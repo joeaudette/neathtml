@@ -11,6 +11,6 @@
     <Execute type="None" entry="NeatHtml" />
   </StartMode>
   <Entries>
-    <Entry filename="./NeatHtml.mdp" />
+    <Entry filename="./Brettle.Web.NeatHtml/NeatHtml.mdp" />
   </Entries>
 </Combine>
