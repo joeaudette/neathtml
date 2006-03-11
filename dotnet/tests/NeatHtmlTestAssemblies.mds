@@ -1,0 +1,13 @@
+<Combine name="NeatHtmlTestAssemblies" fileversion="2.0">
+  <Configurations active="Default">
+    <Configuration name="Default" ctype="CombineConfiguration">
+      <Entry configuration="Default" build="True" name="NeatHtmlTestAssemblies" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="NeatHtmlTestAssemblies" single="True">
+    <Execute type="None" entry="NeatHtmlTestAssemblies" />
+  </StartMode>
+  <Entries>
+    <Entry filename="./NeatHtmlTestAssemblies.md-nunit" />
+  </Entries>
+</Combine>

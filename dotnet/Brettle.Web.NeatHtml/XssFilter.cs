@@ -29,44 +29,40 @@ namespace Brettle.Web.NeatHtml
 {
 	public class XssFilter
 	{
-		public static string FilterFragment(string htmlFragment)
+		public static XssFilter GetForSchema(string schemaLocation)
 		{
-			string page ="<html xmlns='http://www.w3.org/1999/xhtml'>\n"
-			+ "<head><title>title</title></head>\n"
-			+ "<body>"
-			+ "<div>" + htmlFragment + "</div>"
-			+ "</body>\n"
-			+ "</html>";
-			
-			// XmlParserContext parserContext = new XmlParserContext(null, null, "", XmlSpace.None);
-			
-			// XmlValidatingReader validator
-			//			= new System.Xml.XmlValidatingReader(page, XmlNodeType.Element, parserContext);
-			XmlTextReader reader = new XmlTextReader(new StringReader(page));
-			XmlValidatingReader validator
-			= new System.Xml.XmlValidatingReader(reader);
-			
-			
-			validator.ValidationEventHandler += new ValidationEventHandler(OnValidationError);
-			
-			XmlSchemaCollection schemas = new XmlSchemaCollection();
-			XmlDocument schemaDoc = InlineSchema("NeatHtml.xsd");
-			XmlSchema schema;
+			lock (Filters.SyncRoot)
+			{
+				XssFilter filter = Filters[schemaLocation] as XssFilter;
+				if (filter == null)
+				{
+					filter = new XssFilter(schemaLocation);
+					Filters[schemaLocation] = filter;
+				}
+				return filter;
+			}
+		}
+		
+		private static Hashtable Filters = new Hashtable();
+		
+		private XssFilter(string schemaLocation)
+		{
+			XmlDocument schemaDoc = GetSchemaDoc(schemaLocation);
 			XmlReader schemaReader = new XmlNodeReader(schemaDoc);
 			try
 			{
-				schema = XmlSchema.Read(schemaReader, null);
+				Schema = XmlSchema.Read(schemaReader, null);
 			}
 			finally
 			{
 				schemaReader.Close();
 			}
 			
-			schema.Compile(null);
-			XmlSchemaSimpleType uriType = schema.SchemaTypes[new XmlQualifiedName("URI", "http://www.w3.org/1999/xhtml")] as XmlSchemaSimpleType;
+			Schema.Compile(null);
+			XmlSchemaSimpleType uriType = Schema.SchemaTypes[new XmlQualifiedName("URI", "http://www.w3.org/1999/xhtml")] as XmlSchemaSimpleType;
 			XmlSchemaSimpleTypeRestriction uriTypeRestriction = uriType.Content as XmlSchemaSimpleTypeRestriction;
 			XmlSchemaPatternFacet uriPattern = uriTypeRestriction.Facets[0] as XmlSchemaPatternFacet;
-			Regex uriRegex = new Regex(uriPattern.Value);
+			UriRegex = new Regex(uriPattern.Value);
 			
 			XmlNodeList uriAttributeNameNodes = schemaDoc.SelectNodes("//*[@type='URI']/@name");
 			string xpathPredicateOfUriAttributes = null;
@@ -93,20 +89,45 @@ namespace Brettle.Web.NeatHtml
 				}
 				xpathPredicateOfUriAttributes += "local-name() = '" + attrName + "'";
 			}
+			XPathOfUriAttributes = "/" + "/@*[" + xpathPredicateOfUriAttributes + "]";
 			
 			// TODO: look for URIs (plural) attributes too.
+		}
+		
+		private XmlSchema Schema;
+		private string XPathOfUriAttributes;
+		private Regex UriRegex;
+		
+		public string FilterFragment(string htmlFragment)
+		{
+			string page ="<html xmlns='http://www.w3.org/1999/xhtml'>\n"
+			+ "<head><title>title</title></head>\n"
+			+ "<body>"
+			+ "<div>" + htmlFragment + "</div>"
+			+ "</body>\n"
+			+ "</html>";
 			
-			schemas.Add(schema);
-			validator.Schemas.Add(schemas);
+			// XmlParserContext parserContext = new XmlParserContext(null, null, "", XmlSpace.None);
+			
+			// XmlValidatingReader validator
+			//			= new System.Xml.XmlValidatingReader(page, XmlNodeType.Element, parserContext);
+			XmlTextReader reader = new XmlTextReader(new StringReader(page));
+			XmlValidatingReader validator
+			= new System.Xml.XmlValidatingReader(reader);
+			
+			
+			validator.ValidationEventHandler += new ValidationEventHandler(OnValidationError);
+						
+			validator.Schemas.Add(Schema);
 			validator.ValidationType = ValidationType.Schema;
 			XmlDocument doc = new XmlDocument();
 			doc.Load(validator);
-			if (xpathPredicateOfUriAttributes != null)
+			if (XPathOfUriAttributes != null)
 			{
-				XmlNodeList uriAttributes = doc.SelectNodes("/" + "/@*[" + xpathPredicateOfUriAttributes + "]");
+				XmlNodeList uriAttributes = doc.SelectNodes(XPathOfUriAttributes);
 				foreach (XmlNode attr in uriAttributes)
 				{
-					if (!uriRegex.IsMatch(attr.Value))
+					if (!UriRegex.IsMatch(attr.Value))
 					{
 						attr.Value = "";
 					}
@@ -117,113 +138,115 @@ namespace Brettle.Web.NeatHtml
 			return bodyElem.InnerXml;
 		}			
 			
-			private static XmlDocument InlineSchema(string origSchemaFileName)
+		private static XmlDocument GetSchemaDoc(string schemaLocation)
+		{
+			Hashtable includedFileNames = new Hashtable();
+			XmlDocument schema = new XmlDocument();
+			XmlTextReader schemaReader = new XmlTextReader(schemaLocation);
+			try
 			{
-				Hashtable includedFileNames = new Hashtable();
-				XmlDocument schema = new XmlDocument();
-				XmlTextReader schemaReader = new XmlTextReader(origSchemaFileName);
-				try
+				schema.Load(schemaReader);
+			}
+			finally
+			{
+				schemaReader.Close();
+			}
+			
+			while (true)
+			{
+				XmlNamespaceManager nsMgr = new System.Xml.XmlNamespaceManager(schema.NameTable);
+				nsMgr.AddNamespace("xs", "http://www.w3.org/2001/XMLSchema");
+				XmlNodeList imports = schema.GetElementsByTagName("xs:import");
+				if (imports.Count > 0)
 				{
-					schema.Load(schemaReader);
+					XmlElement import = imports[0] as XmlElement;
+					import.ParentNode.RemoveChild(import);
+					continue;
 				}
-				finally
-				{
-					schemaReader.Close();
-				}
+				XmlNodeList nodes = schema.SelectNodes("//xs:include|//xs:redefine", nsMgr);
 				
-				while (true)
+				Console.WriteLine("nodes.Count == " + nodes.Count);
+				XmlElement elem = null;
+				for (int i = 0; i < nodes.Count; i++)
 				{
-					XmlNamespaceManager nsMgr = new System.Xml.XmlNamespaceManager(schema.NameTable);
-					nsMgr.AddNamespace("xs", "http://www.w3.org/2001/XMLSchema");
-					XmlNodeList imports = schema.GetElementsByTagName("xs:import");
-					if (imports.Count > 0)
+					string inclSchemaLocation = nodes[i].Attributes["schemaLocation"].Value;
+					if (includedFileNames[inclSchemaLocation] == null)
 					{
-						XmlElement import = imports[0] as XmlElement;
-						import.ParentNode.RemoveChild(import);
-						continue;
+						includedFileNames[inclSchemaLocation] = inclSchemaLocation;
+						elem = nodes[i] as XmlElement;
+						break;
 					}
-					XmlNodeList nodes = schema.SelectNodes("//xs:include|//xs:redefine", nsMgr);
+					else
+					{
+						nodes[i].ParentNode.RemoveChild(nodes[i]);
+					}
+				}
 					
-					Console.WriteLine("nodes.Count == " + nodes.Count);
-					XmlElement elem = null;
-					for (int i = 0; i < nodes.Count; i++)
+				if (elem != null)
+				{
+					string inclSchemaLocation = elem.Attributes["schemaLocation"].Value;
+					inclSchemaLocation = Path.Combine(Path.GetDirectoryName(schemaLocation), inclSchemaLocation);
+					XmlDocument inclSchema = new XmlDocument();
+					Console.WriteLine("Including " + inclSchemaLocation);
+					schemaReader = new XmlTextReader(inclSchemaLocation);
+					try
 					{
-						string schemaLocation = nodes[i].Attributes["schemaLocation"].Value;
-						if (includedFileNames[schemaLocation] == null)
-						{
-							includedFileNames[schemaLocation] = schemaLocation;
-							elem = nodes[i] as XmlElement;
-							break;
-						}
-						else
-						{
-							nodes[i].ParentNode.RemoveChild(nodes[i]);
-						}
+						inclSchema.Load(schemaReader);
 					}
-						
-					if (elem != null)
+					finally
 					{
-						XmlDocument inclSchema = new XmlDocument();
-						Console.WriteLine("Including " + elem.Attributes["schemaLocation"].Value);
-						schemaReader = new XmlTextReader(elem.Attributes["schemaLocation"].Value);
-						try
+						schemaReader.Close();
+					}
+					
+					foreach (XmlNode contentNode in inclSchema.DocumentElement.ChildNodes)
+					{
+						elem.ParentNode.InsertBefore(schema.ImportNode(contentNode, true), elem);
+					}
+					if (elem.Name == "xs:redefine")
+					{
+						Console.WriteLine("Redefining " + inclSchemaLocation);
+						foreach (XmlNode contentNode in elem.ChildNodes)
 						{
-							inclSchema.Load(schemaReader);
-						}
-						finally
-						{
-							schemaReader.Close();
-						}
-						
-						foreach (XmlNode contentNode in inclSchema.DocumentElement.ChildNodes)
-						{
-							elem.ParentNode.InsertBefore(schema.ImportNode(contentNode, true), elem);
-						}
-						if (elem.Name == "xs:redefine")
-						{
-							Console.WriteLine("Redefining " + elem.Attributes["schemaLocation"].Value);
-							foreach (XmlNode contentNode in elem.ChildNodes)
+							string xpath = null;
+							XmlNode existingNode = null;
+							if (contentNode.Name != null && contentNode.Attributes != null
+							    && contentNode.Attributes["name"] != null && contentNode.Attributes["name"].Value != null)
 							{
-								string xpath = null;
-								XmlNode existingNode = null;
-								if (contentNode.Name != null && contentNode.Attributes != null
-								    && contentNode.Attributes["name"] != null && contentNode.Attributes["name"].Value != null)
-								{
-									xpath = "/" + "/" + contentNode.Name
-										+ "[@name=\"" + contentNode.Attributes["name"].Value + "\"]";
-									existingNode = schema.SelectSingleNode(xpath, nsMgr);
-								}
-								if (existingNode != null)
-								{
-									Console.WriteLine("Replacing " + xpath);
-									existingNode.ParentNode.ReplaceChild(contentNode.CloneNode(true), existingNode);
-								}
-								else
-								{
-									Console.WriteLine("Adding " + xpath);
-									elem.ParentNode.InsertBefore(contentNode.CloneNode(true), elem);
-								}
+								xpath = "/" + "/" + contentNode.Name
+									+ "[@name=\"" + contentNode.Attributes["name"].Value + "\"]";
+								existingNode = schema.SelectSingleNode(xpath, nsMgr);
+							}
+							if (existingNode != null)
+							{
+								Console.WriteLine("Replacing " + xpath);
+								existingNode.ParentNode.ReplaceChild(contentNode.CloneNode(true), existingNode);
+							}
+							else
+							{
+								Console.WriteLine("Adding " + xpath);
+								elem.ParentNode.InsertBefore(contentNode.CloneNode(true), elem);
 							}
 						}
-							
-						elem.ParentNode.RemoveChild(elem);
-						continue;
 					}
-					break;
+						
+					elem.ParentNode.RemoveChild(elem);
+					continue;
 				}
-				
-				XmlTextWriter writer = new XmlTextWriter(new StreamWriter("Inline" + origSchemaFileName));
-				try
-				{
-					schema.WriteTo(writer);
-				}
-				finally
-				{
-					writer.Close();
-				}
-				
-				return schema;
+				break;
 			}
+/*				
+			XmlTextWriter writer = new XmlTextWriter(new StreamWriter("Inline" + schemaLocation));
+			try
+			{
+				schema.WriteTo(writer);
+			}
+			finally
+			{
+				writer.Close();
+			}
+*/			
+			return schema;
+		}
 			
 			
 						
