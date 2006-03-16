@@ -44,5 +44,12 @@ namespace Brettle.Web.NeatHtml.UnitTests
 			Assert.AreEqual(@"<a href="""" xmlns=""http://www.w3.org/1999/xhtml"">test link</a>",
 			                Filter.FilterFragment("<a href='javascript:alert(\"Hello\");'>test link</a>"));
 		}
+		
+		[Test]
+		public void TestObject()
+		{
+			string actual = Filter.FilterFragment("<object>fallback content</object>");
+			Assert.AreEqual(@"<span>fallback content</span>", actual, actual);
+		}
 	}
 }

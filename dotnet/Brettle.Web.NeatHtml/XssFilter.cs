@@ -21,9 +21,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 using System;
 using System.IO;
 using System.Xml;
+using System.Xml.XPath;
 using System.Xml.Schema;
 using System.Collections;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace Brettle.Web.NeatHtml
 {
@@ -91,16 +93,21 @@ namespace Brettle.Web.NeatHtml
 			}
 			XPathOfUriAttributes = "/" + "/@*[" + xpathPredicateOfUriAttributes + "]";
 			
-			// TODO: look for URIs (plural) attributes too.
+			// NOTE: We don't bother with attributes of type "URIs" (plural) because only <object> has such an
+			// attribute and we don't allow that element.
 		}
 		
 		private XmlSchema Schema;
 		private string XPathOfUriAttributes;
 		private Regex UriRegex;
 		
+		private	XmlValidatingReader Validator;
+		private	XPathNavigator Nav;
+		private XPathNavigatorReader NavReader;
+
 		public string FilterFragment(string htmlFragment)
 		{
-			string page ="<html xmlns='http://www.w3.org/1999/xhtml'>\n"
+			string page ="<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
 			+ "<head><title>title</title></head>\n"
 			+ "<body>"
 			+ "<div>" + htmlFragment + "</div>"
@@ -112,19 +119,31 @@ namespace Brettle.Web.NeatHtml
 			// XmlValidatingReader validator
 			//			= new System.Xml.XmlValidatingReader(page, XmlNodeType.Element, parserContext);
 			XmlTextReader reader = new XmlTextReader(new StringReader(page));
-			XmlValidatingReader validator
-			= new System.Xml.XmlValidatingReader(reader);
+			XmlDocument origDoc = new XmlDocument();
+			origDoc.Load(reader);
+			Nav = origDoc.CreateNavigator();
 			
-			
-			validator.ValidationEventHandler += new ValidationEventHandler(OnValidationError);
+			IsValid = false;
+			// TODO: limit number of errors
+			while (!IsValid)
+			{
+				Nav.MoveToRoot();
+				NavReader = new XPathNavigatorReader(Nav);
+				// XmlReader nodeReader = new XmlNodeReader(origDoc);
+				Validator = new System.Xml.XmlValidatingReader(NavReader);
+				Validator.ValidationEventHandler += new ValidationEventHandler(OnValidationError);
+				
+				Validator.Schemas.Add(Schema);
+				Validator.ValidationType = ValidationType.Schema;
+				IsValid = true;
+				while (IsValid && Validator.Read())
+				{
+				}
+			}
 						
-			validator.Schemas.Add(Schema);
-			validator.ValidationType = ValidationType.Schema;
-			XmlDocument doc = new XmlDocument();
-			doc.Load(validator);
 			if (XPathOfUriAttributes != null)
 			{
-				XmlNodeList uriAttributes = doc.SelectNodes(XPathOfUriAttributes);
+				XmlNodeList uriAttributes = origDoc.SelectNodes(XPathOfUriAttributes);
 				foreach (XmlNode attr in uriAttributes)
 				{
 					if (!UriRegex.IsMatch(attr.Value))
@@ -134,7 +153,7 @@ namespace Brettle.Web.NeatHtml
 				}
 			}
 			
-			XmlElement bodyElem = doc.GetElementsByTagName("div")[0] as XmlElement;
+			XmlElement bodyElem = origDoc.GetElementsByTagName("div")[0] as XmlElement;
 			return bodyElem.InnerXml;
 		}			
 			
@@ -165,7 +184,7 @@ namespace Brettle.Web.NeatHtml
 				}
 				XmlNodeList nodes = schema.SelectNodes("//xs:include|//xs:redefine", nsMgr);
 				
-				Console.WriteLine("nodes.Count == " + nodes.Count);
+				Debug.WriteLine("nodes.Count == " + nodes.Count);
 				XmlElement elem = null;
 				for (int i = 0; i < nodes.Count; i++)
 				{
@@ -187,7 +206,7 @@ namespace Brettle.Web.NeatHtml
 					string inclSchemaLocation = elem.Attributes["schemaLocation"].Value;
 					inclSchemaLocation = Path.Combine(Path.GetDirectoryName(schemaLocation), inclSchemaLocation);
 					XmlDocument inclSchema = new XmlDocument();
-					Console.WriteLine("Including " + inclSchemaLocation);
+					Debug.WriteLine("Including " + inclSchemaLocation);
 					schemaReader = new XmlTextReader(inclSchemaLocation);
 					try
 					{
@@ -204,7 +223,7 @@ namespace Brettle.Web.NeatHtml
 					}
 					if (elem.Name == "xs:redefine")
 					{
-						Console.WriteLine("Redefining " + inclSchemaLocation);
+						Debug.WriteLine("Redefining " + inclSchemaLocation);
 						foreach (XmlNode contentNode in elem.ChildNodes)
 						{
 							string xpath = null;
@@ -218,12 +237,12 @@ namespace Brettle.Web.NeatHtml
 							}
 							if (existingNode != null)
 							{
-								Console.WriteLine("Replacing " + xpath);
+								Debug.WriteLine("Replacing " + xpath);
 								existingNode.ParentNode.ReplaceChild(contentNode.CloneNode(true), existingNode);
 							}
 							else
 							{
-								Console.WriteLine("Adding " + xpath);
+								Debug.WriteLine("Adding " + xpath);
 								elem.ParentNode.InsertBefore(contentNode.CloneNode(true), elem);
 							}
 						}
@@ -247,13 +266,34 @@ namespace Brettle.Web.NeatHtml
 */			
 			return schema;
 		}
-			
-			
+		
+		private bool IsValid = false;
 						
-		private static void OnValidationError(object sender, ValidationEventArgs args)
+		private void OnValidationError(object sender, ValidationEventArgs args)
 		{
-			Console.Out.WriteLine(args.Message);
-		}
+			IsValid = false;
+			Console.WriteLine(args.Message);
+			XmlNode node = ((IHasXmlNode)NavReader.CreateNavigator()).GetNode();
+			Console.WriteLine("Name = " + node.Name + ", NodeType = " + node.NodeType);
+			if (node.ParentNode == null)
+			{
+				return;
+			}
 			
+			if (node.NodeType == XmlNodeType.Element)
+			{
+				XmlElement replacementElem = node.OwnerDocument.CreateElement("span");
+				foreach (XmlNode contentNode in node.ChildNodes)
+				{
+					replacementElem.AppendChild(contentNode.CloneNode(true));
+				}
+				Console.WriteLine("node.ParentNode = " + node.ParentNode);
+				node.ParentNode.ReplaceChild(replacementElem, node);
+			}
+			else
+			{
+				node.ParentNode.RemoveChild(node);
+			}
+		}
 	}
 }
