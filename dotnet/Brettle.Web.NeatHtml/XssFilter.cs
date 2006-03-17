@@ -25,6 +25,7 @@ using System.Xml.XPath;
 using System.Xml.Schema;
 using System.Collections;
 using System.Text.RegularExpressions;
+using System.Web;
 using System.Diagnostics;
 
 namespace Brettle.Web.NeatHtml
@@ -65,13 +66,17 @@ namespace Brettle.Web.NeatHtml
 			+ "</body>\n"
 			+ "</html>";
 			
-			// XmlParserContext parserContext = new XmlParserContext(null, null, "", XmlSpace.None);
-			
-			// XmlValidatingReader validator
-			//			= new System.Xml.XmlValidatingReader(page, XmlNodeType.Element, parserContext);
 			XmlTextReader reader = new XmlTextReader(new StringReader(page));
 			XmlDocument origDoc = new XmlDocument();
-			origDoc.Load(reader);
+			origDoc.PreserveWhitespace = true;
+			try
+			{
+				origDoc.Load(reader);
+			}
+			catch (XmlException)
+			{
+				return HttpUtility.HtmlEncode(htmlFragment);
+			}
 						
 			XPathNavigator nav = origDoc.CreateNavigator();
 			

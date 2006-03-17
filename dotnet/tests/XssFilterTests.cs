@@ -41,15 +41,42 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		[Test]
 		public void TestJavaScriptUri()
 		{
-			Assert.AreEqual(@"<a href="""" xmlns=""http://www.w3.org/1999/xhtml"">test link</a>",
-			                Filter.FilterFragment("<a href='javascript:alert(\"Hello\");'>test link</a>"));
+			AssertFilteredIsEqual(@"<a href='javascript:alert(""Hello"");'>test link</a>",
+			                         @"<a href="""" xmlns=""http://www.w3.org/1999/xhtml"">test link</a>");
 		}
 		
 		[Test]
 		public void TestObject()
 		{
-			string actual = Filter.FilterFragment("<object>fallback content</object>");
-			Assert.AreEqual(@"<span>fallback content</span>", actual, actual);
+			AssertFilteredIsEqual(@"<object>fallback content</object>",
+			                         @"<span>fallback content</span>");
 		}
+		
+		[Test]
+		public void TestMalformed()
+		{
+			AssertFilteredIsEqual(@"<span id='x'>missing close tag",
+			                         @"&lt;span id='x'&gt;missing close tag");
+		}
+		
+		[Test]
+		public void TestPreserveWhitespace()
+		{
+			AssertFilteredIsEqual("<pre>\n\ttab indent\n      6 space indent\n</pre>",
+			                         "<pre xmlns=\"http://www.w3.org/1999/xhtml\">\n\ttab indent\n      6 space indent\n</pre>");
+		}
+		
+		[Test]
+		public void TestFont()
+		{
+			AssertFilteredIsEqual(@"<font color=""#ff0000"" size=""2"" face=""Arial, Helvetica, Geneva, SunSans-Regular, sans-serif "">test</font>",
+			                         @"<font color=""#ff0000"" size=""2"" face=""Arial, Helvetica, Geneva, SunSans-Regular, sans-serif "" xmlns=""http://www.w3.org/1999/xhtml"">test</font>");
+		}
+				
+		private void AssertFilteredIsEqual(string fragment, string expected)
+		{
+			string actual = Filter.FilterFragment(fragment);
+			Assert.AreEqual(expected, actual, "Full actual = " + actual);
+		}			
 	}
 }

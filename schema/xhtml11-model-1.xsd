@@ -161,6 +161,7 @@
     <xs:choice>
       <xs:element ref="br"/>
       <xs:element ref="span"/>
+      <xs:element ref="font"/>
     </xs:choice>
   </xs:group>
 

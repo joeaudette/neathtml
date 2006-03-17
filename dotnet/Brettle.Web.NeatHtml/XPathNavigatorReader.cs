@@ -675,7 +675,6 @@ namespace Brettle.Web.NeatHtml
 				return String.Format ("</{0}>", Name);
 			}
 
-			bool isEmpty = IsEmptyElement;
 			string name = Name;
 			atts.Length = 0;
 			XPathNavigator temp = current.Clone ();
