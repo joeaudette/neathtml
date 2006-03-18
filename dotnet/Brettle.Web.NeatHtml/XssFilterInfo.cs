@@ -45,7 +45,15 @@ namespace Brettle.Web.NeatHtml
 			}
 			
 			Schema.Compile(null);
-			XmlSchemaSimpleType uriType = Schema.SchemaTypes[new XmlQualifiedName("URI", "http://www.w3.org/1999/xhtml")] as XmlSchemaSimpleType;
+            if (Type.GetType("Mono.Runtime", false) != null)
+            {
+                SetUpUriRegexAndXPath(schemaDoc);
+            }
+        }
+
+        private void SetUpUriRegexAndXPath(XmlDocument schemaDoc)
+        {
+            XmlSchemaSimpleType uriType = Schema.SchemaTypes[new XmlQualifiedName("URI", "http://www.w3.org/1999/xhtml")] as XmlSchemaSimpleType;
 			XmlSchemaSimpleTypeRestriction uriTypeRestriction = uriType.Content as XmlSchemaSimpleTypeRestriction;
 			XmlSchemaPatternFacet uriPattern = uriTypeRestriction.Facets[0] as XmlSchemaPatternFacet;
 			UriRegex = new Regex(uriPattern.Value);
@@ -87,7 +95,6 @@ namespace Brettle.Web.NeatHtml
 		
 		private static XmlDocument GetSchemaDoc(string schemaLocation)
 		{
-			Hashtable includedFileNames = new Hashtable();
 			XmlDocument schema = new XmlDocument();
 			XmlTextReader schemaReader = new XmlTextReader(schemaLocation);
 			try
@@ -98,12 +105,21 @@ namespace Brettle.Web.NeatHtml
 			{
 				schemaReader.Close();
 			}
-			
-			while (true)
+            if (Type.GetType("Mono.Runtime", false) != null)
+            {
+                PreProcessSchemaDoc(schema, schemaLocation);
+            }
+            return schema;
+        }
+
+        private static void PreProcessSchemaDoc(XmlDocument schema, string schemaLocation)
+        {
+            Hashtable includedFileNames = new Hashtable();
+            while (true)
 			{
 				XmlNamespaceManager nsMgr = new System.Xml.XmlNamespaceManager(schema.NameTable);
 				nsMgr.AddNamespace("xs", "http://www.w3.org/2001/XMLSchema");
-				XmlNodeList imports = schema.GetElementsByTagName("xs:import");
+                XmlNodeList imports = schema.GetElementsByTagName("xs:import");
 				if (imports.Count > 0)
 				{
 					XmlElement import = imports[0] as XmlElement;
@@ -135,7 +151,7 @@ namespace Brettle.Web.NeatHtml
 					inclSchemaLocation = Path.Combine(Path.GetDirectoryName(schemaLocation), inclSchemaLocation);
 					XmlDocument inclSchema = new XmlDocument();
 					Debug.WriteLine("Including " + inclSchemaLocation);
-					schemaReader = new XmlTextReader(inclSchemaLocation);
+                    XmlTextReader schemaReader = new XmlTextReader(inclSchemaLocation);
 					try
 					{
 						inclSchema.Load(schemaReader);
@@ -192,7 +208,6 @@ namespace Brettle.Web.NeatHtml
 				writer.Close();
 			}
 */			
-			return schema;
 		}	
 	}
 }

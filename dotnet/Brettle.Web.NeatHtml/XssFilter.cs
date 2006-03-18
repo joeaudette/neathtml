@@ -99,31 +99,31 @@ namespace Brettle.Web.NeatHtml
 					}
 				}
 			}
-						
-			if (FilterInfo.XPathOfUriAttributes != null)
+
+            if (FilterInfo.XPathOfUriAttributes != null)
 			{
 				Debug.WriteLine("XPath = " + FilterInfo.XPathOfUriAttributes);
 				XmlNodeList uriAttributes = origDoc.SelectNodes(FilterInfo.XPathOfUriAttributes);
-				foreach (XmlNode attr in uriAttributes)
+				foreach (XmlAttribute attr in uriAttributes)
 				{
 					Debug.WriteLine("Checking " + attr.Value + " against " + FilterInfo.UriRegex.ToString());
 					if (!FilterInfo.UriRegex.IsMatch(attr.Value))
 					{
-						attr.Value = "";
-					}
+                        attr.OwnerElement.Attributes.RemoveNamedItem(attr.LocalName, attr.NamespaceURI);
+                    }
 				}
 			}
-			
-			XmlElement bodyElem = origDoc.GetElementsByTagName("div")[0] as XmlElement;
+
+            XmlElement bodyElem = origDoc.GetElementsByTagName("div")[0] as XmlElement;
 			return bodyElem.InnerXml;
 		}
 		
 		private void OnValidationError(object sender, ValidationEventArgs args)
 		{
 			IsValid = false;
-			Debug.WriteLine(args.Message);
-			XmlNode node = ((IHasXmlNode)NavReader.CreateNavigator()).GetNode();
-			Debug.WriteLine("Name = " + node.Name + ", NodeType = " + node.NodeType);
+            XmlNode node = ((IHasXmlNode)NavReader.CreateNavigator()).GetNode();
+			Console.WriteLine("Name = " + node.Name + ", NodeType = " + node.NodeType);
+            Console.WriteLine(args.Message);
 			
 			if (node.NodeType == XmlNodeType.Element)
 			{
@@ -131,7 +131,7 @@ namespace Brettle.Web.NeatHtml
 				{
 					return;
 				}
-				XmlElement replacementElem = node.OwnerDocument.CreateElement("span");
+                XmlElement replacementElem = node.OwnerDocument.CreateElement("span", "http://www.w3.org/1999/xhtml");
 				foreach (XmlNode contentNode in node.ChildNodes)
 				{
 					replacementElem.AppendChild(contentNode.CloneNode(true));

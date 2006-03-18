@@ -30,6 +30,7 @@
 
 using System;
 using System.Text;
+using System.IO;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.XPath;
@@ -37,9 +38,9 @@ using System.Xml.XPath;
 namespace Brettle.Web.NeatHtml
 {
 
-	internal class XPathNavigatorReader : XmlReader, IXPathNavigable
+	internal class XPathNavigatorReader : XmlTextReader, IXPathNavigable
 	{
-		public XPathNavigatorReader (XPathNavigator nav)
+		public XPathNavigatorReader (XPathNavigator nav) : base(new StringReader(""))
 		{
 			switch (nav.NodeType) {
 			case XPathNodeType.Element:

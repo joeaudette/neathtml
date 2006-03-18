@@ -42,14 +42,14 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		public void TestHref()
 		{
 			AssertFilteredIsEqual(@"<a href='javascript:alert(""TestHref"");'>test link</a>",
-			                         @"<a href="""" xmlns=""http://www.w3.org/1999/xhtml"">test link</a>");
+			                         @"<a xmlns=""http://www.w3.org/1999/xhtml"">test link</a>");
 		}
 		
 		[Test]
 		public void TestObject()
 		{
 			AssertFilteredIsEqual(@"<object>fallback content</object>",
-			                         @"<span>fallback content</span>");
+                                     @"<span xmlns=""http://www.w3.org/1999/xhtml"">fallback content</span>");
 		}
 		
 		[Test]
@@ -77,7 +77,7 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		public void TestImgSrc()
 		{
 			AssertFilteredIsEqual(@"<img src=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:alert('TestImgSrc');""/>",
-			                         @"<img src="""" xmlns=""http://www.w3.org/1999/xhtml"" />");
+			                         @"<img xmlns=""http://www.w3.org/1999/xhtml"" />");
 		}
 				
 		[Test]
