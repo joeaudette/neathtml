@@ -102,9 +102,11 @@ namespace Brettle.Web.NeatHtml
 						
 			if (FilterInfo.XPathOfUriAttributes != null)
 			{
+				Debug.WriteLine("XPath = " + FilterInfo.XPathOfUriAttributes);
 				XmlNodeList uriAttributes = origDoc.SelectNodes(FilterInfo.XPathOfUriAttributes);
 				foreach (XmlNode attr in uriAttributes)
 				{
+					Debug.WriteLine("Checking " + attr.Value + " against " + FilterInfo.UriRegex.ToString());
 					if (!FilterInfo.UriRegex.IsMatch(attr.Value))
 					{
 						attr.Value = "";
@@ -119,23 +121,28 @@ namespace Brettle.Web.NeatHtml
 		private void OnValidationError(object sender, ValidationEventArgs args)
 		{
 			IsValid = false;
-			Console.WriteLine(args.Message);
+			Debug.WriteLine(args.Message);
 			XmlNode node = ((IHasXmlNode)NavReader.CreateNavigator()).GetNode();
-			Console.WriteLine("Name = " + node.Name + ", NodeType = " + node.NodeType);
-			if (node.ParentNode == null)
-			{
-				return;
-			}
+			Debug.WriteLine("Name = " + node.Name + ", NodeType = " + node.NodeType);
 			
 			if (node.NodeType == XmlNodeType.Element)
 			{
+				if (node.ParentNode == null)
+				{
+					return;
+				}
 				XmlElement replacementElem = node.OwnerDocument.CreateElement("span");
 				foreach (XmlNode contentNode in node.ChildNodes)
 				{
 					replacementElem.AppendChild(contentNode.CloneNode(true));
 				}
-				Console.WriteLine("node.ParentNode = " + node.ParentNode);
+				Debug.WriteLine("node.ParentNode = " + node.ParentNode);
 				node.ParentNode.ReplaceChild(replacementElem, node);
+			}
+			else if (node.NodeType == XmlNodeType.Attribute)
+			{
+				XmlAttribute attr = (XmlAttribute)node;
+				attr.OwnerElement.Attributes.RemoveNamedItem(attr.LocalName, attr.NamespaceURI);
 			}
 			else
 			{

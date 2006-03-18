@@ -39,9 +39,9 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		}
 		
 		[Test]
-		public void TestJavaScriptUri()
+		public void TestHref()
 		{
-			AssertFilteredIsEqual(@"<a href='javascript:alert(""Hello"");'>test link</a>",
+			AssertFilteredIsEqual(@"<a href='javascript:alert(""TestHref"");'>test link</a>",
 			                         @"<a href="""" xmlns=""http://www.w3.org/1999/xhtml"">test link</a>");
 		}
 		
@@ -72,7 +72,21 @@ namespace Brettle.Web.NeatHtml.UnitTests
 			AssertFilteredIsEqual(@"<font color=""#ff0000"" size=""2"" face=""Arial, Helvetica, Geneva, SunSans-Regular, sans-serif "">test</font>",
 			                         @"<font color=""#ff0000"" size=""2"" face=""Arial, Helvetica, Geneva, SunSans-Regular, sans-serif "" xmlns=""http://www.w3.org/1999/xhtml"">test</font>");
 		}
+		
+		[Test]
+		public void TestImgSrc()
+		{
+			AssertFilteredIsEqual(@"<img src=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:alert('TestImgSrc');""/>",
+			                         @"<img src="""" xmlns=""http://www.w3.org/1999/xhtml"" />");
+		}
 				
+		[Test]
+		public void TestOnClick()
+		{
+			AssertFilteredIsEqual(@"<a href=""#"" onclick=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:document.body.appendChild(document.createTextNode('${xssTestId}_A_ONCLICK_HEX.'));"">TestOnClick</a>",
+			                         @"<a href=""#"" xmlns=""http://www.w3.org/1999/xhtml"">TestOnClick</a>");
+		}
+		
 		private void AssertFilteredIsEqual(string fragment, string expected)
 		{
 			string actual = Filter.FilterFragment(fragment);

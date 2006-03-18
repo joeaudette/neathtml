@@ -29,7 +29,7 @@
   <xs:attributeGroup name="img.attlist">
     <xs:attributeGroup ref="Common.attrib"/>
     <xs:attribute name="src" type="URI" use="required"/>
-    <xs:attribute name="alt" type="Text" use="required"/>
+    <xs:attribute name="alt" type="Text"/>
     <xs:attribute name="longdesc" type="URI"/>
     <xs:attribute name="height" type="Length"/>
     <xs:attribute name="width" type="Length"/>
