@@ -126,8 +126,8 @@ namespace Brettle.Web.NeatHtml
 		{
 			IsValid = false;
             XmlNode node = ((IHasXmlNode)NavReader.CreateNavigator()).GetNode();
-			Console.WriteLine("Name = " + node.Name + ", NodeType = " + node.NodeType);
-            Console.WriteLine(args.Message);
+			Debug.WriteLine("Name = " + node.Name + ", NodeType = " + node.NodeType);
+            Debug.WriteLine(args.Message);
 			
 			if (node.NodeType == XmlNodeType.Element)
 			{
