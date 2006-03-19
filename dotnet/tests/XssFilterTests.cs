@@ -40,6 +40,33 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		}
 		
 		[Test]
+		public void TestNormalText()
+		{
+			AssertFilteredIsEqual(@"test text",
+			                         @"test text");
+		}
+		
+		[Test]
+		public void TestBR()
+		{
+			AssertFilteredIsEqual(@"test<br />text",
+			                         @"test<br xmlns=""http://www.w3.org/1999/xhtml"" />text");
+		}
+		
+		[Test]
+		public void TestFromJoe()
+		{
+			AssertFilteredIsEqual(@"<h3 id=""target"">Why was the target attribute removed from XHTML 1.1?</h3>
+
+<p>It wasn't. XHTML 1.0 comes in three versions: strict, transitional, and frameset. All three of these were deliberately kept as close as possible to HTML 4.01 as XML would allow. XHTML 1.1 is an updated version of XHTML 1.0 <em>strict</em>, and no version of HTML strict has ever included the <code>target</code> attribute. The other two versions, transitional and frameset, were not updated, because there was nothing to update. If you want to use the <code>target</code> attribute, use XHTML 1.0 transitional.<br /><br />I took this text from W3C website about XHTML 1.1<br />so I think you should keep your target attributes and just convert to XHTML transitional.</p>
+						    <br /><br />",
+			                         @"<h3 id=""target"" xmlns=""http://www.w3.org/1999/xhtml"">Why was the target attribute removed from XHTML 1.1?</h3>
+
+<p xmlns=""http://www.w3.org/1999/xhtml"">It wasn't. XHTML 1.0 comes in three versions: strict, transitional, and frameset. All three of these were deliberately kept as close as possible to HTML 4.01 as XML would allow. XHTML 1.1 is an updated version of XHTML 1.0 <em>strict</em>, and no version of HTML strict has ever included the <code>target</code> attribute. The other two versions, transitional and frameset, were not updated, because there was nothing to update. If you want to use the <code>target</code> attribute, use XHTML 1.0 transitional.<br /><br />I took this text from W3C website about XHTML 1.1<br />so I think you should keep your target attributes and just convert to XHTML transitional.</p>
+						    <br xmlns=""http://www.w3.org/1999/xhtml"" /><br xmlns=""http://www.w3.org/1999/xhtml"" />");
+		}
+		
+		[Test]
 		public void TestHref()
 		{
 			AssertFilteredIsEqual(@"<a href='javascript:alert(""TestHref"");'>test link</a>",
