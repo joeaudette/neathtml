@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 using System;
 using NUnit.Framework;
 using System.IO;
+using System.Web;
 
 namespace Brettle.Web.NeatHtml.UnitTests
 {
@@ -55,8 +56,7 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		[Test]
 		public void TestMalformed()
 		{
-			AssertFilteredIsEqual(@"<span id='x'>missing close tag",
-			                         @"&lt;span id='x'&gt;missing close tag");
+			AssertFilteredIsEncoded(@"<span id='x'>missing close tag");
 		}
 		
 		[Test]
@@ -76,10 +76,15 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		[Test]
 		public void TestImgSrc()
 		{
-			AssertFilteredIsEqual(@"<img src=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:alert('TestImgSrc');""/>",
-			                         @"<img xmlns=""http://www.w3.org/1999/xhtml"" />");
+			AssertFilteredIsEqual(@"<img src=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:alert('TestImgSrc');""/>", @"<span xmlns=""http://www.w3.org/1999/xhtml"" />");
 		}
 				
+		[Test]
+		public void TestMissingRequiredAttribute()
+		{
+			AssertFilteredIsEqual(@"<img />", @"<span xmlns=""http://www.w3.org/1999/xhtml"" />");
+		}
+		
 		[Test]
 		public void TestOnClick()
 		{
@@ -87,10 +92,22 @@ namespace Brettle.Web.NeatHtml.UnitTests
 			                         @"<a href=""#"" xmlns=""http://www.w3.org/1999/xhtml"">TestOnClick</a>");
 		}
 		
+		[Test]
+		public void TestSpanNotAllowed()
+		{
+			AssertFilteredIsEncoded(@"<br><span>span not allowed here</span></br>");
+		}
+		
 		private void AssertFilteredIsEqual(string fragment, string expected)
 		{
 			string actual = Filter.FilterFragment(fragment);
 			Assert.AreEqual(expected, actual, "Full actual = " + actual);
+		}			
+		
+		private void AssertFilteredIsEncoded(string fragment)
+		{
+			string actual = Filter.FilterFragment(fragment);
+			Assert.AreEqual(HttpUtility.HtmlEncode(fragment), actual, "Full actual = " + actual);
 		}			
 	}
 }

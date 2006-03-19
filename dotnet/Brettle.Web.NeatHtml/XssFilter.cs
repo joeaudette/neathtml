@@ -72,50 +72,54 @@ namespace Brettle.Web.NeatHtml
 			try
 			{
 				origDoc.Load(reader);
+			
+				if (FilterInfo.XPathOfUriAttributes != null)
+				{
+					Debug.WriteLine("XPath = " + FilterInfo.XPathOfUriAttributes);
+					XmlNodeList uriAttributes = origDoc.SelectNodes(FilterInfo.XPathOfUriAttributes);
+					foreach (XmlAttribute attr in uriAttributes)
+					{
+						Debug.WriteLine("Checking " + attr.Value + " against " + FilterInfo.UriRegex.ToString());
+						if (!FilterInfo.UriRegex.IsMatch(attr.Value))
+						{
+	                        attr.OwnerElement.Attributes.RemoveNamedItem(attr.LocalName, attr.NamespaceURI);
+	                    }
+					}
+				}
+							
+				XPathNavigator nav = origDoc.CreateNavigator();
+				
+				lock (this)
+				{
+					IsValid = false;
+					// TODO: limit number of errors
+					while (!IsValid)
+					{
+						nav.MoveToRoot();
+						NavReader = new XPathNavigatorReader(nav);
+						XmlValidatingReader validator = new System.Xml.XmlValidatingReader(NavReader);
+						validator.ValidationEventHandler += new ValidationEventHandler(OnValidationError);
+						
+						validator.Schemas.Add(FilterInfo.Schema);
+						validator.ValidationType = ValidationType.Schema;
+						IsValid = true;
+						while (IsValid && validator.Read())
+						{
+						}
+					}
+				}
+
+	            XmlElement bodyElem = origDoc.GetElementsByTagName("div")[0] as XmlElement;
+				return bodyElem.InnerXml;
 			}
 			catch (XmlException)
 			{
 				return HttpUtility.HtmlEncode(htmlFragment);
 			}
-						
-			XPathNavigator nav = origDoc.CreateNavigator();
-			
-			lock (this)
+			catch (XmlSchemaException)
 			{
-				IsValid = false;
-				// TODO: limit number of errors
-				while (!IsValid)
-				{
-					nav.MoveToRoot();
-					NavReader = new XPathNavigatorReader(nav);
-					XmlValidatingReader validator = new System.Xml.XmlValidatingReader(NavReader);
-					validator.ValidationEventHandler += new ValidationEventHandler(OnValidationError);
-					
-					validator.Schemas.Add(FilterInfo.Schema);
-					validator.ValidationType = ValidationType.Schema;
-					IsValid = true;
-					while (IsValid && validator.Read())
-					{
-					}
-				}
+				return HttpUtility.HtmlEncode(htmlFragment);
 			}
-
-            if (FilterInfo.XPathOfUriAttributes != null)
-			{
-				Debug.WriteLine("XPath = " + FilterInfo.XPathOfUriAttributes);
-				XmlNodeList uriAttributes = origDoc.SelectNodes(FilterInfo.XPathOfUriAttributes);
-				foreach (XmlAttribute attr in uriAttributes)
-				{
-					Debug.WriteLine("Checking " + attr.Value + " against " + FilterInfo.UriRegex.ToString());
-					if (!FilterInfo.UriRegex.IsMatch(attr.Value))
-					{
-                        attr.OwnerElement.Attributes.RemoveNamedItem(attr.LocalName, attr.NamespaceURI);
-                    }
-				}
-			}
-
-            XmlElement bodyElem = origDoc.GetElementsByTagName("div")[0] as XmlElement;
-			return bodyElem.InnerXml;
 		}
 		
 		private void OnValidationError(object sender, ValidationEventArgs args)
@@ -129,8 +133,17 @@ namespace Brettle.Web.NeatHtml
 			{
 				if (node.ParentNode == null)
 				{
+					// This occurs when a second error is thrown for an element that has already been replaced/removed.
 					return;
 				}
+				if (node.Name == "span")
+				{
+					// If it's already a "span", replacing it with a "span" will just cause an infinite loop.
+					// So throw an exception to force validation to stop.
+					throw args.Exception;
+				}
+				
+				
                 XmlElement replacementElem = node.OwnerDocument.CreateElement("span", "http://www.w3.org/1999/xhtml");
 				foreach (XmlNode contentNode in node.ChildNodes)
 				{
