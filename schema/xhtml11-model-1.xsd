@@ -161,7 +161,6 @@
     <xs:choice>
       <xs:element ref="br"/>
       <xs:element ref="span"/>
-      <xs:element ref="font"/>
     </xs:choice>
   </xs:group>
 
@@ -190,6 +189,11 @@
       <xs:element ref="small"/>
       <xs:element ref="sub"/>
       <xs:element ref="sup"/>
+      <xs:element ref="font"/>
+      <xs:element ref="basefont"/>
+      <xs:element ref="s"/>
+      <xs:element ref="strike"/>
+      <xs:element ref="u"/>
     </xs:choice>
   </xs:group>
 
@@ -365,6 +369,8 @@
       <xs:element ref="ul"/>
       <xs:element ref="ol"/>
       <xs:element ref="dl"/>
+      <xs:element ref="dir"/>
+      <xs:element ref="menu"/>
     </xs:choice>
   </xs:group>
 
@@ -420,7 +426,9 @@
   </xs:group>
 
   <xs:group name="Block.extra">
-    <xs:choice/>
+    <xs:choice>
+      <xs:element ref="center"/>
+    </xs:choice>
   </xs:group>
 
   <!--

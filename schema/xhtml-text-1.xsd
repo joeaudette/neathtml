@@ -67,13 +67,4 @@
     </xs:annotation>
   </xs:include>
 
-  <xs:include schemaLocation="neathtml-font-1.xsd">
-    <xs:annotation>
-      <xs:documentation>
-        Schema for XHTML 1.0 Transitional font element.             
-      </xs:documentation>
-    </xs:annotation>
-  </xs:include>  
-
-
 </xs:schema>

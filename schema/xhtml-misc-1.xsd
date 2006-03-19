@@ -209,6 +209,7 @@
     </xs:documentation>
   </xs:annotation>
 
+<!--
   <xs:attributeGroup name="align.legacy.attlist">
     <xs:attribute name="align">
       <xs:simpleType>
@@ -222,7 +223,6 @@
     </xs:attribute>
   </xs:attributeGroup>
 
-  <!-- add 'target' attribute to 'a' element -->
   <xs:attributeGroup name="a.legacy.attlist">
     <xs:attribute name="target" type="FrameTarget"/>
   </xs:attributeGroup>
@@ -452,5 +452,6 @@
       </xs:simpleType>
     </xs:attribute>         
   </xs:attributeGroup>
+-->
 
 </xs:schema>

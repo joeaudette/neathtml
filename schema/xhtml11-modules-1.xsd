@@ -568,4 +568,23 @@
   </xs:include>
 -->
 
+  <xs:include schemaLocation="xhtml-misc-1.xsd">
+    <xs:annotation>
+      <xs:documentation>
+      XHTML Miscellaneous Legacy Markup   
+        font, basefont, center, s, strike, u,
+        dir, menu, isindex
+      
+      This is to allow XHTML documents to be transformed for
+      display on HTML browsers where CSS support is inconsistent
+      or unavailable.
+      
+      The module also declares legacy attributes for elements
+      in other module. Note: This module only declares the
+      attribute list, and it upto the document type to
+      redefine the model of affected modules.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:include>
+
 </xs:schema>

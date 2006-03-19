@@ -69,20 +69,22 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		[Test]
 		public void TestFont()
 		{
-			AssertFilteredIsEqual(@"<font color=""#ff0000"" size=""2"" face=""Arial, Helvetica, Geneva, SunSans-Regular, sans-serif "">test</font>",
-			                         @"<font color=""#ff0000"" size=""2"" face=""Arial, Helvetica, Geneva, SunSans-Regular, sans-serif "" xmlns=""http://www.w3.org/1999/xhtml"">test</font>");
+			AssertFilteredIsEqual(@"<basefont size=""3""/><font color=""#ff0000"" size=""-1"" face=""Arial, Helvetica, Geneva, SunSans-Regular, sans-serif "">test</font>",
+			                         @"<basefont size=""3"" xmlns=""http://www.w3.org/1999/xhtml"" /><font color=""#ff0000"" size=""-1"" face=""Arial, Helvetica, Geneva, SunSans-Regular, sans-serif "" xmlns=""http://www.w3.org/1999/xhtml"">test</font>");
 		}
 		
 		[Test]
 		public void TestImgSrc()
 		{
-			AssertFilteredIsEqual(@"<img src=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:alert('TestImgSrc');""/>", @"<span xmlns=""http://www.w3.org/1999/xhtml"" />");
+			AssertFilteredIsEqual(@"<img src=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:alert('TestImgSrc');""/>",
+			                         @"<span xmlns=""http://www.w3.org/1999/xhtml"" />");
 		}
 				
 		[Test]
 		public void TestMissingRequiredAttribute()
 		{
-			AssertFilteredIsEqual(@"<img />", @"<span xmlns=""http://www.w3.org/1999/xhtml"" />");
+			AssertFilteredIsEqual(@"<img />",
+			                         @"<span xmlns=""http://www.w3.org/1999/xhtml"" />");
 		}
 		
 		[Test]
