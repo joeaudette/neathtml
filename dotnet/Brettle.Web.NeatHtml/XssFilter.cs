@@ -92,8 +92,10 @@ namespace Brettle.Web.NeatHtml
 				lock (this)
 				{
 					IsValid = false;
-					// TODO: limit number of errors
-					while (!IsValid)
+					// We limit the number of errors we find to be sure we don't end up
+					// in an infinite loop.  There is no way there could be more than 1 error for every
+					// 2 characters in the fragment.
+					for (int errors = 0; errors < htmlFragment.Length/2 + 1 && !IsValid; errors++)
 					{
 						nav.MoveToRoot();
 						NavReader = new XPathNavigatorReader(nav);
@@ -106,6 +108,10 @@ namespace Brettle.Web.NeatHtml
 						while (IsValid && validator.Read())
 						{
 						}
+					}
+					if (!IsValid)
+					{
+						throw new XmlException("Found too many errors in html fragment");
 					}
 				}
 
