@@ -285,7 +285,6 @@
   </xs:include>
 -->
 
-<!--
   <xs:include schemaLocation="xhtml-inlstyle-1.xsd">
     <xs:annotation>
       <xs:documentation>
@@ -298,7 +297,6 @@
          source="http://www.w3.org/TR/xhtml-modularization/abstract_modules.html#s_styleattributemodule"/>
     </xs:annotation>
   </xs:include>
--->
 
   <xs:redefine schemaLocation="xhtml-image-1.xsd">
 <!--

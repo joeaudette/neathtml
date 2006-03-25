@@ -22,6 +22,8 @@ using System;
 using NUnit.Framework;
 using System.IO;
 using System.Web;
+using System.Xml;
+using System.Xml.Schema;
 
 namespace Brettle.Web.NeatHtml.UnitTests
 {
@@ -67,20 +69,42 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		}
 		
 		[Test]
+		public void TestBareAmpersandsEncoded()
+		{
+			AssertFilteredIsEqual(@"<a href=""http://mywebsite.com/GalleryImageEdit.aspx?mid=9&pageindex=3&pageid=6"">http://mywebsite.com/GalleryImageEdit.aspx?mid=9&pageindex=3&pageid=6</a>.",
+			                         @"<a href=""http://mywebsite.com/GalleryImageEdit.aspx?mid=9&amp;pageindex=3&amp;pageid=6"" xmlns=""http://www.w3.org/1999/xhtml"">http://mywebsite.com/GalleryImageEdit.aspx?mid=9&amp;pageindex=3&amp;pageid=6</a>.");
+		}
+		
+		[Test]
+		public void TestEntitiesLeftAlone()
+		{
+			AssertFilteredIsEqual(@"&quot;This&#x20;&amp;&#32;that&quot;",
+			                         @"""This &amp; that""");
+		}
+		
+		[Test]
+		public void TestTagsToLowercase()
+		{
+			AssertFilteredIsEqual(@"<SPAN>Test</SPAN><Span>Test2</Span>",
+			                         @"<span xmlns=""http://www.w3.org/1999/xhtml"">Test</span><span xmlns=""http://www.w3.org/1999/xhtml"">Test2</span>");
+		}
+		
+		[Test]
+		[ExpectedException(typeof(XmlSchemaException))]
 		public void TestHref()
 		{
-			AssertFilteredIsEqual(@"<a href='javascript:alert(""TestHref"");'>test link</a>",
-			                         @"<a xmlns=""http://www.w3.org/1999/xhtml"">test link</a>");
+			Filter.FilterFragment(@"<a href='javascript:alert(""TestHref"");'>test link</a>");
 		}
 		
 		[Test]
+		[ExpectedException(typeof(XmlSchemaException))]
 		public void TestObject()
 		{
-			AssertFilteredIsEqual(@"<object>fallback content</object>",
-                                     @"<span xmlns=""http://www.w3.org/1999/xhtml"">fallback content</span>");
+			Filter.FilterFragment(@"<object>fallback content</object>");
 		}
 		
 		[Test]
+		[ExpectedException(typeof(XmlException))]
 		public void TestMalformed()
 		{
 			AssertFilteredIsEncoded(@"<span id='x'>missing close tag");
@@ -101,30 +125,31 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		}
 		
 		[Test]
+		[ExpectedException(typeof(XmlSchemaException))]
 		public void TestImgSrc()
 		{
-			AssertFilteredIsEqual(@"<img src=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:alert('TestImgSrc');""/>",
-			                         @"<span xmlns=""http://www.w3.org/1999/xhtml"" />");
+			Filter.FilterFragment(@"<img src=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:alert('TestImgSrc');""/>");
 		}
 				
 		[Test]
+		[ExpectedException(typeof(XmlSchemaException))]
 		public void TestMissingRequiredAttribute()
 		{
-			AssertFilteredIsEqual(@"<img />",
-			                         @"<span xmlns=""http://www.w3.org/1999/xhtml"" />");
+			Filter.FilterFragment(@"<img />");
 		}
 		
 		[Test]
+		[ExpectedException(typeof(XmlSchemaException))]
 		public void TestOnClick()
 		{
-			AssertFilteredIsEqual(@"<a href=""#"" onclick=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:document.body.appendChild(document.createTextNode('${xssTestId}_A_ONCLICK_HEX.'));"">TestOnClick</a>",
-			                         @"<a href=""#"" xmlns=""http://www.w3.org/1999/xhtml"">TestOnClick</a>");
+			Filter.FilterFragment(@"<a href=""#"" onclick=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:document.body.appendChild(document.createTextNode('${xssTestId}_A_ONCLICK_HEX.'));"">TestOnClick</a>");
 		}
 		
 		[Test]
+		[ExpectedException(typeof(XmlSchemaException))]
 		public void TestSpanNotAllowed()
 		{
-			AssertFilteredIsEncoded(@"<br><span>span not allowed here</span></br>");
+			Filter.FilterFragment(@"<br><span>span not allowed here</span></br>");
 		}
 		
 		private void AssertFilteredIsEqual(string fragment, string expected)

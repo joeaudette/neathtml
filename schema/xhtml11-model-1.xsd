@@ -62,7 +62,6 @@
            Extended Common Attributes
        </xs:documentation>
     </xs:annotation>
-<!--
     <xs:attributeGroup ref="style.attrib">
        <xs:annotation>
          <xs:documentation>
@@ -70,7 +69,6 @@
          </xs:documentation>
        </xs:annotation>
      </xs:attributeGroup>
--->
   </xs:attributeGroup>
 
   <xs:attributeGroup name="Core.extra.attrib">

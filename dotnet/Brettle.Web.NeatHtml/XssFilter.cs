@@ -54,118 +54,88 @@ namespace Brettle.Web.NeatHtml
 		}
 		
 		private XssFilterInfo FilterInfo;
-		private XPathNavigatorReader NavReader;
-		private bool IsValid = false;
 		
 		public string FilterFragment(string htmlFragment)
 		{
-			string page ="<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
-			+ "<head><title>title</title></head>\n"
-			+ "<body>"
-			+ "<div>" + htmlFragment + "</div>"
-			+ "</body>\n"
-			+ "</html>";
+			htmlFragment = FixAmpersandsAndCase(htmlFragment);
 			
+			string page = @"<html xmlns=""" + FilterInfo.Schema.TargetNamespace + @"""><head><title>title</title></head>"
+			+ "<body>\n"
+			+ "<div>" + htmlFragment + "</div>\n"
+			+ "</body></html>";
 			XmlTextReader reader = new XmlTextReader(new StringReader(page));
-			XmlDocument origDoc = new XmlDocument();
-			origDoc.PreserveWhitespace = true;
+			XmlDocument doc = new XmlDocument();
+			doc.PreserveWhitespace = true;
+			doc.Load(reader);
+			if (FilterInfo.UriAndStyleValidator != null)
+			{
+				FilterInfo.UriAndStyleValidator.Validate(doc);
+			}
+			
+			StringWriter sw = new StringWriter();
+			doc.Save(sw);
+			reader = new XmlTextReader(new StringReader(sw.ToString()));
 			try
 			{
-				origDoc.Load(reader);
-			
-				if (FilterInfo.XPathOfUriAttributes != null)
-				{
-					Debug.WriteLine("XPath = " + FilterInfo.XPathOfUriAttributes);
-					XmlNodeList uriAttributes = origDoc.SelectNodes(FilterInfo.XPathOfUriAttributes);
-					foreach (XmlAttribute attr in uriAttributes)
-					{
-						Debug.WriteLine("Checking " + attr.Value + " against " + FilterInfo.UriRegex.ToString());
-						if (!FilterInfo.UriRegex.IsMatch(attr.Value))
-						{
-	                        attr.OwnerElement.Attributes.RemoveNamedItem(attr.LocalName, attr.NamespaceURI);
-	                    }
-					}
-				}
-							
-				XPathNavigator nav = origDoc.CreateNavigator();
+				XmlValidatingReader validator = new System.Xml.XmlValidatingReader(reader);
+				validator.ValidationEventHandler += new ValidationEventHandler(OnValidationError);
 				
-				lock (this)
+				validator.Schemas.Add(FilterInfo.Schema);
+				validator.ValidationType = ValidationType.Schema;
+				while (validator.Read())
 				{
-					IsValid = false;
-					// We limit the number of errors we find to be sure we don't end up
-					// in an infinite loop.  There is no way there could be more than 1 error for every
-					// 2 characters in the fragment.
-					for (int errors = 0; errors < htmlFragment.Length/2 + 1 && !IsValid; errors++)
-					{
-						nav.MoveToRoot();
-						NavReader = new XPathNavigatorReader(nav);
-						XmlValidatingReader validator = new System.Xml.XmlValidatingReader(NavReader);
-						validator.ValidationEventHandler += new ValidationEventHandler(OnValidationError);
-						
-						validator.Schemas.Add(FilterInfo.Schema);
-						validator.ValidationType = ValidationType.Schema;
-						IsValid = true;
-						while (IsValid && validator.Read())
-						{
-						}
-					}
-					if (!IsValid)
-					{
-						throw new XmlException("Found too many errors in html fragment");
-					}
 				}
-
-	            XmlElement bodyElem = origDoc.GetElementsByTagName("div")[0] as XmlElement;
-				return bodyElem.InnerXml;
 			}
-			catch (XmlException)
+			finally
 			{
-				return HttpUtility.HtmlEncode(htmlFragment);
+				reader.Close();
 			}
-			catch (XmlSchemaException)
-			{
-				return HttpUtility.HtmlEncode(htmlFragment);
-			}
+            XmlElement bodyElem = doc.GetElementsByTagName("div")[0] as XmlElement;
+			return bodyElem.InnerXml;
 		}
 		
-		private void OnValidationError(object sender, ValidationEventArgs args)
+		// Replace ampersands with "&amp;" if they are not followed by either:
+			// a. alphanumerics and a semi
+			// b. "#" and decimal digits and a semi
+			// c. "#x" or "#X" and hex digits and a semi
+		// And force all tag names to lowercase.
+		private static readonly Regex FixAmpersandsAndCaseRegex
+			= new Regex("(</?[a-zA-Z]+)|(&(?!([A-Za-z0-9]+|#[0-9]+|#[xX][0-9A-Fa-f]+);))");
+		private string FixAmpersandsAndCase(string htmlFragment)
 		{
-			IsValid = false;
-            XmlNode node = ((IHasXmlNode)NavReader.CreateNavigator()).GetNode();
-			Debug.WriteLine("Name = " + node.Name + ", NodeType = " + node.NodeType);
-            Debug.WriteLine(args.Message);
-			
-			if (node.NodeType == XmlNodeType.Element)
+			// Replace ampersands with "&amp;" if they are not followed by either:
+				// a. alphanumerics and a semi
+				// b. "#" and decimal digits and a semi
+				// c. "#x" or "#X" and hex digits and a semi
+			// And force all tag names to lowercase.
+			return FixAmpersandsAndCaseRegex.Replace(htmlFragment, new MatchEvaluator(FixMatch));
+		}
+		
+		private string FixMatch(Match m)
+		{
+			if (m.Groups[1].Success)
 			{
-				if (node.ParentNode == null)
-				{
-					// This occurs when a second error is thrown for an element that has already been replaced/removed.
-					return;
-				}
-				if (node.Name == "span")
-				{
-					// If it's already a "span", replacing it with a "span" will just cause an infinite loop.
-					// So throw an exception to force validation to stop.
-					throw args.Exception;
-				}
-				
-				
-                XmlElement replacementElem = node.OwnerDocument.CreateElement("span", "http://www.w3.org/1999/xhtml");
-				foreach (XmlNode contentNode in node.ChildNodes)
-				{
-					replacementElem.AppendChild(contentNode.CloneNode(true));
-				}
-				Debug.WriteLine("node.ParentNode = " + node.ParentNode);
-				node.ParentNode.ReplaceChild(replacementElem, node);
+				return m.Groups[1].Value.ToLower();
 			}
-			else if (node.NodeType == XmlNodeType.Attribute)
+			else if (m.Groups[2].Success)
 			{
-				XmlAttribute attr = (XmlAttribute)node;
-				attr.OwnerElement.Attributes.RemoveNamedItem(attr.LocalName, attr.NamespaceURI);
+				return "&amp;";
 			}
 			else
 			{
-				node.ParentNode.RemoveChild(node);
+				return null;
+			}
+		}
+				
+		private void OnValidationError(object sender, ValidationEventArgs args)
+		{
+			if (args.Exception != null)
+			{
+				throw args.Exception;
+			}
+			else
+			{
+				throw new XmlException("Validation error: " + args.Message);
 			}
 		}
 	}

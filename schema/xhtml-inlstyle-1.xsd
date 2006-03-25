@@ -21,7 +21,7 @@
   </xs:annotation>
 
   <xs:attributeGroup name="style.attrib">
-    <xs:attribute name="style" type="CDATA"/>
+    <xs:attribute name="style" type="InlineStyle"/>
   </xs:attributeGroup>
 
 </xs:schema>

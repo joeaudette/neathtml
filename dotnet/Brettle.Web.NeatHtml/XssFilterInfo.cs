@@ -47,50 +47,17 @@ namespace Brettle.Web.NeatHtml
 			Schema.Compile(null);
             if (Type.GetType("Mono.Runtime", false) != null)
             {
-                SetUpUriRegexAndXPath(schemaDoc);
+				UriAndStyleValidator = new AttributeValueValidator();
+            	UriAndStyleValidator.Add(schemaDoc, Schema, "URI", Schema.TargetNamespace);
+            	UriAndStyleValidator.Add(schemaDoc, Schema, "InlineStyle", Schema.TargetNamespace);
+				// NOTE: We don't bother with attributes of type "URIs" (plural) because only <object> has such an
+				// attribute and we don't allow that element.
             }
-        }
-
-        private void SetUpUriRegexAndXPath(XmlDocument schemaDoc)
-        {
-            XmlSchemaSimpleType uriType = Schema.SchemaTypes[new XmlQualifiedName("URI", "http://www.w3.org/1999/xhtml")] as XmlSchemaSimpleType;
-			XmlSchemaSimpleTypeRestriction uriTypeRestriction = uriType.Content as XmlSchemaSimpleTypeRestriction;
-			XmlSchemaPatternFacet uriPattern = uriTypeRestriction.Facets[0] as XmlSchemaPatternFacet;
-			UriRegex = new Regex(uriPattern.Value);
-			
-			XmlNodeList uriAttributeNameNodes = schemaDoc.SelectNodes("//*[@type='URI']/@name");
-			string xpathPredicateOfUriAttributes = null;
-			Hashtable includedAttributeNames = new Hashtable();
-			for (int i = 0; i < uriAttributeNameNodes.Count; i++)
-			{
-				string attrName = uriAttributeNameNodes.Item(i).Value;
-				if (includedAttributeNames[attrName] != null)
-				{
-					continue;
-				}
-				else
-				{
-					includedAttributeNames[attrName] = attrName;
-				}
-				
-				if (i == 0)
-				{
-					xpathPredicateOfUriAttributes = "";
-				}
-				else
-				{
-					xpathPredicateOfUriAttributes += " or ";
-				}
-				xpathPredicateOfUriAttributes += "local-name() = '" + attrName + "'";
-			}
-			XPathOfUriAttributes = "/" + "/@*[" + xpathPredicateOfUriAttributes + "]";
-			
-			// NOTE: We don't bother with attributes of type "URIs" (plural) because only <object> has such an
-			// attribute and we don't allow that element.
 		}
 		
+		internal AttributeValueValidator UriAndStyleValidator = null;
+		
 		internal XmlSchema Schema;
-		internal string XPathOfUriAttributes;
 		internal Regex UriRegex;
 		
 		private static XmlDocument GetSchemaDoc(string schemaLocation)
