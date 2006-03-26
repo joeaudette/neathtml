@@ -68,7 +68,8 @@
            "style" attribute from Inline Style Module
          </xs:documentation>
        </xs:annotation>
-     </xs:attributeGroup>
+    </xs:attributeGroup>
+    <xs:attribute name="bgcolor" type="Color"/>
   </xs:attributeGroup>
 
   <xs:attributeGroup name="Core.extra.attrib">

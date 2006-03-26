@@ -123,6 +123,20 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		}
 		
 		[Test]
+		public void TestParagraphInFont()
+		{
+			AssertFilteredIsEqual(@"<font color=""#ff0000""><p>test</p></font>",
+			                         @"<font color=""#ff0000"" xmlns=""http://www.w3.org/1999/xhtml""><p>test</p></font>");
+		}
+		
+		[Test]
+		public void TestCommonAttribs()
+		{
+			AssertFilteredIsEqual(@"<table bgcolor=""#ff0000""><tr><td></td></tr></table>",
+			                         @"<table bgcolor=""#ff0000"" xmlns=""http://www.w3.org/1999/xhtml""><tr><td></td></tr></table>");
+		}
+		
+		[Test]
 		public void TestInlineTextStyles()
 		{
 			AssertFilteredIsEqual(@"<span style=""font-weight: bold;"">Bold,</span> <span style=""font-style: italic;"">italic,</span> <span style=""text-decoration: underline;"">underline,</span> <span style=""font-weight: bold; font-style: italic; text-decoration: underline;"">bold-italic-underline</span>.",

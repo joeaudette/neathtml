@@ -296,7 +296,7 @@
     <xs:group name="table.content">
         <xs:sequence>
             <xs:element ref="caption" minOccurs="0"/>
-            <xs:choice>
+            <xs:choice minOccurs="0">
                 <xs:element ref="col" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="colgroup" minOccurs="0" maxOccurs="unbounded"/>
             </xs:choice>
