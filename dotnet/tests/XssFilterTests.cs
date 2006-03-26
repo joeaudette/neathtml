@@ -125,6 +125,13 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		}
 		
 		[Test]
+		public void TestInlineTextStyles()
+		{
+			AssertFilteredIsEqual(@"<span style=""font-weight: bold;"">Bold,</span> <span style=""font-style: italic;"">italic,</span> <span style=""text-decoration: underline;"">underline,</span> <span style=""font-weight: bold; font-style: italic; text-decoration: underline;"">bold-italic-underline</span>.",
+			                         @"<span style=""font-weight: bold;"" xmlns=""http://www.w3.org/1999/xhtml"">Bold,</span> <span style=""font-style: italic;"" xmlns=""http://www.w3.org/1999/xhtml"">italic,</span> <span style=""text-decoration: underline;"" xmlns=""http://www.w3.org/1999/xhtml"">underline,</span> <span style=""font-weight: bold; font-style: italic; text-decoration: underline;"" xmlns=""http://www.w3.org/1999/xhtml"">bold-italic-underline</span>.");
+		}
+		
+		[Test]
 		[ExpectedException(typeof(XmlSchemaException))]
 		public void TestImgSrc()
 		{
