@@ -79,7 +79,6 @@ namespace Brettle.Web.NeatHtml
 			{
 				XmlValidatingReader validator = new System.Xml.XmlValidatingReader(reader);
 				validator.ValidationEventHandler += new ValidationEventHandler(OnValidationError);
-				// validator.XmlResolver = null;
 				
 				validator.Schemas.Add(FilterInfo.Schema);
 				validator.ValidationType = ValidationType.Schema;

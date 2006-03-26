@@ -90,17 +90,15 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		}
 		
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void TestHref()
 		{
-			Filter.FilterFragment(@"<a href='javascript:alert(""TestHref"");'>test link</a>");
+			AssertFilterThrowsXmlSchemaException(@"<a href='javascript:alert(""TestHref"");'>test link</a>");
 		}
 		
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
-		public void TestObject()
+        public void TestObject()
 		{
-			Filter.FilterFragment(@"<object>fallback content</object>");
+            AssertFilterThrowsXmlSchemaException(@"<object>fallback content</object>");
 		}
 		
 		[Test]
@@ -132,38 +130,33 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		}
 		
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void TestImgSrc()
 		{
-			Filter.FilterFragment(@"<img src=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:alert('TestImgSrc');""/>");
+            AssertFilterThrowsXmlSchemaException(@"<img src=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:alert('TestImgSrc');""/>");
 		}
 				
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void TestMissingRequiredAttribute()
 		{
-			Filter.FilterFragment(@"<img />");
+            AssertFilterThrowsXmlSchemaException(@"<img />");
 		}
 		
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void TestOnClick()
 		{
-			Filter.FilterFragment(@"<a href=""#"" onclick=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:document.body.appendChild(document.createTextNode('${xssTestId}_A_ONCLICK_HEX.'));"">TestOnClick</a>");
+            AssertFilterThrowsXmlSchemaException(@"<a href=""#"" onclick=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:document.body.appendChild(document.createTextNode('${xssTestId}_A_ONCLICK_HEX.'));"">TestOnClick</a>");
 		}
 		
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void TestSpanNotAllowed()
 		{
-			Filter.FilterFragment(@"<br><span>span not allowed here</span></br>");
+            AssertFilterThrowsXmlSchemaException(@"<br><span>span not allowed here</span></br>");
 		}
 		
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void TestOtherNamespacesNotAllowed()
 		{
-			Filter.FilterFragment(@"<span xmlns:xs=""http://www.w3.org/2001/XMLSchema""><xs:element name=""rt"" type=""rt.type""/></span>");
+            AssertFilterThrowsXmlSchemaException(@"<span xmlns:xs=""http://www.w3.org/2001/XMLSchema""><xs:element name=""rt"" type=""rt.type""/></span>");
 		}
 		
 		[Test]
@@ -176,17 +169,15 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		}
 		
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void TestExternalSchemasNotAllowed()
 		{
-			Filter.FilterFragment(@"<test:elem xmlns:test=""urn:test"" xsi:schemaLocation=""urn:test http://www.brettle.com/Data/Sites/1/test.xsd"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">Test</test:elem>");
+            AssertFilterThrowsXmlSchemaException(@"<test:elem xmlns:test=""urn:test"" xsi:schemaLocation=""urn:test http://www.brettle.com/Data/Sites/1/test.xsd"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">Test</test:elem>");
 		}
 		
 		[Test]
-		[ExpectedException(typeof(XmlSchemaException))]
 		public void TestInternalSchemasNotAllowed()
 		{
-			Filter.FilterFragment(@"<xs:schema xmlns:xs=""http://www.w3.org/2001/XMLSchema"" targetNamespace=""urn:test"" xmlns=""urn:test""><xs:element name=""elem"" type=""xs:string"" /></xs:schema><test:elem xmlns:test=""urn:test"">Test</test:elem>");
+            AssertFilterThrowsXmlSchemaException(@"<xs:schema xmlns:xs=""http://www.w3.org/2001/XMLSchema"" targetNamespace=""urn:test"" xmlns=""urn:test""><xs:element name=""elem"" type=""xs:string"" /></xs:schema><test:elem xmlns:test=""urn:test"">Test</test:elem>");
 		}
 		
 		private void AssertFilteredIsEqual(string fragment, string expected)
@@ -199,6 +190,19 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		{
 			string actual = Filter.FilterFragment(fragment);
 			Assert.AreEqual(HttpUtility.HtmlEncode(fragment), actual, "Full actual = " + actual);
-		}			
-	}
+		}
+
+        private void AssertFilterThrowsXmlSchemaException(string fragment)
+        {
+            try
+            {
+                Filter.FilterFragment(fragment);
+                Assert.Fail("XmlSchemaException not thrown");
+            }
+            catch (XmlSchemaException)
+            {
+                // Expected
+            }
+        }
+    }
 }
