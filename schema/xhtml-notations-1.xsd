@@ -32,7 +32,7 @@
   
   <!-- SGML Formal Public Identifiers -->
   <xs:notation name="fpi"
-    public="ISO 8879:1986//NOTATION Formal Public Identifier//EN"/>
+    public="ISO 8879 1986//NOTATION Formal Public Identifier//EN"/>
 
   <!-- XHTML Notations ... -->
   <!-- Length defined for cellpadding/cellspacing -->
