@@ -26,7 +26,7 @@
   </xs:annotation>
 
   <xs:attributeGroup name="br.attlist">
-    <xs:attributeGroup ref="Core.attrib"/>
+    <xs:attributeGroup ref="Common.attrib"/>
   </xs:attributeGroup>
   
   <xs:group name="br.content">
@@ -46,7 +46,7 @@
   
   <xs:group name="span.content">
     <xs:sequence>
-       <xs:group ref="Inline.mix" minOccurs="0" maxOccurs="unbounded"/>     
+       <xs:group ref="Flow.mix" minOccurs="0" maxOccurs="unbounded"/>     
     </xs:sequence>
   </xs:group>
 

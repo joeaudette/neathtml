@@ -43,7 +43,7 @@
   
   <xs:group name="p.content">
      <xs:sequence>
-       <xs:group ref="Inline.mix" minOccurs="0" maxOccurs="unbounded"/>     
+       <xs:group ref="Flow.mix" minOccurs="0" maxOccurs="unbounded"/>     
      </xs:sequence>
   </xs:group>      
 

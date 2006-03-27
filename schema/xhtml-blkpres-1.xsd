@@ -26,6 +26,7 @@
 
   <xs:attributeGroup name="hr.attlist">
     <xs:attributeGroup ref="Common.attrib"/>
+    <xs:attributeGroup ref="hr.legacy.attlist"/>
   </xs:attributeGroup>
   
   <xs:group name="hr.content">

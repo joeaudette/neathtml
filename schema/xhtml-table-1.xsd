@@ -99,6 +99,7 @@
     
     <xs:attributeGroup name="td.attlist">
         <xs:attributeGroup ref="Common.attrib"/>
+        <xs:attributeGroup ref="td.legacy.attlist"/>
         <xs:attribute name="abbr" type="Text"/>
         <xs:attribute name="axis" type="CDATA"/>
         <xs:attribute name="headers" type="xs:IDREFS"/>
@@ -124,6 +125,7 @@
     
     <xs:attributeGroup name="th.attlist">
         <xs:attributeGroup ref="Common.attrib"/>
+        <xs:attributeGroup ref="th.legacy.attlist"/>
         <xs:attribute name="abbr" type="Text"/>
         <xs:attribute name="axis" type="CDATA"/>
         <xs:attribute name="headers" type="xs:IDREFS"/>
@@ -149,6 +151,7 @@
     
     <xs:attributeGroup name="tr.attlist">
         <xs:attributeGroup ref="Common.attrib"/>
+        <xs:attributeGroup ref="tr.legacy.attlist"/>
         <xs:attributeGroup ref="CellHAlign.attrib"/>
         <xs:attributeGroup ref="CellVAlign.attrib"/>
     </xs:attributeGroup>
@@ -284,6 +287,7 @@
     
     <xs:attributeGroup name="table.attlist">
         <xs:attributeGroup ref="Common.attrib"/>
+        <xs:attributeGroup ref="table.legacy.attlist"/>
         <xs:attribute name="summary" type="Text"/>
         <xs:attribute name="width" type="Length"/>
         <xs:attribute name="border" type="Pixels"/>

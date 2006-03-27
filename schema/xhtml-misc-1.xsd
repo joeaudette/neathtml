@@ -32,8 +32,7 @@
   </xs:annotation>
 
   <xs:attributeGroup name="font.attlist">
-    <xs:attributeGroup ref="Core.attrib"/>
-    <xs:attributeGroup ref="I18n.attrib"/>
+    <xs:attributeGroup ref="Common.attrib"/>
     <xs:attribute name="size" type="CDATA"/>
     <xs:attribute name="color" type="Color"/>
     <xs:attribute name="face" type="CDATA"/>
@@ -209,7 +208,6 @@
     </xs:documentation>
   </xs:annotation>
 
-<!--
   <xs:attributeGroup name="align.legacy.attlist">
     <xs:attribute name="align">
       <xs:simpleType>
@@ -223,10 +221,14 @@
     </xs:attribute>
   </xs:attributeGroup>
 
+  <xs:simpleType name="FrameTarget">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>  
+
   <xs:attributeGroup name="a.legacy.attlist">
     <xs:attribute name="target" type="FrameTarget"/>
   </xs:attributeGroup>
-
+<!--
   <xs:attributeGroup name="applet.legacy.attlist">
     <xs:attribute name="align">
       <xs:simpleType>
@@ -251,6 +253,8 @@
     <xs:attribute name="vlinke" type="Color"/>
     <xs:attribute name="alink" type="Color"/>
   </xs:attributeGroup>
+
+-->
 
   <xs:attributeGroup name="br.legacy.attlist">
     <xs:attribute name="clear" default="none">
@@ -288,6 +292,7 @@
     </xs:attribute>    
     <xs:attribute name="size" type="Pixels"/>
     <xs:attribute name="width" type="Length"/>
+    <xs:attribute name="color" type="Color"/>
   </xs:attributeGroup>
 
   <xs:attributeGroup name="img.legacy.attlist">
@@ -307,6 +312,7 @@
     <xs:attribute name="vspace" type="Pixels"/>
   </xs:attributeGroup>
 
+<!--
   <xs:attributeGroup name="input.legacy.attlist">
     <xs:attribute name="align">
       <xs:simpleType>
@@ -333,12 +339,14 @@
       </xs:simpleType>
     </xs:attribute>
   </xs:attributeGroup>
+-->
 
   <xs:attributeGroup name="li.legacy.attlist">
     <xs:attribute name="type" type="CDATA"/>
     <xs:attribute name="value" type="Number"/>
   </xs:attributeGroup>
 
+<!--
   <xs:attributeGroup name="object.legacy.attlist">
     <xs:attribute name="align">
       <xs:simpleType>
@@ -355,6 +363,8 @@
     <xs:attribute name="hspace" type="Pixels"/>
     <xs:attribute name="vspace" type="Pixels"/>
   </xs:attributeGroup>
+
+-->
 
   <xs:attributeGroup name="ol.legacy.attlist">
     <xs:attribute name="type" type="Text"/>
@@ -393,11 +403,14 @@
 
   <xs:attributeGroup name="pre.legacy.attlist">
     <xs:attribute name="width" type="Length"/>
+    <xs:attribute name="wrap" type="xs:string"/>
   </xs:attributeGroup>
 
+<!--
   <xs:attributeGroup name="script.legacy.attlist">
     <xs:attribute name="language" type="ContentType"/>
   </xs:attributeGroup>
+-->
 
   <xs:attributeGroup name="table.legacy.attlist">
     <xs:attribute name="align">
@@ -414,6 +427,8 @@
 
   <xs:attributeGroup name="tr.legacy.attlist">
     <xs:attribute name="bgcolor" type="Color"/>
+    <xs:attribute name="width" type="Length"/>
+    <xs:attribute name="height" type="Length"/>
   </xs:attributeGroup>
 
   <xs:attributeGroup name="th.legacy.attlist">
@@ -452,6 +467,5 @@
       </xs:simpleType>
     </xs:attribute>         
   </xs:attributeGroup>
--->
 
 </xs:schema>

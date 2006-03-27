@@ -144,6 +144,27 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		}
 		
 		[Test]
+		public void TestStylesAreCaseInsensitive()
+		{
+			AssertFilteredIsEqual(@"<span style=""FONT-WEIGHT: bold;"">Bold,</span> <span style=""font-style: italic;"">italic,</span> <span style=""text-decoration: underline;"">underline,</span> <span style=""font-weight: bold; font-style: italic; text-decoration: underline;"">bold-italic-underline</span>.",
+			                         @"<span style=""FONT-WEIGHT: bold;"" xmlns=""http://www.w3.org/1999/xhtml"">Bold,</span> <span style=""font-style: italic;"" xmlns=""http://www.w3.org/1999/xhtml"">italic,</span> <span style=""text-decoration: underline;"" xmlns=""http://www.w3.org/1999/xhtml"">underline,</span> <span style=""font-weight: bold; font-style: italic; text-decoration: underline;"" xmlns=""http://www.w3.org/1999/xhtml"">bold-italic-underline</span>.");
+		}
+		
+		[Test]
+		public void TestFontFamily()
+		{
+			AssertFilteredIsEqual(@"<span style='FONT-FAMILY: ""Arial, sans-serif"";'>Arial</span>",
+			                         @"<span style=""FONT-FAMILY: &quot;Arial, sans-serif&quot;;"" xmlns=""http://www.w3.org/1999/xhtml"">Arial</span>");
+		}
+		
+		[Test]
+		public void TestMarginStyleNoSemi()
+		{
+			AssertFilteredIsEqual(@"<p style=""MARGIN: 0in 0in 0pt"">test</p>",
+			                         @"<p style=""MARGIN: 0in 0in 0pt"" xmlns=""http://www.w3.org/1999/xhtml"">test</p>");
+		}
+		
+		[Test]
 		public void TestImgSrc()
 		{
             AssertFilterThrowsXmlSchemaException(@"<img src=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:alert('TestImgSrc');""/>");

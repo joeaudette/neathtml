@@ -44,6 +44,7 @@
   <xs:complexType name="a.type" mixed="true">
      <xs:group ref="a.content"/>
      <xs:attributeGroup ref="a.attlist"/>
+     <xs:attributeGroup ref="a.legacy.attlist"/>
   </xs:complexType>
  
   <xs:element name="a" type="a.type"/>

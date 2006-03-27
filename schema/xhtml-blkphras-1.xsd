@@ -77,6 +77,7 @@
     <xs:attributeGroup name="pre.attlist">
         <xs:attribute ref="xml:space"/>
         <xs:attributeGroup ref="Common.attrib"/>
+        <xs:attributeGroup ref="pre.legacy.attlist"/>
     </xs:attributeGroup>
     
     <xs:group name="pre.content">
