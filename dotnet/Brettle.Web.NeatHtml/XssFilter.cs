@@ -65,9 +65,11 @@ namespace Brettle.Web.NeatHtml
 			+ "</body></html>";
 			
 			XmlTextReader reader = new XmlTextReader(new StringReader(page));
+			XmlValidatingReader validator = new System.Xml.XmlValidatingReader(reader);
+			validator.ValidationType = ValidationType.None;
 			XmlDocument doc = new XmlDocument();
 			doc.PreserveWhitespace = true;
-			doc.Load(reader);
+			doc.Load(validator);
 			
 			if (FilterInfo.UriAndStyleValidator != null)
 			{
@@ -79,7 +81,7 @@ namespace Brettle.Web.NeatHtml
 			reader = new XmlTextReader(new StringReader(doc.DocumentElement.OuterXml));
 			try
 			{
-				XmlValidatingReader validator = new System.Xml.XmlValidatingReader(reader);
+				validator = new System.Xml.XmlValidatingReader(reader);
 				validator.ValidationEventHandler += new ValidationEventHandler(OnValidationError);
 				validator.Schemas.Add(FilterInfo.Schema);
 				validator.ValidationType = ValidationType.Schema;

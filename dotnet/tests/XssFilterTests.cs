@@ -79,7 +79,7 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		public void TestEntitiesLeftAlone()
 		{
 			AssertFilteredIsEqual(@"&quot;This&#x20;&amp;&#32;that&nbsp;and that&quot;",
-			                         @"""This &amp; that&nbsp;and that""");
+			                         "\"This &amp; that\u00A0and that\"");
 		}
 		
 		[Test]
