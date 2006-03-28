@@ -227,6 +227,7 @@
 
   <xs:attributeGroup name="a.legacy.attlist">
     <xs:attribute name="target" type="FrameTarget"/>
+    <xs:attribute name="name" type="xs:string"/>
   </xs:attributeGroup>
 <!--
   <xs:attributeGroup name="applet.legacy.attlist">

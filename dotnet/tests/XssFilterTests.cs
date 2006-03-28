@@ -44,49 +44,41 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		[Test]
 		public void TestNormalText()
 		{
-			AssertFilteredIsEqual(@"test text",
-			                         @"test text");
+			AssertFilterDoesNotChange(@"test text");
 		}
 		
 		[Test]
 		public void TestBR()
 		{
-			AssertFilteredIsEqual(@"test<br />text",
-			                         @"test<br xmlns=""http://www.w3.org/1999/xhtml"" />text");
+			AssertFilterDoesNotChange(@"test<br />text");
 		}
 		
 		[Test]
 		public void TestFromJoe()
 		{
-			AssertFilteredIsEqual(@"<h3 id=""target"">Why was the target attribute removed from XHTML 1.1?</h3>
+			AssertFilterDoesNotChange(@"<h3 id=""target"">Why was the target attribute removed from XHTML 1.1?</h3>
 
 <p>It wasn't. XHTML 1.0 comes in three versions: strict, transitional, and frameset. All three of these were deliberately kept as close as possible to HTML 4.01 as XML would allow. XHTML 1.1 is an updated version of XHTML 1.0 <em>strict</em>, and no version of HTML strict has ever included the <code>target</code> attribute. The other two versions, transitional and frameset, were not updated, because there was nothing to update. If you want to use the <code>target</code> attribute, use XHTML 1.0 transitional.<br /><br />I took this text from W3C website about XHTML 1.1<br />so I think you should keep your target attributes and just convert to XHTML transitional.</p>
-						    <br /><br />",
-			                         @"<h3 id=""target"" xmlns=""http://www.w3.org/1999/xhtml"">Why was the target attribute removed from XHTML 1.1?</h3>
-
-<p xmlns=""http://www.w3.org/1999/xhtml"">It wasn't. XHTML 1.0 comes in three versions: strict, transitional, and frameset. All three of these were deliberately kept as close as possible to HTML 4.01 as XML would allow. XHTML 1.1 is an updated version of XHTML 1.0 <em>strict</em>, and no version of HTML strict has ever included the <code>target</code> attribute. The other two versions, transitional and frameset, were not updated, because there was nothing to update. If you want to use the <code>target</code> attribute, use XHTML 1.0 transitional.<br /><br />I took this text from W3C website about XHTML 1.1<br />so I think you should keep your target attributes and just convert to XHTML transitional.</p>
-						    <br xmlns=""http://www.w3.org/1999/xhtml"" /><br xmlns=""http://www.w3.org/1999/xhtml"" />");
+						    <br /><br />");
 		}
 		
 		[Test]
 		public void TestBareAmpersandsEncoded()
 		{
-			AssertFilteredIsEqual(@"<a href=""http://mywebsite.com/GalleryImageEdit.aspx?mid=9&pageindex=3&pageid=6"">http://mywebsite.com/GalleryImageEdit.aspx?mid=9&pageindex=3&pageid=6</a>.",
-			                         @"<a href=""http://mywebsite.com/GalleryImageEdit.aspx?mid=9&amp;pageindex=3&amp;pageid=6"" xmlns=""http://www.w3.org/1999/xhtml"">http://mywebsite.com/GalleryImageEdit.aspx?mid=9&amp;pageindex=3&amp;pageid=6</a>.");
+			AssertFilterDoesNotChange(@"<a href=""http://mywebsite.com/GalleryImageEdit.aspx?mid=9&pageindex=3&pageid=6"">http://mywebsite.com/GalleryImageEdit.aspx?mid=9&pageindex=3&pageid=6</a>.");
 		}
 		
 		[Test]
 		public void TestEntitiesLeftAlone()
 		{
-			AssertFilteredIsEqual(@"&quot;This&#x20;&amp;&#32;that&nbsp;and that&quot;",
-			                         "\"This &amp; that\u00A0and that\"");
+			AssertFilterDoesNotChange(@"&quot;This&#x20;&amp;&#32;that&nbsp;and that&quot;");
 		}
 		
 		[Test]
 		public void TestTagsToLowercase()
 		{
 			AssertFilteredIsEqual(@"<SPAN>Test</SPAN><Span>Test2</Span>",
-			                         @"<span xmlns=""http://www.w3.org/1999/xhtml"">Test</span><span xmlns=""http://www.w3.org/1999/xhtml"">Test2</span>");
+			                         @"<span>Test</span><span>Test2</span>");
 		}
 		
 		[Test]
@@ -105,63 +97,61 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		[ExpectedException(typeof(XmlException))]
 		public void TestMalformed()
 		{
-			AssertFilteredIsEncoded(@"<span id='x'>missing close tag");
+			Filter.FilterFragment(@"<span id='x'>missing close tag");
 		}
 		
 		[Test]
 		public void TestPreserveWhitespace()
 		{
-			AssertFilteredIsEqual("<pre>\n\ttab indent\n      6 space indent\n</pre>",
-			                         "<pre xmlns=\"http://www.w3.org/1999/xhtml\">\n\ttab indent\n      6 space indent\n</pre>");
+			AssertFilterDoesNotChange("<pre>\n\ttab indent\n      6 space indent\n</pre>");
 		}
 		
 		[Test]
 		public void TestFont()
 		{
-			AssertFilteredIsEqual(@"<basefont size=""3""/><font color=""#ff0000"" size=""-1"" face=""Arial, Helvetica, Geneva, SunSans-Regular, sans-serif "">test</font>",
-			                         @"<basefont size=""3"" xmlns=""http://www.w3.org/1999/xhtml"" /><font color=""#ff0000"" size=""-1"" face=""Arial, Helvetica, Geneva, SunSans-Regular, sans-serif "" xmlns=""http://www.w3.org/1999/xhtml"">test</font>");
+			AssertFilterDoesNotChange(@"<basefont size=""3""/><font color=""#ff0000"" size=""-1"" face=""Arial, Helvetica, Geneva, SunSans-Regular, sans-serif "">test</font>");
 		}
 		
 		[Test]
 		public void TestParagraphInFont()
 		{
-			AssertFilteredIsEqual(@"<font color=""#ff0000""><p>test</p></font>",
-			                         @"<font color=""#ff0000"" xmlns=""http://www.w3.org/1999/xhtml""><p>test</p></font>");
+			AssertFilterDoesNotChange(@"<font color=""#ff0000""><p>test</p></font>");
 		}
 		
 		[Test]
 		public void TestCommonAttribs()
 		{
-			AssertFilteredIsEqual(@"<table bgcolor=""#ff0000""><tr><td></td></tr></table>",
-			                         @"<table bgcolor=""#ff0000"" xmlns=""http://www.w3.org/1999/xhtml""><tr><td></td></tr></table>");
+			AssertFilterDoesNotChange(@"<table bgcolor=""#ff0000""><tr><td></td></tr></table>");
 		}
 		
 		[Test]
 		public void TestInlineTextStyles()
 		{
-			AssertFilteredIsEqual(@"<span style=""font-weight: bold;"">Bold,</span> <span style=""font-style: italic;"">italic,</span> <span style=""text-decoration: underline;"">underline,</span> <span style=""font-weight: bold; font-style: italic; text-decoration: underline;"">bold-italic-underline</span>.",
-			                         @"<span style=""font-weight: bold;"" xmlns=""http://www.w3.org/1999/xhtml"">Bold,</span> <span style=""font-style: italic;"" xmlns=""http://www.w3.org/1999/xhtml"">italic,</span> <span style=""text-decoration: underline;"" xmlns=""http://www.w3.org/1999/xhtml"">underline,</span> <span style=""font-weight: bold; font-style: italic; text-decoration: underline;"" xmlns=""http://www.w3.org/1999/xhtml"">bold-italic-underline</span>.");
+			AssertFilterDoesNotChange(@"<span style=""font-weight: bold;"">Bold,</span> <span style=""font-style: italic;"">italic,</span> <span style=""text-decoration: underline;"">underline,</span> <span style=""font-weight: bold; font-style: italic; text-decoration: underline;"">bold-italic-underline</span>.");
 		}
 		
 		[Test]
 		public void TestStylesAreCaseInsensitive()
 		{
-			AssertFilteredIsEqual(@"<span style=""FONT-WEIGHT: bold;"">Bold,</span> <span style=""font-style: italic;"">italic,</span> <span style=""text-decoration: underline;"">underline,</span> <span style=""font-weight: bold; font-style: italic; text-decoration: underline;"">bold-italic-underline</span>.",
-			                         @"<span style=""FONT-WEIGHT: bold;"" xmlns=""http://www.w3.org/1999/xhtml"">Bold,</span> <span style=""font-style: italic;"" xmlns=""http://www.w3.org/1999/xhtml"">italic,</span> <span style=""text-decoration: underline;"" xmlns=""http://www.w3.org/1999/xhtml"">underline,</span> <span style=""font-weight: bold; font-style: italic; text-decoration: underline;"" xmlns=""http://www.w3.org/1999/xhtml"">bold-italic-underline</span>.");
+			AssertFilterDoesNotChange(@"<span style=""FONT-WEIGHT: bold;"">Bold,</span> <span style=""font-style: italic;"">italic,</span> <span style=""text-decoration: underline;"">underline,</span> <span style=""font-weight: bold; font-style: italic; text-decoration: underline;"">bold-italic-underline</span>.");
 		}
 		
 		[Test]
 		public void TestFontFamily()
 		{
-			AssertFilteredIsEqual(@"<span style='FONT-FAMILY: ""Arial, sans-serif"";'>Arial</span>",
-			                         @"<span style=""FONT-FAMILY: &quot;Arial, sans-serif&quot;;"" xmlns=""http://www.w3.org/1999/xhtml"">Arial</span>");
+			AssertFilterDoesNotChange(@"<span style='FONT-FAMILY: ""Arial, sans-serif"";'>Arial</span>");
 		}
 		
 		[Test]
 		public void TestMarginStyleNoSemi()
 		{
-			AssertFilteredIsEqual(@"<p style=""MARGIN: 0in 0in 0pt"">test</p>",
-			                         @"<p style=""MARGIN: 0in 0in 0pt"" xmlns=""http://www.w3.org/1999/xhtml"">test</p>");
+			AssertFilterDoesNotChange(@"<p style=""MARGIN: 0in 0in 0pt"">test</p>");
+		}
+		
+		[Test]
+		public void TestDuplicateIdAllowed()
+		{
+			AssertFilterDoesNotChange(@"<a id=""test"" href=""/foo?id=bar"">test</a><span id=""test"">test2</span>");
 		}
 		
 		[Test]
@@ -221,12 +211,12 @@ namespace Brettle.Web.NeatHtml.UnitTests
 			Assert.AreEqual(expected, actual, "Full actual = " + actual);
 		}			
 		
-		private void AssertFilteredIsEncoded(string fragment)
+		private void AssertFilterDoesNotChange(string fragment)
 		{
 			string actual = Filter.FilterFragment(fragment);
-			Assert.AreEqual(HttpUtility.HtmlEncode(fragment), actual, "Full actual = " + actual);
-		}
-
+			Assert.AreEqual(fragment, actual, "Full actual = " + actual);
+		}			
+		
         private void AssertFilterThrowsXmlSchemaException(string fragment)
         {
             try

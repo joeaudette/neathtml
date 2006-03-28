@@ -27,6 +27,7 @@
 
   <xs:attributeGroup name="br.attlist">
     <xs:attributeGroup ref="Common.attrib"/>
+    <xs:attribute name="type" type="xs:string"/>
   </xs:attributeGroup>
   
   <xs:group name="br.content">

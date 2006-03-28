@@ -55,9 +55,10 @@ namespace Brettle.Web.NeatHtml
 		
 		private XssFilterInfo FilterInfo;
 		
-		public string FilterFragment(string htmlFragment)
+		public string FilterFragment(string origHtmlFragment)
 		{
-			htmlFragment = FixAmpersandsAndCase(htmlFragment);
+			origHtmlFragment = FixAmpersandsAndCase(origHtmlFragment);
+			string htmlFragment = RemoveIds(origHtmlFragment); // Because duplicate ids are invalid but not worth filtering out.
 			
 			string page = DtdDeclaration + @"<html xmlns=""" + FilterInfo.Schema.TargetNamespace + @"""><head><title>title</title></head>"
 			+ "<body>\n"
@@ -94,8 +95,7 @@ namespace Brettle.Web.NeatHtml
 			{
 				reader.Close();
 			}
-            XmlElement bodyElem = doc.GetElementsByTagName("div")[0] as XmlElement;
-			return bodyElem.InnerXml;
+			return origHtmlFragment;
 		}
 		
 		// Replace ampersands with "&amp;" if they are not followed by either:
@@ -131,6 +131,13 @@ namespace Brettle.Web.NeatHtml
 			}
 		}
 				
+		private static readonly Regex IdAttributeRegex
+			= new Regex(@"(?<before>[<][a-zA-Z]+(\s+([^iI][a-zA-Z]*|[iI][^dD][a-zA-Z]*|[iI][dD][a-zA-Z]+)=('[^']*'|""[^""]*""|[^\s>]*))*)(\s+(id|ID)=('[^']+'|""[^""]*""|[^\s>]*))(?<after>\s|>)");
+		private string RemoveIds(string htmlFragment)
+		{
+			return IdAttributeRegex.Replace(htmlFragment, "${before}${after}");
+		}
+		
 		private void OnValidationError(object sender, ValidationEventArgs args)
 		{
 			if (args.Exception != null)
@@ -662,22 +669,4 @@ namespace Brettle.Web.NeatHtml
 		";
 		
 	}
-	
-	internal class MyUrlResolver : XmlUrlResolver
-	{
-		public override object GetEntity(Uri absoluteUri, string role, Type typeOfObjectToReturn)
-		{
-			object result = base.GetEntity(absoluteUri, role, typeOfObjectToReturn);
-			Console.WriteLine("GetEntity(" + absoluteUri + "," + role + "," + typeOfObjectToReturn + ") = " + result);
-			return result;
-		}
-		
-		public override Uri ResolveUri(Uri baseUri, string relativeUri)
-		{
-			Uri result = base.ResolveUri(baseUri, relativeUri);
-			Console.WriteLine("ResolveUri(" + baseUri + "," + relativeUri + ") = " + result);
-			return result;
-		}
-	}
-	
 }

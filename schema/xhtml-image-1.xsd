@@ -28,6 +28,7 @@
 
   <xs:attributeGroup name="img.attlist">
     <xs:attributeGroup ref="Common.attrib"/>
+    <xs:attributeGroup ref="img.legacy.attlist"/>
     <xs:attribute name="src" type="URI" use="required"/>
     <xs:attribute name="alt" type="Text"/>
     <xs:attribute name="longdesc" type="URI"/>
