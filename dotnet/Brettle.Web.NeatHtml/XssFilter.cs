@@ -68,9 +68,10 @@ namespace Brettle.Web.NeatHtml
 			htmlFragment = ResolveGeneralEntities(htmlFragment);
 			
 			string page = @"<html xmlns=""" + FilterInfo.Schema.TargetNamespace + @"""><head><title>title</title></head>"
-			+ "<body>\n"
-			+ "<div>" + htmlFragment + "</div>\n"
-			+ "</body></html>";
+			+ "<body>"
+			+ "<div>\n" + htmlFragment + "\n</div>"
+			+ "</body>"
+			+ "</html>";
 						
 			XmlTextReader reader = new XmlTextReader(new StringReader(page));
 			try
