@@ -152,7 +152,7 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		[Test]
 		public void TestDuplicateIdAllowed()
 		{
-			AssertFilterDoesNotChange(@"<a id=""test"" href=""/foo?id=bar"">test</a><span id=""test"">test2</span>");
+			AssertFilterDoesNotChange(@"<a id=""_ctrl5a_myDataList__ctrl0a_Description"" href=""/foo?id=bar"">test</a><span id=""_ctrl5a_myDataList__ctrl0a_Description"">test2</span>");
 		}
 		
 		[Test]

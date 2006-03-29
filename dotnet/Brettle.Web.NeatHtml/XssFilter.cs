@@ -143,7 +143,7 @@ namespace Brettle.Web.NeatHtml
 		}
 				
 		private static readonly Regex IdAttributeRegex
-			= new Regex(@"(?<before>[<][a-zA-Z]+(\s+([^iI][a-zA-Z]*|[iI][^dD][a-zA-Z]*|[iI][dD][a-zA-Z]+)=('[^']*'|""[^""]*""|[^\s>]*))*)(\s+(id|ID)=('[a-zA-Z_][a-zA-Z_.-]*'|""[a-zA-Z_][a-zA-Z_.-]*""|[a-zA-Z_][a-zA-Z_.-]*))(?<after>\s|>)");
+			= new Regex(@"(?<before>[<][a-zA-Z]+(\s+([^iI][a-zA-Z]*|[iI][^dD][a-zA-Z]*|[iI][dD][a-zA-Z]+)=('[^']*'|""[^""]*""|[^\s>]*))*)(\s+(id|ID)=('[a-zA-Z0-9_][a-zA-Z0-9_.-]*'|""[a-zA-Z0-9_][a-zA-Z0-9_.-]*""|[a-zA-Z0-9_][a-zA-Z0-9_.-]*))(?<after>\s|>)");
 		private string RemoveIds(string htmlFragment)
 		{
 			return IdAttributeRegex.Replace(htmlFragment, "${before}${after}");
