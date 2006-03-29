@@ -126,7 +126,7 @@
     
     <!-- a Uniform Resource Identifier, see [URI] -->
     <xs:simpleType name="URI">
-        <xs:restriction base="xs:anyURI">
+        <xs:restriction base="xs:string">
         	<xs:pattern value="^(https?|ftp|file|mailto|news):.*$|^[^:]*$"/>
         </xs:restriction>
     </xs:simpleType>
