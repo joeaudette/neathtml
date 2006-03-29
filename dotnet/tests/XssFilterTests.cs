@@ -156,6 +156,12 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		}
 		
 		[Test]
+		public void TestRelativeUrl()
+		{
+			AssertFilterDoesNotChange(@"<a href=""/foo?bar=spam"">test</a>");
+		}
+		
+		[Test]
 		public void TestImgSrc()
 		{
             AssertFilterThrowsXmlSchemaException(@"<img src=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:alert('TestImgSrc');""/>");
