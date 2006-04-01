@@ -83,6 +83,13 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		}
 		
 		[Test]
+		public void TestFixUnclosedBR()
+		{
+			AssertFilteredIsEqual(@"line 1<br>line2<br >line3<br class=""BR"">line4<br/>line5<br />line6",
+			                         @"line 1<br/>line2<br />line3<br class=""BR""/>line4<br/>line5<br />line6");
+		}
+		
+		[Test]
 		public void TestHref()
 		{
 			AssertFilterThrowsXmlSchemaException(@"<a href='javascript:alert(""TestHref"");'>test link</a>");
@@ -132,6 +139,12 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		}
 		
 		[Test]
+		public void TestInlineMoreStyles()
+		{
+			AssertFilterDoesNotChange(@"<span style=""width: 100%; height: 20px; vertical-align: top; mso-fareast-font-family: 'Times New Roman'; mso-ansi-language: EN-US; mso-fareast-language: EN-US; mso-bidi-language: AR-SA"">test</span>");
+		}
+		
+		[Test]
 		public void TestStylesAreCaseInsensitive()
 		{
 			AssertFilterDoesNotChange(@"<span style=""FONT-WEIGHT: bold;"">Bold,</span> <span style=""font-style: italic;"">italic,</span> <span style=""text-decoration: underline;"">underline,</span> <span style=""font-weight: bold; font-style: italic; text-decoration: underline;"">bold-italic-underline</span>.");
@@ -162,6 +175,24 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		}
 		
 		[Test]
+		public void TestEmptyStyle()
+		{
+			AssertFilterDoesNotChange(@"<span style="""">test</span>");
+		}
+				
+		[Test]
+		public void TestXmp()
+		{
+			AssertFilterDoesNotChange(@"<xmp class=""Example"">An example</xmp>");
+		}
+		
+		[Test]
+		public void TestHRInH1()
+		{
+			AssertFilterDoesNotChange(@"<h1>Header followed by horizontal rule<hr/></h1>");
+		}
+		
+		[Test]
 		public void TestImgSrc()
 		{
             AssertFilterThrowsXmlSchemaException(@"<img src=""&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:alert('TestImgSrc');""/>");
@@ -182,7 +213,7 @@ namespace Brettle.Web.NeatHtml.UnitTests
 		[Test]
 		public void TestSpanNotAllowed()
 		{
-            AssertFilterThrowsXmlSchemaException(@"<br><span>span not allowed here</span></br>");
+            AssertFilterThrowsXmlSchemaException(@"<hr><span>span not allowed here</span></hr>");
 		}
 		
 		[Test]

@@ -94,6 +94,23 @@
 
   <xs:element name="code" type="code.type"/>
 
+  <xs:attributeGroup name="xmp.attlist">
+    <xs:attributeGroup ref="Common.attrib"/>
+  </xs:attributeGroup>
+
+  <xs:group name="xmp.content">
+     <xs:sequence>
+       <xs:group ref="Flow.mix" minOccurs="0" maxOccurs="unbounded"/>
+     </xs:sequence>
+  </xs:group>
+
+  <xs:complexType name="xmp.type" mixed="true">
+    <xs:group ref="xmp.content"/>
+    <xs:attributeGroup ref="xmp.attlist"/>
+  </xs:complexType>
+
+  <xs:element name="xmp" type="xmp.type"/>
+
   <xs:attributeGroup name="dfn.attlist">
     <xs:attributeGroup ref="Common.attrib"/>
   </xs:attributeGroup>

@@ -168,6 +168,7 @@
       <xs:element ref="strong"/>
       <xs:element ref="dfn"/>
       <xs:element ref="code"/>
+      <xs:element ref="xmp"/>
       <xs:element ref="samp"/>
       <xs:element ref="kbd"/>
       <xs:element ref="var"/>

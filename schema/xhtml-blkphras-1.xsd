@@ -109,7 +109,7 @@
     
     <xs:group name="h1.content">
        <xs:sequence>    
-          <xs:group ref="Inline.mix" minOccurs="0" maxOccurs="unbounded"/>    
+          <xs:group ref="Flow.mix" minOccurs="0" maxOccurs="unbounded"/>    
        </xs:sequence>
     </xs:group>
     
@@ -126,7 +126,7 @@
     
     <xs:group name="h2.content">
        <xs:sequence>    
-          <xs:group ref="Inline.mix" minOccurs="0" maxOccurs="unbounded"/>    
+          <xs:group ref="Flow.mix" minOccurs="0" maxOccurs="unbounded"/>    
        </xs:sequence>
     </xs:group>
     
@@ -143,7 +143,7 @@
     
     <xs:group name="h3.content">
        <xs:sequence>    
-          <xs:group ref="Inline.mix" minOccurs="0" maxOccurs="unbounded"/>    
+          <xs:group ref="Flow.mix" minOccurs="0" maxOccurs="unbounded"/>    
        </xs:sequence>
     </xs:group>
     
@@ -160,7 +160,7 @@
     
     <xs:group name="h4.content">
        <xs:sequence>    
-          <xs:group ref="Inline.mix" minOccurs="0" maxOccurs="unbounded"/>    
+          <xs:group ref="Flow.mix" minOccurs="0" maxOccurs="unbounded"/>    
        </xs:sequence>
     </xs:group>
     
@@ -177,7 +177,7 @@
     
     <xs:group name="h5.content">
        <xs:sequence>    
-          <xs:group ref="Inline.mix" minOccurs="0" maxOccurs="unbounded"/>    
+          <xs:group ref="Flow.mix" minOccurs="0" maxOccurs="unbounded"/>    
        </xs:sequence>
     </xs:group>
     
@@ -194,7 +194,7 @@
     
     <xs:group name="h6.content">
        <xs:sequence>    
-          <xs:group ref="Inline.mix" minOccurs="0" maxOccurs="unbounded"/>    
+          <xs:group ref="Flow.mix" minOccurs="0" maxOccurs="unbounded"/>    
        </xs:sequence>
     </xs:group>
     

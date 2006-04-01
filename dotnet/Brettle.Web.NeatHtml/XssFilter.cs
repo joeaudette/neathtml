@@ -57,7 +57,7 @@ namespace Brettle.Web.NeatHtml
 		
 		public string FilterFragment(string origHtmlFragment)
 		{
-			origHtmlFragment = FixAmpersandsAndCase(origHtmlFragment);
+			origHtmlFragment = CleanupHtml(origHtmlFragment);
 			
 			// Remove duplicate ids because they are invalid but not an attack vector.
 			string htmlFragment = RemoveIds(origHtmlFragment);
@@ -110,30 +110,38 @@ namespace Brettle.Web.NeatHtml
 			return origHtmlFragment;
 		}
 		
+		// Replace <br> with <br/>
+		// Force all tag names to lowercase.
 		// Replace ampersands with "&amp;" if they are not followed by either:
 			// a. alphanumerics and a semi
 			// b. "#" and decimal digits and a semi
 			// c. "#x" or "#X" and hex digits and a semi
-		// And force all tag names to lowercase.
-		private static readonly Regex FixAmpersandsAndCaseRegex
-			= new Regex("(</?[a-zA-Z]+)|(&(?!([A-Za-z0-9]+|#[0-9]+|#[xX][0-9A-Fa-f]+);))");
-		private string FixAmpersandsAndCase(string htmlFragment)
+		private static readonly Regex CleanupHtmlRegex
+			= new Regex(@"(<[bB][rR](\s*[^>]*)>)|(</?[a-zA-Z]+)|(&(?!([A-Za-z0-9]+|#[0-9]+|#[xX][0-9A-Fa-f]+);))");
+		private string CleanupHtml(string htmlFragment)
 		{
 			// Replace ampersands with "&amp;" if they are not followed by either:
 				// a. alphanumerics and a semi
 				// b. "#" and decimal digits and a semi
 				// c. "#x" or "#X" and hex digits and a semi
 			// And force all tag names to lowercase.
-			return FixAmpersandsAndCaseRegex.Replace(htmlFragment, new MatchEvaluator(FixMatch));
+			return CleanupHtmlRegex.Replace(htmlFragment, new MatchEvaluator(FixMatch));
 		}
 		
 		private string FixMatch(Match m)
 		{
-			if (m.Groups[1].Success)
+			if (m.Groups[1].Success && m.Groups[2].Success)
 			{
-				return m.Groups[1].Value.ToLower();
+				string beforeCloseBracket =  m.Groups[2].Value;
+				if (!beforeCloseBracket.EndsWith("/"))
+					beforeCloseBracket += "/";
+				return "<br" + beforeCloseBracket + ">";
 			}
-			else if (m.Groups[2].Success)
+			else if (m.Groups[3].Success)
+			{
+				return m.Groups[3].Value.ToLower();
+			}
+			else if (m.Groups[4].Success)
 			{
 				return "&amp;";
 			}
