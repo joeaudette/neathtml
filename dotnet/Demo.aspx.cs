@@ -55,8 +55,8 @@ namespace Brettle.Web.NeatHtml
 
 		private void Button_Clicked(object sender, EventArgs e)
 		{
-			DirectoryInfo appDir = new DirectoryInfo(Request.PhysicalApplicationPath);
-			string schemaLocation = Path.Combine(appDir.Parent.FullName, "schema");
+			FileInfo currentFile = new FileInfo(Request.PhysicalPath);
+			string schemaLocation = Path.Combine(currentFile.Directory.Parent.FullName, "schema");
 			schemaLocation = Path.Combine(schemaLocation, "NeatHtml.xsd");
 			XssFilter filter = XssFilter.GetForSchema(schemaLocation);
 			
@@ -91,6 +91,7 @@ namespace Brettle.Web.NeatHtml
 						position = textarea.Value.IndexOf("\n", position);
 						position = position + 1;
 					}
+					position -= (lineNumber - 1); // Because newlines aren't counted when javascript moves to the position
 					position += linePosition - 1;
 					RegisterStartupScript("moveto-error", "<script>NeatHtml_MoveTo('textarea', " + position + ");</script>");
 				}				
