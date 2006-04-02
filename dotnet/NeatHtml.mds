@@ -1,12 +1,12 @@
 <Combine name="NeatHtml" fileversion="2.0" outputpath="./build/bin/">
-  <Configurations active="Debug">
+  <Configurations active="Release">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry configuration="Debug" build="True" name="NeatHtml" />
       <Entry configuration="Debug" build="True" name="NeatHtmlUnitTests" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry configuration="Debug" build="True" name="NeatHtml" />
-      <Entry configuration="Debug" build="True" name="NeatHtmlUnitTests" />
+      <Entry configuration="Release" build="True" name="NeatHtml" />
+      <Entry configuration="Release" build="True" name="NeatHtmlUnitTests" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="NeatHtml" single="True">
