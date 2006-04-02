@@ -1,0 +1,5 @@
+The NeatHtml code (in source and binary form) is licensed under the
+Lesser General Public License (LGPL) which can be found in COPYING-LIB.txt.
+The NeatHtml schema files (in the schema directory) are derived from the
+XHTML 1.1 schema files which are licensed under an X11-style license which
+can be found in schema/xhtml-copyright-1.xsd.
