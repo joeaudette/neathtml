@@ -1,0 +1,1 @@
+<hr><span>span not allowed here</span></hr>

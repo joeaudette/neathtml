@@ -1,0 +1,1 @@
+<table bgcolor="#ff0000"><tr><td></td></tr></table>

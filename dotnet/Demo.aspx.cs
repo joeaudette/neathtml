@@ -62,8 +62,13 @@ namespace Brettle.Web.NeatHtml
 			
 			try
 			{
-				filter.FilterFragment(textarea.Value);
-				outputDiv.InnerHtml = textarea.Value;
+				string html = textarea.Value;
+				if (Environment.Version.Major < 2)
+				{
+					html = HttpUtility.HtmlDecode(html);
+				}
+				filter.FilterFragment(html);
+				outputDiv.InnerHtml = html;
 			}
 			catch (Exception ex)
 			{
