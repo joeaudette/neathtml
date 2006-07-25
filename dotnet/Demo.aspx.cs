@@ -51,6 +51,9 @@ namespace Brettle.Web.NeatHtml
 		private void Page_Load(object sender, EventArgs e)
 		{
 			submitButton.Click += new System.EventHandler(this.Button_Clicked);
+			// Works around a Mono bug (http://bugzilla.ximian.com/show_bug.cgi?id=78948) which causes
+			// the textarea content to render without being encoded.
+			textarea.InnerText = textarea.Value;
 		}
 
 		private void Button_Clicked(object sender, EventArgs e)

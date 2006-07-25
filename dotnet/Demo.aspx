@@ -29,7 +29,7 @@ function NeatHtml_MoveTo(id, position)
 		<form id="form" runat="server">
 			<h1>NeatHtml Demo</h1>
 			<p>
-			This page demonstrates the basic functionality of NeatHtml.
+			This page demonstrates the basic functionality of NeatHtml under ASP.NET <%= System.Environment.Version %>.
 			Enter some HTML source in the area below and click submit.
 			</p>
 			<textarea id="textarea" runat="server" rows=25 cols=80></textarea>
