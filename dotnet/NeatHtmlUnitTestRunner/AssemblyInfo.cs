@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -7,13 +6,13 @@ using System.Runtime.CompilerServices;
 //
 // change them to the information which is associated with the assembly
 // you compile.
-[assembly:CLSCompliant(true)]
-[assembly: AssemblyTitle("NeatHtmlUnitTests")]
-[assembly: AssemblyDescription("NeatHtml unit tests for NUnit..")]
+
+[assembly: AssemblyTitle("")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Dean Brettle")]
-[assembly: AssemblyProduct("NeatHtml")]
-[assembly: AssemblyCopyright("Copyright 2006 Dean Brettle.  Licensed under the Lesser General Public License.")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -26,17 +25,8 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyInformationalVersion("trunk")]
-
 // The following attributes specify the key for the sign of your assembly. See the
 // .NET Framework documentation for more information about signing.
 // This is not required, if you don't want signing let these attributes like they're.
 [assembly: AssemblyDelaySign(false)]
 [assembly: AssemblyKeyFile("")]
-
-#if USE_LOG4NET
-[assembly: log4net.Config.XmlConfigurator(ConfigFile="log4net.config", Watch=true)]
-#else
-#warning LOGGING DISABLED.  To enable logging, add a reference to log4net and define USE_LOG4NET.
-#endif
-
