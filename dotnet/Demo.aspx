@@ -30,13 +30,21 @@ function NeatHtml_MoveTo(id, position)
 			<h1>NeatHtml Demo</h1>
 			<p>
 			This page demonstrates the basic functionality of NeatHtml under ASP.NET <%= System.Environment.Version %>.
-			Enter some HTML source in the area below and click submit.
+			Enter some HTML source in the area below and click the submit button.
 			</p>
 			<textarea id="textarea" runat="server" rows=25 cols=80></textarea>
 			<br/>
 			<asp:Button id="submitButton" runat="server" Text="Submit" />
 			</span>
-			<div id="outputDiv" runat="server">
+			<br/>
+			If NeatHtml accepts your HTML, it will be rendered in the red box below.  The red box will expand up to 800
+			pixels wide and 
+			500 pixels high.  If your HTML requires more space than that, you should see 
+			scrollbars.  You should not be able to cause any script to execute and you should not be able to make
+			anything appear outside the red box.  If you can, please email me (dean at brettle dot com) with the HTML
+			you used and the browser you used.  Thanks!
+			<br/>
+			<div id="outputDiv" style="border: 2px solid red; max-width: 800px; max-height: 500px; min-height: 2em; overflow: auto; width: expression(Math.min(parseInt(this.offsetWidth), 800 ) + 'px'); height: expression(Math.min(parseInt(this.offsetHeight), 500 ) + 'px');" runat="server">
 			</div>
 		</form>
 	</Body>
