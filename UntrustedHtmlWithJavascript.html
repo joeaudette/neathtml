@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Untrusted HTML With Javascript</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+</head>
+<body>
+	<h1>Restricting Untrusted HTML With Javascript</h1>
+	<p><em>Last updated 8/16/2007 9:10 AM PDT</em></p>
+	<div>
+	<p>
+	This is based heavily on <a href="http://www.mindedsecurity.com/">Stefano Di Paola's</a>
+	<a href="http://www.wisec.it/ph/test.html">http://www.wisec.it/ph/test.html</a> and 
+	<a href="http://www.wisec.it/ph/test.php">http://www.wisec.it/ph/test.php</a>.  
+	My primary contribution is the idea to use
+	document.write() to put
+	the untrusted content in a comment.  This means that if javascript is available, the untrusted
+	content is stored in a comment until the javascript has a chance to parse it (using the browser's parser), 
+	clean the resulting DOM fragment, and then put the result where the comment was.  Most importantly, if javascript
+	is not available (e.g. search engines spiders), the content is not in a comment and displays normally.  
+	</p>
+	<p>
+	To play with this, save this page and look at the HTML source.  Find the &lt;untrusted&gt; element and try to
+	replace its	contents with something that will execute script.  The only rules are that you need to do the following
+	things that the server would normally do to the untrusted content:
+	<ul>
+	<li>Remove any comments.  They aren't a security threat, but they will corrupt the display of the 
+	untrusted content.  In other words, an app that doesn't expect benign content to contain comments would not need
+	to strip	comments.</li>
+	<li>Replace '--' with '&amp;#45;&amp;#45'.  That string is a threat because it would end the enclosing 
+	javascript-generated	comment.</li>
+	<li>If the content contains '&lt;table&gt;' or '&lt;/table&gt;', either check the content for well-formedness, or 
+	if you are willing to disallow tables in the untrusted content, just replace '&lt;table&gt;' with 
+	'&amp;lt;table&gt;' and '&lt;/table&gt;' with '&amp;lt;/table&gt;'.
+	This is necessary because we put the untrusted content in a &lt;table&gt; to prevent parser based attacks on users
+	that don't have javascript.  This works because Firefox's tag soup parsing seems to ignore end tags for
+	outer elements until it sees the table end tag.</li>
+	</ul>
+	</p>
+	<p>
+	The current implementation has only been tested with Firefox.
+	</p>
+	</div>
+	<h2>Example</h2>
+	<h3>Untrusted Content</h3>
+	<!-- Note: the style="overflow: hidden; position: relative" on the inner div below prevents well-formed but
+	untrusted content from getting outside the box when javascript is disabled. -->
+	<div style="overflow: hidden; position: relative; border: solid 1px;">
+	<!-- Note: the table forces all following content (up to </table>) to be inside the table node.  This means
+	the server doesn't have to check for well-formedness.  It can just HTML-encode all '<table>', and '</table>'.
+	Of course that means tables would not work in the untrusted content. To get the best of both worlds, only
+	check for well-formedness if the untrusted content contains "</table>".  -->
+	<table><tr><td id="untrusted">
+		<script type="text/javascript">
+		<!--
+		document.write("<!--");
+		// -->
+		</script><div>
+		
+			<p><em>Start of untrusted content...</em></p>
+			
+			<p>Here is a script element...</p>
+			<script type="text/javascript">
+			window.alert("XSS from script element");
+			</script>
+			<p>Here is a link with an onclick handler:
+			<a onclick="window.alert('XSS on click')" href="#">onclick link</a>
+			</p>
+			<p>Here is a link that uses the javascript protocol:
+			<a href="javascript:alert('XSS on link')">javascript link</a>
+			</p>
+			<p style="background-color: red; nonstandard-attribute: expr/**/es\sion(alert('XSS from style'));">
+			Here is a paragraph with a javascript expression in the style (IE only).
+			</p>
+			<p>Next we attempt to break out of the containing &lt;div&gt; element to display content outside
+			the box.  If you have javascript enabled, all remaining untrusted content will be ignored.
+			If not, the remaining untrusted comment will still be in the box.</p>
+			</div>
+			</div>
+			</div>
+			<p>Help, let me out of this box!</p>
+			<p><em>End of untrusted content...</em></p>
+									
+		</div><script type="text/javascript">
+		<!--
+		document.write(" -" + "-><!--");
+		// -->
+		</script>
+		<!-- ' " > -->
+		<!-- The preceding comment might not be necessary but it should ensure that any attributes and tags started
+		by the untrusted content have been closed. -->
+	</td></tr></table></div>
+	<h3>Trusted Content</h3>
+	<div>
+	This is trusted content.
+	</div>
+	<script type="text/javascript">
+	<!--
+	var untrustedDiv = document.getElementById("untrusted");
+	var xmlstr;
+	for (var i = 0; i < untrustedDiv.childNodes.length; i++)
+	{
+		var n = untrustedDiv.childNodes[i];
+		if (n.nodeType == Node.COMMENT_NODE)
+		{
+			xmlstr = n.data;
+			break;
+		}
+	}
+	var endTag = "</div>";
+	var endTagIndex = xmlstr.lastIndexOf(endTag);
+	if (endTagIndex == -1)
+		throw "Untrusted HTML is invalid.  It probably contains a '-" + "-'.";
+	xmlstr = xmlstr.substring(0, endTagIndex + endTag.length);
+	// alert("xmlstr = '" + xmlstr + "'");
+	
+	// NOTE: The remainder of this code is copied from Stefano Di Paola's http://www.wisec.it/ph/test.html
+	// and modified slightly for clarity and to suit our purposes.
+
+	var range = document.createRange();
+	range.selectNode(document.body);
+	var doc = range.createContextualFragment(xmlstr);
+	var xmlDoc=document.implementation.createDocument("","",null);
+	xmlDoc.appendChild(doc.firstChild );
+	var badNodes = new Array();
+	var d = xmlDoc.getElementsByTagName('*') ;
+	var a = document.createElement('A'); // For testing URLs and styles
+	if(d[i].tagName in { SCRIPT: 1, OBJECT: 1, EMBED: 1, IFRAME: 1, FRAME: 1, FRAMESET: 1, XML: 1 }  ){
+      badNodes.push(d[i]);
+   }
+	for(var i=0;i< d.length;i++ ){
+		if(d[i].hasAttributes()){
+			xmlattrs = d[i].attributes;
+			var badattrs=new Array();
+			for(var j=0;j < xmlattrs.length;j++){
+				var name = xmlattrs.item(j).name;
+				var val = xmlattrs.item(j).value;
+				if(name.match(/^on.*/i) ){
+					badattrs.push (name);
+				}
+				// Remove any URL attributes with protocols other than http, https, or ftp
+				else if(name in { href: 1, src: 1, url: 1}) {
+					a.setAttribute("href", unescape(val));
+					if (a.protocol != undefined && a.protocol.length > 0 && !a.protocol.match(/^(http|https|ftp)/) ) {
+						badattrs.push (name);
+					}
+				}
+				// Remove any style attributes that contain 'expression', 'url', comments or escape sequences.
+				// Note: comments and escape sequences can be used to hide 'expression' and 'url'.
+				// An alternative approach would be to let the browser parse the style and then copy the benign
+				// properties of the parsed style object into the current node's style object.
+				else if(name == "style") {
+					window.alert("style value = " + val);
+					if (val.match(/expression|url|\x2F\*|\\/i) ) {
+						badattrs.push (xmlattrs.item(j).name);
+					}
+				}
+			}
+			for(var ba = 0 ; ba< badattrs.length; ba++ ) {
+				d[i].removeAttribute( badattrs[ba] );
+		   }
+		}
+	      
+//		alert("d[i].tagName = " + d[i].tagName);
+   }
+   
+   for(var n=0;n < badNodes.length; n++) {
+		badNodes[n].parentNode.removeChild( badNodes[n]);
+   }
+	
+	untrustedDiv.innerHTML =  xmlDoc.firstChild.innerHTML;
+	
+	// -->
+	</script>
+</body>
+</html>
