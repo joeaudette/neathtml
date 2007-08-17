@@ -9,7 +9,7 @@
 </head>
 <body>
 	<h1>Restricting Untrusted HTML With Javascript</h1>
-	<p><em>Last updated 8/16/2007 9:10 AM PDT</em></p>
+	<p><em>Last updated 8/17/2007 1:14 AM PDT</em></p>
 	<div>
 	<p>
 	This is based heavily on <a href="http://www.mindedsecurity.com/">Stefano Di Paola's</a>
@@ -41,11 +41,12 @@
 	</ul>
 	</p>
 	<p>
-	The current implementation has only been tested with Firefox.
+	The current implementation has only been tested with Firefox 1.5 and IE7.
 	</p>
 	</div>
 	<h2>Example</h2>
 	<h3>Untrusted Content</h3>
+	<p>The following content is untrusted:</p>
 	<!-- Note: the style="overflow: hidden; position: relative" on the inner div below prevents well-formed but
 	untrusted content from getting outside the box when javascript is disabled. -->
 	<div style="overflow: hidden; position: relative; border: solid 1px;">
@@ -53,7 +54,7 @@
 	the server doesn't have to check for well-formedness.  It can just HTML-encode all '<table>', and '</table>'.
 	Of course that means tables would not work in the untrusted content. To get the best of both worlds, only
 	check for well-formedness if the untrusted content contains "</table>".  -->
-	<table><tr><td id="untrusted">
+	<table><tr><td id="untrusted1">
 		<script type="text/javascript">
 		<!--
 		document.write("<!--");
@@ -75,12 +76,41 @@
 			<p style="background-color: red; nonstandard-attribute: expr/**/es\sion(alert('XSS from style'));">
 			Here is a paragraph with a javascript expression in the style (IE only).
 			</p>
-			<p>Next we attempt to break out of the containing &lt;div&gt; element to display content outside
-			the box.  If you have javascript enabled, all remaining untrusted content will be ignored.
-			If not, the remaining untrusted comment will still be in the box.</p>
-			</div>
-			</div>
-			</div>
+			<p><em>End of untrusted content...</em></p>
+									
+		</div><script type="text/javascript">
+		<!--
+		document.write(" -" + "-><!--");
+		// -->
+		</script>
+		<!-- ' " > -->
+		<!-- The preceding comment might not be necessary but it should ensure that any attributes and tags started
+		by the untrusted content have been closed. -->
+	</td></tr></table></div>
+
+    <p>The next bit of content attempts to break out of its containing &lt;div&gt; element to display content
+    outside	the box.  If you don't have javascript enabled, the untrusted comment will remain in the box 
+    (because an inner table would need to be closed first).
+    If you have javascript enabled the result depend on the browser you are using.
+    If you are using IE, nothing will be displayed. IE's XML parser
+    rejects the content because it isn't well-formed.  Firefox's parser returns a partial document so 
+    the portion before the attempt to break out 
+    (i.e. before the &lt;/div&gt; tag) will be displayed.  In none of the cases is any untrusted content
+    displayed outside the box.</p>
+	<div style="overflow: hidden; position: relative; border: solid 1px;">
+	<table><tr><td id="untrusted2">
+		<script type="text/javascript">
+		<!--
+		document.write("<!--");
+		// -->
+		</script><div>
+		
+			<p><em>Start of untrusted content...</em></p>
+			
+			<p>Attempting to break out...</p>
+            </div>
+            </div>
+            </div>
 			<p>Help, let me out of this box!</p>
 			<p><em>End of untrusted content...</em></p>
 									
@@ -93,18 +123,25 @@
 		<!-- The preceding comment might not be necessary but it should ensure that any attributes and tags started
 		by the untrusted content have been closed. -->
 	</td></tr></table></div>
+
 	<h3>Trusted Content</h3>
 	<div>
 	This is trusted content.
 	</div>
 	<script type="text/javascript">
 	<!--
-	var untrustedDiv = document.getElementById("untrusted");
+	RestrictContentInId("untrusted1");
+	RestrictContentInId("untrusted2");
+	
+	function RestrictContentInId(id)
+	{
+	try {
+	var untrustedDiv = document.getElementById(id);
 	var xmlstr;
 	for (var i = 0; i < untrustedDiv.childNodes.length; i++)
 	{
 		var n = untrustedDiv.childNodes[i];
-		if (n.nodeType == Node.COMMENT_NODE)
+		if (n.nodeType == 8 /* Node.COMMENT_NODE */)
 		{
 			xmlstr = n.data;
 			break;
@@ -119,12 +156,20 @@
 	
 	// NOTE: The remainder of this code is copied from Stefano Di Paola's http://www.wisec.it/ph/test.html
 	// and modified slightly for clarity and to suit our purposes.
-
-	var range = document.createRange();
-	range.selectNode(document.body);
-	var doc = range.createContextualFragment(xmlstr);
-	var xmlDoc=document.implementation.createDocument("","",null);
-	xmlDoc.appendChild(doc.firstChild );
+    var xmlDoc;
+    try
+    {
+	    var range = document.createRange();
+	    range.selectNode(document.body);
+	    var doc = range.createContextualFragment(xmlstr);
+	    xmlDoc=document.implementation.createDocument("","",null);
+	    xmlDoc.appendChild(doc.firstChild );
+	} catch (ex)
+	{
+	    xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+	    xmlDoc.async = false;
+	    xmlDoc.loadXML(xmlstr);
+	}
 	var badNodes = new Array();
 	var d = xmlDoc.getElementsByTagName('*') ;
 	var a = document.createElement('A'); // For testing URLs and styles
@@ -132,7 +177,8 @@
       badNodes.push(d[i]);
    }
 	for(var i=0;i< d.length;i++ ){
-		if(d[i].hasAttributes()){
+		if(d[i].hasAttributes && d[i].hasAttributes() 
+		   || d[i].attributes.length > 0){
 			xmlattrs = d[i].attributes;
 			var badattrs=new Array();
 			for(var j=0;j < xmlattrs.length;j++){
@@ -141,10 +187,10 @@
 				if(name.match(/^on.*/i) ){
 					badattrs.push (name);
 				}
-				// Remove any URL attributes with protocols other than http, https, or ftp
+				// Remove any URL attributes with protocols other than http, https, or ftp (or no protocol)
 				else if(name in { href: 1, src: 1, url: 1}) {
 					a.setAttribute("href", unescape(val));
-					if (a.protocol != undefined && a.protocol.length > 0 && !a.protocol.match(/^(http|https|ftp)/) ) {
+					if (a.protocol != undefined && a.protocol.length > 0 && !a.protocol.match(/^(http|https|ftp|:)/) ) {
 						badattrs.push (name);
 					}
 				}
@@ -153,7 +199,6 @@
 				// An alternative approach would be to let the browser parse the style and then copy the benign
 				// properties of the parsed style object into the current node's style object.
 				else if(name == "style") {
-					window.alert("style value = " + val);
 					if (val.match(/expression|url|\x2F\*|\\/i) ) {
 						badattrs.push (xmlattrs.item(j).name);
 					}
@@ -171,8 +216,19 @@
 		badNodes[n].parentNode.removeChild( badNodes[n]);
    }
 	
-	untrustedDiv.innerHTML =  xmlDoc.firstChild.innerHTML;
-	
+	if ("innerHTML" in xmlDoc.firstChild)
+	{
+	    untrustedDiv.innerHTML =  xmlDoc.firstChild.innerHTML;
+	}
+	else
+	{
+	    untrustedDiv.innerHTML =  xmlDoc.firstChild.xml;
+	}
+	} catch (ex)
+	{
+	    // Ignored for now.  The untrusted comment will remain commented out.
+	}
+	}
 	// -->
 	</script>
 </body>
