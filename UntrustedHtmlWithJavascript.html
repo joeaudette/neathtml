@@ -135,99 +135,111 @@
 	
 	function RestrictContentInId(id)
 	{
-	try {
-	var untrustedDiv = document.getElementById(id);
-	var xmlstr;
-	for (var i = 0; i < untrustedDiv.childNodes.length; i++)
-	{
-		var n = untrustedDiv.childNodes[i];
-		if (n.nodeType == 8 /* Node.COMMENT_NODE */)
-		{
-			xmlstr = n.data;
-			break;
-		}
-	}
-	var endTag = "</div>";
-	var endTagIndex = xmlstr.lastIndexOf(endTag);
-	if (endTagIndex == -1)
-		throw "Untrusted HTML is invalid.  It probably contains a '-" + "-'.";
-	xmlstr = xmlstr.substring(0, endTagIndex + endTag.length);
-	// alert("xmlstr = '" + xmlstr + "'");
-	
-	// NOTE: The remainder of this code is copied from Stefano Di Paola's http://www.wisec.it/ph/test.html
-	// and modified slightly for clarity and to suit our purposes.
-    var xmlDoc;
-    try
-    {
-	    var range = document.createRange();
-	    range.selectNode(document.body);
-	    var doc = range.createContextualFragment(xmlstr);
-	    xmlDoc=document.implementation.createDocument("","",null);
-	    xmlDoc.appendChild(doc.firstChild );
-	} catch (ex)
-	{
-	    xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-	    xmlDoc.async = false;
-	    xmlDoc.loadXML(xmlstr);
-	}
-	var badNodes = new Array();
-	var d = xmlDoc.getElementsByTagName('*') ;
-	var a = document.createElement('A'); // For testing URLs and styles
-	if(d[i].tagName in { SCRIPT: 1, OBJECT: 1, EMBED: 1, IFRAME: 1, FRAME: 1, FRAMESET: 1, XML: 1 }  ){
-      badNodes.push(d[i]);
-   }
-	for(var i=0;i< d.length;i++ ){
-		if(d[i].hasAttributes && d[i].hasAttributes() 
-		   || d[i].attributes.length > 0){
-			xmlattrs = d[i].attributes;
-			var badattrs=new Array();
-			for(var j=0;j < xmlattrs.length;j++){
-				var name = xmlattrs.item(j).name;
-				var val = xmlattrs.item(j).value;
-				if(name.match(/^on.*/i) ){
-					badattrs.push (name);
-				}
-				// Remove any URL attributes with protocols other than http, https, or ftp (or no protocol)
-				else if(name in { href: 1, src: 1, url: 1}) {
-					a.setAttribute("href", unescape(val));
-					if (a.protocol != undefined && a.protocol.length > 0 && !a.protocol.match(/^(http|https|ftp|:)/) ) {
-						badattrs.push (name);
-					}
-				}
-				// Remove any style attributes that contain 'expression', 'url', comments or escape sequences.
-				// Note: comments and escape sequences can be used to hide 'expression' and 'url'.
-				// An alternative approach would be to let the browser parse the style and then copy the benign
-				// properties of the parsed style object into the current node's style object.
-				else if(name == "style") {
-					if (val.match(/expression|url|\x2F\*|\\/i) ) {
-						badattrs.push (xmlattrs.item(j).name);
-					}
-				}
-			}
-			for(var ba = 0 ; ba< badattrs.length; ba++ ) {
-				d[i].removeAttribute( badattrs[ba] );
-		   }
-		}
-	      
-//		alert("d[i].tagName = " + d[i].tagName);
-   }
-   
-   for(var n=0;n < badNodes.length; n++) {
-		badNodes[n].parentNode.removeChild( badNodes[n]);
-   }
-	
-	if ("innerHTML" in xmlDoc.firstChild)
-	{
-	    untrustedDiv.innerHTML =  xmlDoc.firstChild.innerHTML;
-	}
-	else
-	{
-	    untrustedDiv.innerHTML =  xmlDoc.firstChild.xml;
-	}
-	} catch (ex)
-	{
-	    // Ignored for now.  The untrusted comment will remain commented out.
-	}
+	    try {
+	        var untrustedDiv = document.getElementById(id);
+	        var xmlstr;
+	        for (var i = 0; i < untrustedDiv.childNodes.length; i++)
+	        {
+		        var n = untrustedDiv.childNodes[i];
+		        if (n.nodeType == 8 /* Node.COMMENT_NODE */)
+		        {
+			        xmlstr = n.data;
+			        break;
+		        }
+	        }
+	        var endTag = "</div>";
+	        var endTagIndex = xmlstr.lastIndexOf(endTag);
+	        if (endTagIndex == -1)
+		        throw "Untrusted HTML is invalid.  It probably contains a '-" + "-'.";
+	        xmlstr = xmlstr.substring(0, endTagIndex + endTag.length);
+	        // alert("xmlstr = '" + xmlstr + "'");
+        	
+	        // NOTE: The remainder of this code is based on Stefano Di Paola's http://www.wisec.it/ph/test.html
+            var xmlDoc;
+            try
+            {
+	            var range = document.createRange();
+	            range.selectNode(document.body);
+	            var doc = range.createContextualFragment(xmlstr);
+	            xmlDoc=document.implementation.createDocument("","",null);
+	            xmlDoc.appendChild(doc.firstChild );
+	        } catch (ex)
+	        {
+	            xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+	            xmlDoc.async = false;
+	            xmlDoc.loadXML(xmlstr);
+	        }
+	        var badNodes = new Array();
+	        var d = xmlDoc.getElementsByTagName('*') ;
+	        var a = document.createElement('A'); // For testing URLs and styles
+	        if(d[i].tagName in { SCRIPT: 1, OBJECT: 1, EMBED: 1, IFRAME: 1, FRAME: 1, FRAMESET: 1, XML: 1 }  ){
+              badNodes.push(d[i]);
+           }
+	        for(var i=0;i< d.length;i++ ){
+		        if(d[i].hasAttributes && d[i].hasAttributes() 
+		           || d[i].attributes.length > 0){
+			        xmlattrs = d[i].attributes;
+			        var badattrs=new Array();
+			        for(var j=0;j < xmlattrs.length;j++){
+				        var name = xmlattrs.item(j).name;
+				        var val = xmlattrs.item(j).value;
+				        if(name.match(/^on.*/i) ){
+					        badattrs.push (name);
+				        }
+				        // Remove any URL attributes with protocols other than http, https, or ftp (or no protocol)
+				        else if(name in { href: 1, src: 1, url: 1}) {
+					        a.setAttribute("href", unescape(val));
+					        if (a.protocol != undefined && a.protocol.length > 0 && !a.protocol.match(/^(http|https|ftp|:)/) ) {
+						        badattrs.push (name);
+					        }
+				        }
+				        // Remove any style attributes that contain 'expression', 'url', comments or escape sequences.
+				        // Note: comments and escape sequences can be used to hide 'expression' and 'url'.
+				        else if(name == "style") {
+				            a.style.cssText = val;
+				            // On browsers supporting DOM Level 2 Styles, copy the benign
+				            // properties of the parsed style object into the current node's style object.
+				            if (a.style.length && a.style.getPropertyValue) {
+				                for (var s = 0; s < a.style.length; s++) {
+				                    var propName = a.style[s];
+				                    if (propName == "cssText") continue;
+				                    var propValue = a.style.getPropertyValue(propName);
+            				        
+				                    if (!propValue.match(/expression|url|\x2F\*|\\/i)) {
+				                        d[i].style.setProperty(propName, propValue, "");
+				                    }
+				                }
+				             }
+				             /*  Else use the all or nothing approach in browsers like IE */
+				             else if (val.match(/expression|url|\x2F\*|\\/i) ) {                        
+					            badattrs.push (xmlattrs.item(j).name);
+					         }
+				        }
+			        }
+			        for(var ba = 0 ; ba< badattrs.length; ba++ ) {
+				        d[i].removeAttribute( badattrs[ba] );
+		           }
+		        }
+        	      
+        //		alert("d[i].tagName = " + d[i].tagName);
+           }
+           
+           for(var n=0;n < badNodes.length; n++) {
+		        badNodes[n].parentNode.removeChild( badNodes[n]);
+           }
+        	
+	        if ("innerHTML" in xmlDoc.firstChild)
+	        {
+	            untrustedDiv.innerHTML =  xmlDoc.firstChild.innerHTML;
+	        }
+	        else
+	        {
+	            untrustedDiv.innerHTML =  xmlDoc.firstChild.xml;
+	        }
+	    } catch (ex)
+	    {
+	        // Ignored for now.  The untrusted content will remain commented out.
+	    }
 	}
 	// -->
 	</script>
