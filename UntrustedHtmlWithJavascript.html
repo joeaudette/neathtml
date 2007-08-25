@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
 <html>
 <head>
 <title>Untrusted HTML With Javascript</title>
@@ -8,61 +8,102 @@
 <meta http-equiv="expires" content="0">
 </head>
 <body>
+<!--
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+-->
 	<h1>Restricting Untrusted HTML With Javascript</h1>
-	<p><em>Last updated 8/17/2007 2:44 AM PDT</em></p>
+	<p><em>Last updated 8/24/2007 11:17 AM PDT</em></p>
 	<div>
 	<p>
 	This is based heavily on <a href="http://www.mindedsecurity.com/">Stefano Di Paola's</a>
 	<a href="http://www.wisec.it/ph/test.html">http://www.wisec.it/ph/test.html</a> and 
 	<a href="http://www.wisec.it/ph/test.php">http://www.wisec.it/ph/test.php</a>.  
 	My primary contribution is the idea to use
-	document.write() to put
-	the untrusted content in a comment.  This means that if javascript is available, the untrusted
-	content is stored in a comment until the javascript has a chance to parse it (using the browser's parser), 
-	clean the resulting DOM fragment, and then put the result where the comment was.  Most importantly, if javascript
-	is not available (e.g. search engines spiders), the content is not in a comment and displays normally.  
+	document.write() to inject some markup that will cause the parser to stop processing normal tags.  We inject this
+	immediately before the untrusted content.  Then we later
+	use javascript to extract the untrusted content, parse it as XML (using the browser's parser), 
+	clean the resulting DOM, and put the result where the injected markup was.
+	For most browsers we inject "&lt;!--" to start a comment. On browsers where we can't access the contents of
+	comments (e.g. Safari and Konqueror), we inject &lt;xmp&gt;	instead (which for historical reasons stops 
+	processing normal markup.  In either case, the key is that if javascript
+	is not available (e.g. search engines spiders), nothing is injected and the content displays normally.
 	</p>
 	<p>
-	To play with this, save this page and look at the HTML source.  Find the &lt;untrusted&gt; element and try to
-	replace its	contents with something that will execute script.  The only rules are that you need to do the following
-	things that the server would normally do to the untrusted content:
+	To play with this, save this page and look at the HTML source.  Find the &lt;div&gt;s containing the untrusted
+	content and try replacing their contents with something that will execute script.  The only rules are that you 
+	need to do the following things that the server would normally do to the untrusted content:
 	<ul>
 	<li>Remove any comments.  They aren't a security threat, but they will corrupt the display of the 
 	untrusted content.  In other words, an app that doesn't expect benign content to contain comments would not need
 	to strip	comments.</li>
-	<li>Replace '--' with '&amp;#45;&amp;#45'.  That string is a threat because it would end the enclosing 
+	<li>Replace '--' with '&amp;#45;&amp;#45;'.  That string is a threat because it would end the enclosing 
 	javascript-generated	comment.</li>
+	<li>Replace '&lt;/xmp&gt;' with '&amp;lt;/xmp&amp;gt;'.  That string is a threat because it would end the enclosing 
+	javascript-generated	&lt;xmp&gt; element needed by browsers like Safari and Konqueror.</li>
 	<li>If the content contains '&lt;table&gt;' or '&lt;/table&gt;', either check the content for well-formedness, or 
 	if you are willing to disallow tables in the untrusted content, just replace '&lt;table&gt;' with 
-	'&amp;lt;table&gt;' and '&lt;/table&gt;' with '&amp;lt;/table&gt;'.
+	'&amp;lt;table&amp;gt;' and '&lt;/table&gt;' with '&amp;lt;/table&amp;gt;'.
 	This is necessary because we put the untrusted content in a &lt;table&gt; to prevent parser based attacks on users
-	that don't have javascript.  This works because Firefox's tag soup parsing seems to ignore end tags for
+	that don't have javascript.  This works because tag soup parsing seems to ignore end tags for
 	outer elements until it sees the table end tag.</li>
 	</ul>
 	</p>
 	<p>
-	The current implementation has only been tested with Firefox 1.5 and IE7.
+	The current implementation seems to work with:
+	<ul>
+	<li>Microsoft Internet Explorer (IE) version 7</li>
+	<li>Microsoft Internet Explorer (IE) version 6, except that when javascript is disabled the untrusted content
+	is displayed in fixed size div (with scroll bars if necessary).  This is necessary to prevent
+	absolutely position untrusted content from displaying outside the box.</li>
+	<li>Mozilla Firefox (FF) versions 1.5 and 2.0</li>
+	<li>Opera 9</li>
+	<li>Netscape 7.2</li>
+	<li>Mac Safari versions 1.2, 1.3, and 2.0.</li>
+	<li>Windows Safari version 3.0.2.</li>
+	<li>Konqueror 3.5.7, except that it is unable to prevent
+	id spoofing because <a href="http://bugs.kde.org/show_bug.cgi?id=149157">setting/removing the id causes 
+	Konqueror to crash</a>.</li>
+	</ul>
+	</p>
+	<p>Please report bugs, and send comments to dean at brettle dot com.
 	</p>
 	</div>
 	<h2>Example</h2>
 	<h3>Untrusted Content</h3>
 	<p>The following content is untrusted:</p>
-	<!-- Note: the style="overflow: hidden; position: relative" on the inner div below prevents well-formed but
-	untrusted content from getting outside the box when javascript is disabled. -->
+	<!-- Note: In most browsers, the style="overflow: hidden; position: relative" on the div below prevents 
+	well-formed but untrusted content from getting outside the box when javascript is disabled.  In IE6 and
+	earlier a width and height needs to be specified. -->
+	<![if gte IE 7]>
 	<div style="overflow: hidden; position: relative; border: solid 1px;">
+	<![endif]>
+	<!--[if lt IE 7]>
+	<div style="overflow: auto; position: relative; border: solid 1px; width: 100%; height: 200;">	
+	<![endif]-->
 	<!-- Note: the table forces all following content (up to </table>) to be inside the table node.  This means
 	the server doesn't have to check for well-formedness.  It can just HTML-encode all '<table>', and '</table>'.
 	Of course that means tables would not work in the untrusted content. To get the best of both worlds, only
 	check for well-formedness if the untrusted content contains "</table>".  -->
 	<table><tr><td id="untrusted1">
-		<script type="text/javascript">
-		<!--
-		document.write("<!--");
-		// -->
+		<!-- test comment --><script type="text/javascript">
+		// <![CDATA[
+		var scriptElems = document.getElementsByTagName("script");
+		var thisScript = scriptElems[scriptElems.length - 1];
+		if (thisScript.previousSibling && thisScript.previousSibling.nodeType == 8 /* Node.COMMENT_NODE */)
+		{
+			document.write("<!-" + "-");
+		}
+		else
+		{
+			document.write("<xmp>");
+		}
+		// ]]>
 		</script><div>
-		
-			<p><em>Start of untrusted content...</em></p>
-			
+					
+			<p>Here we try to display "Let me out!" outside of the box using absolute positioning:</p>
+			<div style="position: absolute; top: 0; right: 0; color: red;">Let me out!</div>
+			<div style="position: absolute; top: -100px; right: 0; color: red;">Let me out with negative top property!</div>
+
 			<p>Here is a script element...</p>
 			<script type="text/javascript">
 			window.alert("XSS from script element");
@@ -73,20 +114,22 @@
 			<p>Here is a link that uses the javascript protocol:
 			<a href="javascript:alert('XSS on link')">javascript link</a>
 			</p>
+			<p>Here is a link which tries to spoof a trusted element ID (i.e. an ID that trusted script later uses to
+			find an element to which a handler should be attached):
+			<a id="trustedLink" href="#">link with trusted ID</a>
+			</p>
 			<p style="background-color: red; nonstandard-attribute: expr/**/es\sion(alert('XSS from style'));">
 			Here is a paragraph with a javascript expression in the style (IE only).
 			</p>
-			<p><em>End of untrusted content...</em></p>
 									
-		</div><script type="text/javascript">
-		<!--
-		document.write(" -" + "-><!--");
-		// -->
-		</script>
+		</div><xmp></xmp>
 		<!-- ' " > -->
 		<!-- The preceding comment might not be necessary but it should ensure that any attributes and tags started
 		by the untrusted content have been closed. -->
 	</td></tr></table></div>
+
+<!--
+-->
 
     <p>The next bit of content attempts to break out of its containing &lt;div&gt; element to display content
     outside	the box.  If you don't have javascript enabled, the untrusted comment will remain in the box 
@@ -99,10 +142,19 @@
     displayed outside the box.</p>
 	<div style="overflow: hidden; position: relative; border: solid 1px;">
 	<table><tr><td id="untrusted2">
-		<script type="text/javascript">
-		<!--
-		document.write("<!--");
-		// -->
+		<!-- test comment --><script type="text/javascript">
+		// <![CDATA[
+		var scriptElems = document.getElementsByTagName("script");
+		var thisScript = scriptElems[scriptElems.length - 1];
+		if (thisScript.previousSibling && thisScript.previousSibling.nodeType == 8 /* Node.COMMENT_NODE */)
+		{
+			document.write("<!-" + "-");
+		}
+		else
+		{
+			document.write("<xmp>");
+		}
+		// ]]>
 		</script><div>
 		
 			<p><em>Start of untrusted content...</em></p>
@@ -111,23 +163,34 @@
             </div>
             </div>
             </div>
-			<p>Help, let me out of this box!</p>
+			<p>Help! Let me out of this box!</p>
 			<p><em>End of untrusted content...</em></p>
 									
-		</div><script type="text/javascript">
-		<!--
-		document.write(" -" + "-><!--");
-		// -->
-		</script>
+		</div><xmp></xmp><!-- -->
 		<!-- ' " > -->
 		<!-- The preceding comment might not be necessary but it should ensure that any attributes and tags started
 		by the untrusted content have been closed. -->
 	</td></tr></table></div>
 
 	<h3>Trusted Content</h3>
-	<div>
 	This is trusted content.
-	</div>
+	Here is <a id="trustedLink" href="#">a link</a> that some trusted script will attach an onclick handler to.
+	Clicking the link should bring up an alert.  If it doesn't or a link in untrusted content does, then there is a
+	hole.  The script finds the link using document.getElementById("trustedLink"), 
+	so untrusted content needs to be prevented from	containing elements with such an ID.
+	<script type="text/javascript">
+	<!--
+	window.onload = function() 
+	{
+		document.getElementById("trustedLink").onclick 
+			= function () { 
+				window.alert("You should only see this when clicking a link in trusted content."); 
+				return false;
+			};
+	}
+	// -->
+	</script>
+
 	<script type="text/javascript">
 	<!--
 	RestrictContentInId("untrusted1");
@@ -136,23 +199,26 @@
 	function RestrictContentInId(id)
 	{
 	    try {
+//				alert("In RestrictContentInId()");
 	        var untrustedDiv = document.getElementById(id);
+	        var n = untrustedDiv.getElementsByTagName("script")[0].nextSibling;
 	        var xmlstr;
-	        for (var i = 0; i < untrustedDiv.childNodes.length; i++)
+	        if (n.nodeType == 8 /* Node.COMMENT_NODE */)
 	        {
-		        var n = untrustedDiv.childNodes[i];
-		        if (n.nodeType == 8 /* Node.COMMENT_NODE */)
-		        {
-			        xmlstr = n.data;
-			        break;
-		        }
+		        xmlstr = n.data;
 	        }
+	        else if (n.tagName == "XMP")
+	        {
+	        	xmlstr = n.innerHTML;
+	        	xmlstr = xmlstr.replace(/&lt;/gm, "<").replace(/&gt;/gm, ">").replace(/&amp;/gm, "&");
+	        }
+	        // alert("xmlstr = '" + xmlstr + "'");
 	        var endTag = "</div>";
 	        var endTagIndex = xmlstr.lastIndexOf(endTag);
 	        if (endTagIndex == -1)
 		        throw "Untrusted HTML is invalid.  It probably contains a '-" + "-'.";
 	        xmlstr = xmlstr.substring(0, endTagIndex + endTag.length);
-	        // alert("xmlstr = '" + xmlstr + "'");
+	        //alert("xmlstr = '" + xmlstr + "'");
         	
 	        // NOTE: The remainder of this code is based on Stefano Di Paola's http://www.wisec.it/ph/test.html
             var xmlDoc;
@@ -165,17 +231,37 @@
 	            xmlDoc.appendChild(doc.firstChild );
 	        } catch (ex)
 	        {
-	            xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-	            xmlDoc.async = false;
-	            xmlDoc.loadXML(xmlstr);
+	        		try {
+		            xmlDoc=document.implementation.createDocument("", null, null);
+		            xmlDoc.async = false;
+		            xmlDoc.loadXML(xmlstr);
+	        		} catch (ex2) {
+		            xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+		            xmlDoc.async = false;
+		            xmlDoc.loadXML(xmlstr);
+		         }
+	        }
+        	  var containingDiv = untrustedDiv;
+			  while (containingDiv.tagName != "DIV" && containingDiv.parentNode)
+			  {
+			  		containingDiv = containingDiv.parentNode;
+			  }	
+	        if ((xmlDoc.parseError && xmlDoc.parseError.errorCode)
+	        		|| xmlDoc.documentElement.tagName == "parsererror"
+	        		|| xmlDoc.documentElement.tagName == "html" // Konqueror returns an error HTML document
+	        		|| xmlDoc.getElementsByTagName("parsererror").length > 0) {
+	        		containingDiv.innerHTML = "&nbsp;";
+	        		throw "Untrusted HTML could not be parsed."
 	        }
 	        var badNodes = new Array();
 	        var d = xmlDoc.getElementsByTagName('*') ;
 	        var a = document.createElement('A'); // For testing URLs and styles
-	        if(d[i].tagName in { SCRIPT: 1, OBJECT: 1, EMBED: 1, IFRAME: 1, FRAME: 1, FRAMESET: 1, XML: 1 }  ){
-              badNodes.push(d[i]);
-           }
 	        for(var i=0;i< d.length;i++ ){
+//	        		alert(d[i]);
+		        if(d[i].tagName in { SCRIPT: 1, OBJECT: 1, EMBED: 1, IFRAME: 1, FRAME: 1, FRAMESET: 1, XML: 1 }  ){
+	              badNodes.push(d[i]);
+	              continue;
+	           }
 		        if(d[i].hasAttributes && d[i].hasAttributes() 
 		           || d[i].attributes.length > 0){
 			        xmlattrs = d[i].attributes;
@@ -183,14 +269,27 @@
 			        for(var j=0;j < xmlattrs.length;j++){
 				        var name = xmlattrs.item(j).name;
 				        var val = xmlattrs.item(j).value;
-				        if(name.match(/^on.*/i) ){
+				        if(name.match(/^on.*/i)) {
 					        badattrs.push (name);
 				        }
+				        if (name.match(/^id$/i)) {
+				            // Prefix the id unless we are using Konqueror.  Attempting to set the id attribute
+				            // in Konqueror causes it to crash.  See: http://bugs.kde.org/show_bug.cgi?id=149157
+				        		if (navigator.userAgent.toLowerCase().indexOf("konqueror") == -1)
+				        		{
+					            d[i].setAttribute(name, "NeatHtml_" + val);
+					         }
+				        }
 				        // Remove any URL attributes with protocols other than http, https, or ftp (or no protocol)
-				        else if(name in { href: 1, src: 1, url: 1}) {
+				        else if(name.toLowerCase() in { href: 1, src: 1, url: 1}) {
+				           /* The following code does NOT prevent javascript URLs in Opera 9
 					        a.setAttribute("href", unescape(val));
 					        if (a.protocol != undefined && a.protocol.length > 0 && !a.protocol.match(/^(http|https|ftp|:)/) ) {
 						        badattrs.push (name);
+					        }
+					        */
+					        if (!val.match(/^#|(http|https|ftp|mailto):/)) {
+					           badattrs.push (name);
 					        }
 				        }
 				        // Remove any style attributes that contain 'expression', 'url', comments or escape sequences.
@@ -199,9 +298,9 @@
 				            a.style.cssText = val;
 				            // On browsers supporting DOM Level 2 Styles, copy the benign
 				            // properties of the parsed style object into the current node's style object.
-				            if (a.style.length && a.style.getPropertyValue) {
+				            if (a.style.length && a.style.getPropertyValue && a.style.item(0)) {
 				                for (var s = 0; s < a.style.length; s++) {
-				                    var propName = a.style[s];
+				                    var propName = a.style.item(s);
 				                    if (propName == "cssText") continue;
 				                    var propValue = a.style.getPropertyValue(propName);
             				        
@@ -227,18 +326,30 @@
            for(var n=0;n < badNodes.length; n++) {
 		        badNodes[n].parentNode.removeChild( badNodes[n]);
            }
-        	
-	        if ("innerHTML" in xmlDoc.firstChild)
-	        {
-	            untrustedDiv.innerHTML =  xmlDoc.firstChild.innerHTML;
-	        }
-	        else
-	        {
-	            untrustedDiv.innerHTML =  xmlDoc.firstChild.xml;
-	        }
+
+        		if (window.XMLSerializer) {
+        			xmlstr = new XMLSerializer().serializeToString(xmlDoc.firstChild);
+        			if (!xmlstr) {
+        				// Safari < 2.0 only accepts XML documents, not nodes.
+        				xmlstr = new XMLSerializer().serializeToString(xmlDoc);
+        			}
+        		} else {
+        			xmlstr = xmlDoc.firstChild.xml;
+        		}
+           containingDiv.innerHTML =  xmlstr;
+           // Set the dimensions of the div based on the new content.  This allows IE6 to hide overflow that was
+           // absolutely positioned.
+           var displayDiv = containingDiv;
+           if (displayDiv.firstChild.offsetHeight)
+           {
+           		displayDiv.style.height = displayDiv.firstChild.offsetHeight;
+           		displayDiv.style.width = displayDiv.firstChild.offsetWidth;
+           		displayDiv.style.overflow = "hidden";
+           }
 	    } catch (ex)
 	    {
-	        // Ignored for now.  The untrusted content will remain commented out.
+	        // Ignored for now.  The untrusted content will not be displayed.
+	        // throw ex;
 	    }
 	}
 	// -->
