@@ -1,18 +1,13 @@
-
 <html>
 <head>
 <title>Untrusted HTML With Javascript</title>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8">
 <meta http-equiv="content-style-type" content="text/css">
 <meta http-equiv="expires" content="0">
 </head>
 <body>
-<!--
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
--->
 	<h1>Restricting Untrusted HTML With Javascript</h1>
-	<p><em>Last updated 8/24/2007 11:17 AM PDT</em></p>
+	<p><em>Last updated 8/24/2007 11:40 PM PDT</em></p>
 	<div>
 	<p>
 	This is based heavily on <a href="http://www.mindedsecurity.com/">Stefano Di Paola's</a>
@@ -38,11 +33,11 @@
 	to strip	comments.</li>
 	<li>Replace '--' with '&amp;#45;&amp;#45;'.  That string is a threat because it would end the enclosing 
 	javascript-generated	comment.</li>
-	<li>Replace '&lt;/xmp&gt;' with '&amp;lt;/xmp&amp;gt;'.  That string is a threat because it would end the enclosing 
+	<li>Replace '&lt;/xmp' with '&amp;lt;/xmp'.  That string is a threat because it would end the enclosing 
 	javascript-generated	&lt;xmp&gt; element needed by browsers like Safari and Konqueror.</li>
-	<li>If the content contains '&lt;table&gt;' or '&lt;/table&gt;', either check the content for well-formedness, or 
-	if you are willing to disallow tables in the untrusted content, just replace '&lt;table&gt;' with 
-	'&amp;lt;table&amp;gt;' and '&lt;/table&gt;' with '&amp;lt;/table&amp;gt;'.
+	<li>If the content contains '&lt;table' or '&lt;/table', either check the content for well-formedness, or 
+	if you are willing to disallow tables in the untrusted content, just replace '&lt;table' with 
+	'&amp;lt;table' and '&lt;/table' with '&amp;lt;/table'.
 	This is necessary because we put the untrusted content in a &lt;table&gt; to prevent parser based attacks on users
 	that don't have javascript.  This works because tag soup parsing seems to ignore end tags for
 	outer elements until it sees the table end tag.</li>
@@ -53,7 +48,7 @@
 	<ul>
 	<li>Microsoft Internet Explorer (IE) version 7</li>
 	<li>Microsoft Internet Explorer (IE) version 6, except that when javascript is disabled the untrusted content
-	is displayed in fixed size div (with scroll bars if necessary).  This is necessary to prevent
+	is displayed in a fixed size div (with scroll bars if necessary).  This is necessary to prevent
 	absolutely position untrusted content from displaying outside the box.</li>
 	<li>Mozilla Firefox (FF) versions 1.5 and 2.0</li>
 	<li>Opera 9</li>
@@ -78,7 +73,7 @@
 	<div style="overflow: hidden; position: relative; border: solid 1px;">
 	<![endif]>
 	<!--[if lt IE 7]>
-	<div style="overflow: auto; position: relative; border: solid 1px; width: 100%; height: 200;">	
+	<div style="overflow: auto; position: relative; border: solid 1px; width: 100%; height: 400;">	
 	<![endif]-->
 	<!-- Note: the table forces all following content (up to </table>) to be inside the table node.  This means
 	the server doesn't have to check for well-formedness.  It can just HTML-encode all '<table>', and '</table>'.
@@ -118,8 +113,9 @@
 			find an element to which a handler should be attached):
 			<a id="trustedLink" href="#">link with trusted ID</a>
 			</p>
-			<p style="background-color: red; nonstandard-attribute: expr/**/es\sion(alert('XSS from style'));">
-			Here is a paragraph with a javascript expression in the style (IE only).
+			<p style="background-color: red; nonstandard-attribute1: expr/**/ession(alert('XSS from style with comment')); nonstandard-attribute2: expres\000073ion(alert('XSS from style with escape'));">
+			Here is a paragraph with a javascript expressions in the style (IE only).  It should have a red background to
+			show that the properties with expressions don't prevent other properties from working.
 			</p>
 									
 		</div><xmp></xmp>
@@ -220,6 +216,7 @@
 	        xmlstr = xmlstr.substring(0, endTagIndex + endTag.length);
 	        //alert("xmlstr = '" + xmlstr + "'");
         	
+
 	        // NOTE: The remainder of this code is based on Stefano Di Paola's http://www.wisec.it/ph/test.html
             var xmlDoc;
             try
@@ -257,7 +254,6 @@
 	        var d = xmlDoc.getElementsByTagName('*') ;
 	        var a = document.createElement('A'); // For testing URLs and styles
 	        for(var i=0;i< d.length;i++ ){
-//	        		alert(d[i]);
 		        if(d[i].tagName in { SCRIPT: 1, OBJECT: 1, EMBED: 1, IFRAME: 1, FRAME: 1, FRAMESET: 1, XML: 1 }  ){
 	              badNodes.push(d[i]);
 	              continue;
@@ -310,13 +306,14 @@
 				                }
 				             }
 				             /*  Else use the all or nothing approach in browsers like IE */
-				             else if (val.match(/expression|url|\x2F\*|\\/i) ) {                        
-					            badattrs.push (xmlattrs.item(j).name);
+				             else if (val.match(/expression|url|\x2F\*|\\/i) ) {
+					            badattrs.push (name);
+					            d[i].setAttribute("x"+name, val);
 					         }
 				        }
 			        }
 			        for(var ba = 0 ; ba< badattrs.length; ba++ ) {
-				        d[i].removeAttribute( badattrs[ba] );
+				        d[i].removeAttribute( badattrs[ba] );				        
 		           }
 		        }
         	      
@@ -337,19 +334,52 @@
         			xmlstr = xmlDoc.firstChild.xml;
         		}
            containingDiv.innerHTML =  xmlstr;
+           
+           var elems = containingDiv.getElementsByTagName("*");
+           for (var ei = 0; ei < elems.length; ei++)
+           {
+           		var e = elems[ei];
+           		var xstyleVal = e.getAttribute("xstyle");
+           		if (typeof(xstyleVal) == "undefined" || xstyleVal == null || xstyleVal == "") 
+           		{
+           			continue;
+           		}
+           		a.style.cssText = xstyleVal;
+           		 
+  				   for (var p in a.style)
+             	{
+             		if (p == "cssText" || p == "length") continue;
+             		var propType = typeof(a.style[p]);
+             		if ((propType != "string" && propType != "number" && propType != "boolean") 
+             			|| a.style[p] == null || a.style[p] == "")
+             		{
+             			continue;
+             		}
+          			if (a.style[p].match(/expression|url/i)) 
+          			{
+                  	continue;
+                  }
+                  // alert("Setting " + p + "=" + a.style[p]);
+
+             		e.style[p] = a.style[p];
+             	}
+           }               
+ 
            // Set the dimensions of the div based on the new content.  This allows IE6 to hide overflow that was
            // absolutely positioned.
            var displayDiv = containingDiv;
-           if (displayDiv.firstChild.offsetHeight)
+           if (displayDiv.firstChild.scrollHeight)
            {
-           		displayDiv.style.height = displayDiv.firstChild.offsetHeight;
-           		displayDiv.style.width = displayDiv.firstChild.offsetWidth;
+           		displayDiv.style.height = displayDiv.firstChild.scrollHeight;
+           		displayDiv.style.width = displayDiv.firstChild.scrollWidth;
            		displayDiv.style.overflow = "hidden";
            }
+
 	    } catch (ex)
 	    {
 	        // Ignored for now.  The untrusted content will not be displayed.
-	        // throw ex;
+//	        alert(ex);
+//	        throw ex;
 	    }
 	}
 	// -->
