@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
 <title>Untrusted HTML With Javascript</title>
@@ -83,13 +84,13 @@
 	<div style="overflow: hidden; position: relative; border: solid 1px;">
 	<![endif]>
 	<!--[if lt IE 7]>
-	<div style="overflow: auto; position: relative; border: solid 1px; width: 100%; height: 400;">	
+	<div style="overflow: auto; position: relative; border: solid 1px; width: 100%; height: 400px;">	
 	<![endif]-->
 	<!-- Note: the table forces all following content (up to </table>) to be inside the table node.  This means
 	the server doesn't have to check for well-formedness.  It can just HTML-encode all '<table>', and '</table>'.
 	Of course that means tables would not work in the untrusted content. To get the best of both worlds, only
 	check for well-formedness if the untrusted content contains "</table>".  -->
-	<table><tr><td id="untrusted1">
+	<table><tr><td>
 		<!-- test comment --><script type="text/javascript">
 		// <![CDATA[
 		NeatHtml.BeginUntrusted();
@@ -118,17 +119,16 @@
 			Here is a paragraph with a javascript expressions in the style (IE only).  It should have a red background to
 			show that the properties with expressions don't prevent other properties from working.
 			</p>
-									
 		</div><xmp></xmp>
-		<!-- ' " -->
-		<!-- The preceding comment might not be necessary but it should ensure that any attributes started
+		<!-- ' " > -->
+		<!-- The preceding comment ensures that the comment and any attrs and tags started
 		by the untrusted content have been closed. -->
 		<script type="text/javascript">
 		// <![CDATA[
 		NeatHtml.EndUntrusted();
 		// ]]>
 		</script>
-		</td></tr></table></div>
+	</td></tr></table></div>
 
     <p>The next bit of content attempts to break out of its containing &lt;div&gt; element to display content
     outside	the box.  If you don't have javascript enabled, the untrusted comment will remain in the box 
@@ -139,8 +139,8 @@
     the portion before the attempt to break out 
     (i.e. before the &lt;/div&gt; tag) will be displayed.  In none of the cases is any untrusted content
     displayed outside the box.</p>
-	<div style="overflow: hidden; position: relative; border: solid 1px;">
-	<table><tr><td id="untrusted2">
+	<div style="overflow: hidden; position: relative; border: solid 1px; padding: 0;">
+	<table><tr><td>
 		<!-- test comment --><script type="text/javascript">
 		// <![CDATA[
 		NeatHtml.BeginUntrusted();

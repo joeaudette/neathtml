@@ -134,7 +134,11 @@ NeatHtml.EndUntrusted = function() {
 			|| xmlDoc.documentElement.tagName == "html" // Konqueror returns an error HTML document
 			|| xmlDoc.getElementsByTagName("parsererror").length > 0)
 		{
-	  		throw "Untrusted HTML could not be parsed."
+/*
+			var parseErrorText = xmlDoc.documentElement.firstChild.data;
+         parseErrorText += "\n" +  xmlDoc.documentElement.firstChild.nextSibling.firstChild.data;
+*/
+	  		throw "Untrusted HTML could not be parsed";
 		}
 		return xmlDoc;
 	}
@@ -239,8 +243,21 @@ NeatHtml.EndUntrusted = function() {
 		// absolutely positioned.
 		if (parent.firstChild.scrollHeight)
 		{
-			parent.style.height = parent.firstChild.scrollHeight;
-			parent.style.width = parent.firstChild.scrollWidth;
+			// Firefox (at least 1.5) computes an incorrect scrollHeight there is no padding and no border.
+			// If there is no padding, temporarily add padding so FF will calculate scrollHeight properly.
+			var extraPadding = 0;
+			if (!parent.firstChild.style.padding)
+			{
+				parent.firstChild.style.padding = "1px";
+				extraPadding = 1;
+			}
+			// Don't count extraPadding in height and width because we will be removing it.
+			parent.style.height = (parent.firstChild.scrollHeight-2*extraPadding) + "px";
+			parent.style.width = (parent.firstChild.scrollWidth-2*extraPadding) + "px";
+			if (extraPadding)
+			{
+				parent.firstChild.style.padding = "0px";
+			}
 			parent.style.overflow = "hidden";
 		}
 	}
