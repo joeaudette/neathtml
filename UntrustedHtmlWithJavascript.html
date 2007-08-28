@@ -9,18 +9,17 @@
 </head>
 <body>
 	<h1>Restricting Untrusted HTML With Javascript</h1>
-	<p><em>Last updated 8/24/2007 11:40 PM PDT</em></p>
+	<p><em>Last updated 8/28/2007 12:55 PM PDT</em></p>
 	<div>
 	<p>
-	This is based heavily on <a href="http://www.mindedsecurity.com/">Stefano Di Paola's</a>
-	<a href="http://www.wisec.it/ph/test.html">http://www.wisec.it/ph/test.html</a> and 
-	<a href="http://www.wisec.it/ph/test.php">http://www.wisec.it/ph/test.php</a>.  
-	My primary contribution is the idea to use
+	This is inspired by <a href="http://www.mindedsecurity.com/">Stefano Di Paola's</a> work on 
+	<a href="http://www.wisec.it/sectou.php?id=46c5843ea4900">Preventing XSS with Data Binding</a>.
+	My primary contributions are lots of browser compatibility work and the idea to use
 	document.write() to inject some markup that will cause the parser to stop processing normal tags.  We inject this
 	immediately before the untrusted content.  Then we later
 	use javascript to extract the untrusted content, parse it as XML (using the browser's parser), 
 	clean the resulting DOM, and put the result where the injected markup was.
-	For most browsers we inject "&lt;!&amp#45;&amp#45;" to start a comment. On browsers where we can't access the contents of
+	For most browsers we inject "&lt;!&#45;&#45;" to start a comment. On browsers where we can't access the contents of
 	comments (e.g. Safari and Konqueror), we inject &lt;xmp&gt;	instead (which for historical reasons stops 
 	processing normal markup.  In either case, the key is that if javascript
 	is not available (e.g. search engines spiders), nothing is injected and the content displays normally.
@@ -34,7 +33,7 @@
 	<li>Remove any comments.  They aren't a security threat, but they will corrupt the display of the 
 	untrusted content.  In other words, an app that doesn't expect benign content to contain comments would not need
 	to strip	comments.</li>
-	<li>Replace '&amp#45;&amp#45;' with '&amp;#45;&amp;#45;'.  That string is a threat because it would end the enclosing 
+	<li>Replace '&#45;&#45;' with '&amp;#45;&amp;#45;'.  That string is a threat because it would end the enclosing 
 	javascript-generated	comment.</li>
 	<li>Replace '&lt;/xmp' with '&amp;lt;/xmp'.  That string is a threat because it would end the enclosing 
 	javascript-generated	&lt;xmp&gt; element needed by browsers like Safari and Konqueror.</li>
