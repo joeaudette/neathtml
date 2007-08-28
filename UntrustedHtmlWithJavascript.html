@@ -29,6 +29,7 @@
 	To play with this, save this page and look at the HTML source.  Find the &lt;div&gt;s containing the untrusted
 	content and try replacing their contents with something that will execute script.  The only rules are that you 
 	need to do the following things that the server would normally do to the untrusted content:
+	</p>
 	<ul>
 	<li>Remove any comments.  They aren't a security threat, but they will corrupt the display of the 
 	untrusted content.  In other words, an app that doesn't expect benign content to contain comments would not need
@@ -44,9 +45,9 @@
 	that don't have javascript.  This works because tag soup parsing seems to ignore end tags for
 	outer elements until it sees the table end tag.</li>
 	</ul>
-	</p>
 	<p>
 	The current implementation seems to work with:
+	</p>
 	<ul>
 	<li>Microsoft Internet Explorer (IE) version 7</li>
 	<li>Microsoft Internet Explorer (IE) version 6, except that when javascript is disabled the untrusted content
@@ -60,17 +61,18 @@
 	<li>Windows Safari version 3.0.2.</li>
 	<li>Konqueror 3.5.7.</li>
 	</ul>
-	</p>
 	<p>Please report bugs and send comments to dean at brettle dot com.
 	</p>
 	</div>
 	<h2>Example</h2>
 	<h3>Trusted Content</h3>
+	<p>
 	This is trusted content.
 	Here is <a id="trustedLinkBefore" href="#">a link</a> that some trusted script will attach an onclick handler to.
 	Clicking the link should bring up an alert.  If it doesn't or a link in untrusted content does, then there is a
 	hole.  The script finds the link using document.getElementById("trustedLink"), 
 	so untrusted content needs to be prevented from	containing elements with such an ID.
+	</p>
 	<h3>Untrusted Content</h3>
 	<p>The following content is untrusted:</p>
 	<!-- Note: In most browsers, the style="overflow: hidden; position: relative" on the div below prevents 
@@ -177,9 +179,11 @@
 	</script>
 
 	<h3>Trusted Content</h3>
+	<p>
 	This is trusted content again.
 	Here is <a id="trustedLinkAfter" href="#">another link</a> that some trusted script will attach an onclick handler to
-	based on it's ID.  
+	based on it's ID.
+	</p>  
 	<script type="text/javascript">
 	<!--
 	window.onload = function() 
