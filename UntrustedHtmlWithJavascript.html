@@ -5,7 +5,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="content-style-type" content="text/css">
 <meta http-equiv="expires" content="0">
-<script type="text/javascript" src="neathtml.js"></script>
+<script type="text/javascript" src="neathtml.js?46</script>"></script>
 </head>
 <body>
 	<h1>Restricting Untrusted HTML With Javascript</h1>
@@ -20,7 +20,7 @@
 	immediately before the untrusted content.  Then we later
 	use javascript to extract the untrusted content, parse it as XML (using the browser's parser), 
 	clean the resulting DOM, and put the result where the injected markup was.
-	For most browsers we inject "&lt;!--" to start a comment. On browsers where we can't access the contents of
+	For most browsers we inject "&lt;!&amp#45;&amp#45;" to start a comment. On browsers where we can't access the contents of
 	comments (e.g. Safari and Konqueror), we inject &lt;xmp&gt;	instead (which for historical reasons stops 
 	processing normal markup.  In either case, the key is that if javascript
 	is not available (e.g. search engines spiders), nothing is injected and the content displays normally.
@@ -33,7 +33,7 @@
 	<li>Remove any comments.  They aren't a security threat, but they will corrupt the display of the 
 	untrusted content.  In other words, an app that doesn't expect benign content to contain comments would not need
 	to strip	comments.</li>
-	<li>Replace '--' with '&amp;#45;&amp;#45;'.  That string is a threat because it would end the enclosing 
+	<li>Replace '&amp#45;&amp#45;' with '&amp;#45;&amp;#45;'.  That string is a threat because it would end the enclosing 
 	javascript-generated	comment.</li>
 	<li>Replace '&lt;/xmp' with '&amp;lt;/xmp'.  That string is a threat because it would end the enclosing 
 	javascript-generated	&lt;xmp&gt; element needed by browsers like Safari and Konqueror.</li>
@@ -51,30 +51,26 @@
 	<li>Microsoft Internet Explorer (IE) version 7</li>
 	<li>Microsoft Internet Explorer (IE) version 6, except that when javascript is disabled the untrusted content
 	is displayed in a fixed size div (with scroll bars if necessary).  This is necessary to prevent
-	absolutely position untrusted content from displaying outside the box.</li>
+	absolutely positioned untrusted content from displaying outside the box.</li>
 	<li>Mozilla Firefox (FF) versions 1.5 and 2.0</li>
 	<li>Opera 9</li>
-	<li>Netscape 7.2</li>
+	<li>Netscape 7.2, except that when javascript is disabled the untrusted content
+	is displayed in a fixed size div with no scroll bars.</li>
 	<li>Mac Safari versions 1.2, 1.3, and 2.0.</li>
 	<li>Windows Safari version 3.0.2.</li>
-	<li>Konqueror 3.5.7, except that it is unable to prevent
-	id spoofing because <a href="http://bugs.kde.org/show_bug.cgi?id=149157">setting/removing the id causes 
-	Konqueror to crash</a>.</li>
+	<li>Konqueror 3.5.7.</li>
 	</ul>
 	</p>
-	<p>Please report bugs, and send comments to dean at brettle dot com.
-	</p>
-	<p>TODO list:
-	<ul>
-	<li>Filter out processing instructions, and DTDs</li>
-	<li>Convert CDATA sections to HTML-encoded character data</li>
-	<li>Remove unrecognized attributes or at least match using attribute prefixes to avoid attacks using attr names
-	like "style[special_char]".</li>
-	<li>Workaround Konqueror ID problem by renaming ID in HTML instead of XML.</li>
-	</ul>
+	<p>Please report bugs and send comments to dean at brettle dot com.
 	</p>
 	</div>
 	<h2>Example</h2>
+	<h3>Trusted Content</h3>
+	This is trusted content.
+	Here is <a id="trustedLinkBefore" href="#">a link</a> that some trusted script will attach an onclick handler to.
+	Clicking the link should bring up an alert.  If it doesn't or a link in untrusted content does, then there is a
+	hole.  The script finds the link using document.getElementById("trustedLink"), 
+	so untrusted content needs to be prevented from	containing elements with such an ID.
 	<h3>Untrusted Content</h3>
 	<p>The following content is untrusted:</p>
 	<!-- Note: In most browsers, the style="overflow: hidden; position: relative" on the div below prevents 
@@ -95,50 +91,63 @@
 		// <![CDATA[
 		NeatHtml.BeginUntrusted();
 		// ]]>
-		</script><div>
-					
+		</script><div><?xml-stylesheet href="xss.css" type="text/css" ?>
 			<p>Here we try to display "Let me out!" outside of the box using absolute positioning:</p>
 			<div style="position: absolute; top: 0; right: 0; color: red;">Let me out!</div>
-			<div style="position: absolute; top: -100px; right: 0; color: red;">Let me out with negative top property!</div>
+			<div style="position: absolute; top: -100px; right: 0; color: red;">Let me out with a negative top property!</div>
 
 			<p>Here is a script element...</p>
 			<script type="text/javascript">
 			window.alert("XSS from script element");
 			</script>
-			<p>Here is a link with an onclick handler:
+			<p>Here is a normal link:
+			<a href="http://www.google.com/">normal link to google</a>
+			</p>
+			<p>Here is the same link with an onclick handler added:
 			<a onclick="window.alert('XSS on click')" href="http://www.google.com/">onclick link</a>
 			</p>
 			<p>Here is a link that uses the javascript protocol:
 			<a href="javascript:alert('XSS on link')">javascript link</a>
 			</p>
-			<p>Here is a link which tries to spoof a trusted element ID (i.e. an ID that trusted script later uses to
-			find an element to which a handler should be attached):
-			<a id="trustedLink" href="http://www.google.com/">link with trusted ID</a>
+			<p>Here are some links which try to spoof trusted element IDs (i.e. IDs that trusted script later uses to
+			find elements and attach handlers):
+			a
+			<a id="trustedLinkBefore" href="http://www.google.com/">link with an ID that already exists</a> 
+			and a
+			<a id="trustedLinkAfter" href="http://www.google.com/">link with an ID that will be used later</a>
 			</p>
-			<p style="background-color: red; nonstandard-attribute1: expr/**/ession(alert('XSS from style with comment')); nonstandard-attribute2: expres\000073ion(alert('XSS from style with escape'));">
-			Here is a paragraph with a javascript expressions in the style (IE only).  It should have a red background to
+			<p>Here is a CDATA section containing a script element:
+			<![CDATA[
+			<script type="text/javascript">
+			window.alert("XSS from script element in CDATA section");
+			</script>
+			]]>
+			</p>
+			<p style="background-color: rgb(192,255,192); nonstandard-attribute1: expression(alert('XSS from style')); nonstandard-attribute2: expr/**/ession(alert('XSS from style with comment')); nonstandard-attribute3: expres\000073ion(alert('XSS from style with escape'));">
+			Here is a paragraph with javascript expressions in the inline style (IE only).  It should have a green background to
 			show that the properties with expressions don't prevent other properties from working.
+			</p>
+			<p class="XSS">
+			Here is a paragraph that uses a class defined in an external stylesheet 
+			(referenced by an &lt;?xml-stylesheet?&gt; processing instruction) 
+			that contains javascript expressions.  The stylesheet should not be used, so this paragraph should not be
+			red and no scripts should run.
 			</p>
 		</div><xmp></xmp>
 		<!-- ' " > -->
 		<!-- The preceding comment ensures that the comment and any attrs and tags started
 		by the untrusted content have been closed. -->
-		<script type="text/javascript">
-		// <![CDATA[
-		NeatHtml.EndUntrusted();
-		// ]]>
-		</script>
 	</td></tr></table></div>
+	<script type="text/javascript">
+	// <![CDATA[
+	NeatHtml.ProcessUntrusted();
+	// ]]>
+	</script>
 
-    <p>The next bit of content attempts to break out of its containing &lt;div&gt; element to display content
-    outside	the box.  If you don't have javascript enabled, the untrusted comment will remain in the box 
+    <p>The next bit of content attempts to close its containing &lt;div&gt; element to display content
+    outside	the box.  If you don't have javascript enabled, the untrusted content will remain in the box 
     (because an inner table would need to be closed first).
-    If you have javascript enabled the result depend on the browser you are using.
-    If you are using IE, nothing will be displayed. IE's XML parser
-    rejects the content because it isn't well-formed.  Firefox's parser returns a partial document so 
-    the portion before the attempt to break out 
-    (i.e. before the &lt;/div&gt; tag) will be displayed.  In none of the cases is any untrusted content
-    displayed outside the box.</p>
+    If you have javascript enabled an error message will be displayed in the box.</p>
 	<div style="overflow: hidden; position: relative; border: solid 1px; padding: 0;">
 	<table><tr><td>
 		<!-- test comment --><script type="text/javascript">
@@ -160,26 +169,29 @@
 		<!-- ' " > -->
 		<!-- The preceding comment might not be necessary but it should ensure that any attributes and tags started
 		by the untrusted content have been closed. -->
-		<script type="text/javascript">
-		// <![CDATA[
-		NeatHtml.EndUntrusted();
-		// ]]>
-		</script>
 	</td></tr></table></div>
+	<script type="text/javascript">
+	// <![CDATA[
+	NeatHtml.ProcessUntrusted();
+	// ]]>
+	</script>
 
 	<h3>Trusted Content</h3>
-	This is trusted content.
-	Here is <a id="trustedLink" href="#">a link</a> that some trusted script will attach an onclick handler to.
-	Clicking the link should bring up an alert.  If it doesn't or a link in untrusted content does, then there is a
-	hole.  The script finds the link using document.getElementById("trustedLink"), 
-	so untrusted content needs to be prevented from	containing elements with such an ID.
+	This is trusted content again.
+	Here is <a id="trustedLinkAfter" href="#">another link</a> that some trusted script will attach an onclick handler to
+	based on it's ID.  
 	<script type="text/javascript">
 	<!--
 	window.onload = function() 
 	{
-		document.getElementById("trustedLink").onclick 
+		document.getElementById("trustedLinkBefore").onclick 
 			= function () { 
-				window.alert("You should only see this when clicking a link in trusted content."); 
+				window.alert("You should only see this when clicking the link in the\n trusted content that appear before the untrusted content."); 
+				return false;
+			};
+		document.getElementById("trustedLinkAfter").onclick 
+			= function () { 
+				window.alert("You should only see this when clicking the link in the\n trusted content that appear after the untrusted content."); 
 				return false;
 			};
 	}
