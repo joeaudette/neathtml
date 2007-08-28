@@ -44,17 +44,19 @@ NeatHtml.BeginUntrusted = function() {
 NeatHtml.ProcessUntrusted = function() {
 	var my = this;
 	var containingDiv = FindContainingDiv(this.BeginUntrustedScript);
-	try
+//	try
 	{
 		var xmlStr = GetUntrustedXml();
 		xmlStr = ProcessXml(xmlStr);
 	   containingDiv.innerHTML = xmlStr;
 	   ProcessHtmlElem(containingDiv);
 	}
+/*
 	catch (ex)
 	{
 		containingDiv.innerHTML = "<pre>" + ex.toString().replace("<", "&lt;").replace("&", "&amp;") + "</pre>";
 	}
+*/
 	/***** Local Functions ******/
 	
 	function FindContainingDiv(n) 
@@ -248,103 +250,12 @@ NeatHtml.ProcessUntrusted = function() {
 	
 	function ProcessXmlElem(elem)
 	{
-		if (elem.tagName.toLowerCase() in { script: 1, object: 1, embed: 1, iframe: 1, frame: 1, frameset: 1, xml: 1 })
-		{
-			elem.parentNode.removeChild(elem);
-			return;
-		}
-		if (elem.attributes.length > 0)
-		{
-			ProcessXmlAttrs(elem);
-		}
-		var nextSibling = null;
-		for (var n = elem.firstChild; n != null; n = nextSibling)
-		{
-			nextSibling = n.nextSibling; // Remember the nextSibling in case n gets removed.
-			switch (n.nodeType)
-			{
-				case 1: // ELEMENT_NODE
-					ProcessXmlElem(n);
-					break;
-				case 3: // TEXT_NODE
-				case 5: // ENTITY_REFERENCE_NODE
-					break;
-				case 4: // CDATA_SECTION_NODE
-				case 8: // COMMENT_NODE
-				default: // Remove everything else, including comments and CDATA sections
-					elem.removeChild(n);
-			}
-		}
+		var actions = GetDefaultActions();
+		actions[elem.tagName].call(this, elem);
+		return;
 	}
 
-	function ProcessXmlAttrs(elem)
-	{
-		var attrs = elem.attributes;
-		var attrsToRemove = [];
-		var styleValue = null;
-		for (var i = 0; i < attrs.length; i++)
-		{
-			var attr = attrs.item(i);
-			var name = attr.name;
-			var val = attr.value;
-			if (/^on.*/i.test(name)                                     // Event handler attributes
-				|| (name.toLowerCase() in { href: 1, src: 1, url: 1}       // URL attribute with...
-					&& /^(http:|https:|ftp:|mailto:)/i.test(val) == false)   // ... invalid protocol
-				|| name == "neathtml_style")                               // Reserved attribute name
-			{
-				attrsToRemove.push(attr);
-			}
-			else if (name.toLowerCase() == "style")
-			{
-				// Remember the style value so we can put it in a private attribute
-				styleValue = val;
-				attrsToRemove.push(attr);
-			}
-		}
-
-		// Remove the unwanted attributes
-		for (var i = 0; i < attrsToRemove.length; i++)
-		{
-			elem.removeAttributeNode(attrsToRemove[i]);
-		}
-		// If there was a style attribute, sanitize it's value and put it in our private attribute.
-		// We must sanitize the style before we attempt to access any style properties (e.g. elem.style.overflow) in IE.
-		// There doesn't seem to be a way to access the styles in IE after they have been parsed but before the 
-		// script has been run.  For example, if you do:
-		//
-		// elem.style.cssText = "attr: expression(window.alert('XSS'));";
-		//
-		// the script will not run yet.  But, as soon as you access any of the style properties the script will run. 
-		if (styleValue != null)
-		{
-			styleValue = SanitizeStyle(styleValue);
-			elem.setAttribute("neathtml_style", styleValue);
-		}
-	}
 	
-	// Removes Javascript from style.
-	function SanitizeStyle(s)
-	{
-		// Remove comments
-		s = s.replace(/\x2F\*[^*]*\*+([^\x2F][^*]*\*+)*\x2F/gm, "");
-		// Remove any left over comment markers
-		s = s.replace(/\x2F\*|\*\x2F/, "");
-		// Remove Unicode escapes
-		s = s.replace(/\\[0-9a-f]{1,6}[ \n\r\t\f]?/g, "");
-		// Remove all other escapes
-		s = s.replace(/\\./g, "");
-		
-		// Rename all function calls except those to rgb()
-		s = s.replace(/([A-Za-z]|[^\0-\177])([A-Za-z0-9-]|[^\0-\177])*\(/g, function (match) {
-			if (match != "rgb(")
-			{
-				match = match.substring(0, match.length-1) + "NotAllowedByNeatHtml(";
-			}
-			return match;
-		});
-		return s;
-	}
-
 	function ProcessHtmlElem(parent)
 	{
 		var elems = parent.getElementsByTagName("*");
@@ -384,7 +295,6 @@ NeatHtml.ProcessUntrusted = function() {
 	function ProcessHtmlAttrs(elem)
 	{
 		var attrs = elem.attributes;
-		var attrsToRemove = [];
 		for (var i = 0; i < attrs.length; i++)
 		{
 			var attr = attrs.item(i);
@@ -395,82 +305,305 @@ NeatHtml.ProcessUntrusted = function() {
 				newIdValue = "NeatHtml_" + val;
 				elem.setAttribute(name, "NeatHtml_" + val);
 			}
-			else if (name.toLowerCase() == "neathtml_style")
-			{
-				attrsToRemove.push(attr);
-				if (!testElem)
-				{
-				 	testElem = document.createElement("A");
-				}
-				testElem.style.cssText = val;
-				CopyStyleProperties(testElem, elem);
-			}
-		}
-		// Remove the unwanted attributes
-		for (var i = 0; i < attrsToRemove.length; i++)
-		{
-			elem.removeAttributeNode(attrsToRemove[i]);
 		}
 	}
-	
-	function CopyStyleProperties(src, dest)
+		
+	function GetDefaultActions()
 	{
-		// TODO: Filter properties when copying them.
+		var allowedTags = [ // These tags and their content is allowed.
+"a",
+"abbr",
+"acronym",
+"address",
+"b",
+"basefont",
+"bdo",
+"big",
+"blockquote",
+"br",
+"caption",
+"center",
+"cite",
+"code",
+"col",
+"colgroup",
+"dd",
+"del",
+"dfn",
+"dir",
+"div",
+"dl",
+"dt",
+"em",
+"font",
+"h1",
+"h2",
+"h3",
+"h4",
+"h5",
+"h6",
+"hr",
+"i",
+"ins",
+"kbd",
+"li",
+"ol",
+"p",
+"pre",
+"q",
+"s",
+"samp",
+"small",
+"span",
+"strike",
+"strong",
+"sub",
+"sup",
+"table",
+"tbody",
+"td",
+"tfoot",
+"th",
+"thead",
+"tr",
+"tt",
+"u",
+"ul",
+"var",
+null
+];
+	
+		var prohibitedTags = [ // These tags are removed along with their content
+"script",
+"style",
+null
+];
 
-		if (src.style.length == 0)
+
+		var allowedAttrs = [ // These attributes are allowed
+"abbr",
+"accept",
+"accesskey",
+"align",
+"alt",
+"axis",
+"bgcolor",
+"border",
+"cellpadding",
+"cellspacing",
+"cite",
+"class",
+"classid",
+"clear",
+"code",
+"color",
+"cols",
+"colspan",
+"compact",
+"datetime",
+"dir",
+"disabled",
+"face",
+"frame",
+"frameborder",
+"headers",
+"height",
+"hreflang",
+"id",
+"label",
+"lang",
+"language",
+"longdesc",
+"marginheight",
+"marginwidth",
+"name",
+"noshade",
+"nowrap",
+"readonly",
+"rel",
+"rev",
+"rows",
+"rowspan",
+"rules",
+"scope",
+"size",
+"span",
+"start",
+"summary",
+"tabindex",
+"title",
+"type",
+"value",
+"width",
+"xml:lang",
+"xml:space",
+null
+];
+
+		var elemActions = {};
+		for (var i = 0; i < allowedTags.length ; i++)
 		{
-			return;
+			var t = allowedTags[i];
+			if (t == null) continue;
+			elemActions[t] = ProcessElem; 
 		}
-		// Copy the style properties
-		if (src.style.getPropertyValue && dest.style.setProperty)
+
+		for (var i = 0; i < prohibitedTags.length ; i++)
 		{
-			var propNames = [];
-			if (src.style.item(0) !== null)
+			var t = prohibitedTags[i];
+			if (t == null) continue;
+			elemActions[t] = RemoveElem; 
+		}
+
+		var attrActions = {};
+		for (var i = 0; i < allowedAttrs.length ; i++)
+		{
+			var a = allowedAttrs[i];
+			if (a == null) continue;
+			attrActions[a] = AllowAttribute; 
+		}
+
+		attrActions["href"] = HandleUrl; 
+		attrActions["style"] = HandleStyle; 
+
+		var StyleRe = new RegExp("^(\s*((vertical-align|VERTICAL-ALIGN):\s*((text-)?(top|bottom)|middle|baseline|sub|super)|(text-align|TEXT-ALIGN):\s*(left|right|center|justify)|(text-decoration|TEXT-DECORATION):\s*(blink|line-through|overline|underline|none)|(font-style|FONT-STYLE):\s*(normal|oblique|italic)|(font-weight|FONT-WEIGHT):\s*(normal|bold)|((mso-|MSO-)(fareast-|FAREAST-|ansi-|ANSI-|bidi-|BIDI-))?(font-family|FONT-FAMILY|language|LANGUAGE):\s*[a-zA-Z, &quot;'\-]+|(font-size|FONT-SIZE):\s*(([1-9]|1[0-8])pt|([1-3]|[0-2]\.[0-9]*)e[mx]|xx-small|x-small|small|medium|large)|(margin|MARGIN|padding|PADDING)(-(top|TOP|left|LEFT|bottom|BOTTOM|right|RIGHT))?:(\s*(0|[1-9][0-9]*)(.[0-9]*)?(pt|em|ex|in|px|cm)?)+|(width|WIDTH|height|HEIGHT):\s*(0|[1-9][0-9]*)(.[0-9]*)?(pt|em|ex|in|px|cm|%)?|(text-indent|TEXT-INDENT):\s*(0|[1-9][0-9]*)(.[0-9]*)?(pt|em|ex|in|cm)|(mso-spacerun|MSO-SPACERUN):\s*(yes|no)|((background|BACKGROUND)-)?(color|COLOR):\s*((-|[a-zA-Z])+|#[0-9a-fA-F]+|rgb\([0-9, ]+\)))\s*;?)*$");
+
+		return elemActions;
+
+		function AllowAttribute(elem, attr, attrsToRemove, attrsToAdd)
+		{
+			// Do nothing
+		}
+		
+		function HandleUrl(elem, attr, attrsToRemove, attrsToAdd)
+		{
+			if (attr.value == null) return;
+			if (! /^(http:|https:|ftp:|mailto:)/i.test(attr.value) == false)   // ... invalid protocol
 			{
-				// The standard way to get the property names...
-				for (var i = 0; i < src.style.length; i++)
+				attrsToRemove.push(attr);
+			}
+		}
+		
+		function HandleStyle(elem, attr, attrsToRemove, attrsToAdd)
+		{
+			// If there was a style attribute, sanitize it's value and then check it against a whitelist regex.
+			// We must sanitize the style before we attempt to access any style properties (e.g. elem.style.overflow) in IE.
+			// There doesn't seem to be a way to access the styles in IE after they have been parsed but before the 
+			// script has been run.  For example, if you do:
+			//
+			// elem.style.cssText = "attr: expression(window.alert('XSS'));";
+			//
+			// the script will not run yet.  But, as soon as you access any of the style properties the script will run. 
+			if (attr.value == null) return;
+
+			s = attr.value;			
+			// Remove comments
+			s = s.replace(/\x2F\*[^*]*\*+([^\x2F][^*]*\*+)*\x2F/gm, "");
+			// Remove any left over comment markers
+			s = s.replace(/\x2F\*|\*\x2F/, "");
+			// Remove Unicode escapes
+			s = s.replace(/\\[0-9a-f]{1,6}[ \n\r\t\f]?/g, "");
+			// Remove all other escapes
+			s = s.replace(/\\./g, "");
+			
+			// Remove all function calls except those to rgb()
+			s = s.replace(/([A-Za-z]|[^\0-\177])([A-Za-z0-9-]|[^\0-\177])*\([^\(\)]*\)/g, function (match) {
+				if (/rgb\(/.test(match) == false)
 				{
-					propNames.push(src.style.item(i));
+					match = "";
+				}
+				return match;
+			});
+			attr.value = s;
+
+			if (! StyleRe.test(attr.value) == false) // Still looks a little fishy, so delete it to be safe... 
+			{
+				attrsToRemove.push(attr);
+			}
+		}
+
+		function ProcessAttributes(elem)
+		{
+			var attrs = elem.attributes;
+			var attrsToRemove = [];
+			var attrsToAdd = [];
+			for (var i = 0; i < attrs.length; i++)
+			{
+				var attr = attrs.item(i);
+				var action = attrActions[attr.name];
+				if (!action) 
+				{
+					action = attrActions[attr.name.toLowerCase()];
+				}
+				if (action)
+				{
+					action.call(this, elem, attr, attrsToRemove, attrsToAdd);
+				}
+				else
+				{
+					attrsToRemove.push(attr);
 				}
 			}
-			else
+
+			// Remove the unwanted attributes
+			for (var i = 0; i < attrsToRemove.length; i++)
 			{
-				// The Safari hack...
-				var styles = src.style.cssText.split(/;/g);
-				for (var i = 0; i < styles.length; i++)
-				{
-					var name = styles[i].replace(/[ \t\n\r]/, "").split(/:/g)[0];
-					propNames.push(name);
-				}
+				elem.removeAttributeNode(attrsToRemove[i]);
 			}
-			for (var i = 0; i < propNames.length; i++)
+			// Add new attributes
+			for (var i = 0; i < attrsToAdd.length; i++)
 			{
-				var p = propNames[i];
-				var propValue = src.style.getPropertyValue(p);
-				if (propValue != "")
+				elem.setAttribute(attrsToAdd[i].name, attrsToAdd[i].value);
+			}
+		}
+		
+		function ProcessElem(elem)
+		{
+			ProcessAttributes(elem);
+			var nextSibling = null;
+			for (var n = elem.firstChild; n != null; n = nextSibling)
+			{
+				nextSibling = n.nextSibling; // Remember the nextSibling in case n gets removed.
+				switch (n.nodeType)
 				{
-					dest.style.setProperty(p, propValue, null);
+					case 1: // ELEMENT_NODE
+						var action = elemActions[n.tagName];
+						if (!action)
+						{
+							action = elemActions[n.tagName.toLowerCase()];
+						}
+						if (action)
+						{
+							action.call(this, n);
+						}
+						else
+						{  // By default, move all the children out of the element and then delete the empty element.
+							var nextSibling2 = null;
+							for (var n2 = n.firstChild; n2 != null; n2 = nextSibling2)
+							{
+								nextSibling2 = n2.nextSibling;
+								n.removeChild(n2);
+								elem.insertBefore(n2, nextSibling);
+							}
+							nextSibling = n.nextSibling; // because our insertions changed the nextSibling
+							elem.removeChild(n);
+						}
+						break;
+					case 3: // TEXT_NODE
+					case 5: // ENTITY_REFERENCE_NODE
+						break;
+					case 4: // CDATA_SECTION_NODE
+					case 8: // COMMENT_NODE
+					default: // Remove everything else, including comments and CDATA sections
+						elem.removeChild(n);
 				}
 			}
 		}
-		else
+		
+		function RemoveElem(elem)
 		{
-			// The IE way
-			for (var p in src.style)
-			{
-				if (p == "cssText" || p == "length") continue;
-				var propValue = null;
-				var propType = null;
-				propValue = src.style[p];
-				propType = typeof(propValue);
-				if((propType != "string" && propType != "number" && propType != "boolean") 
-					|| propValue == null || propValue == "")
-				{
-					continue;
-				}
-				dest.style[p] = propValue;
-	 		}
-	 	}
+			elem.parentNode.removeChild(elem);
+		}
 	}
 };
 
