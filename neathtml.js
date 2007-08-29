@@ -342,13 +342,18 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		var endTagsOptional = { li:1, p:1, dt:1, dd:1, thead:1, tfoot:1, tbody:1, colgroup:1, tr:1, th:1, td:1, plaintext:1, option:1 };
 		var openTagNames = [];
 		var lengthToIgnoreAtEnd = 0;
+		var lengthToIgnoreAtBeginning = 0;
 		var ignoreUntilOffset = 0;
-		s = s.replace(/<(\/?)([^ \t\n\r>]*)([^>]*)>/gm, function(match, isEndTag, tagName, attrs, offset) {
+		s = s.replace(/<(\/?)(([!\?A-Z:_a-z][^ \t\n\r>]*)([^>]*)>|([^!\?A-Z:_a-z]))/gm, function(match, isEndTag, raw, tagName, attrs, isNotEncoded, offset) {
 			// If we already set the length to ignore at end, then we are already done.
 			if (lengthToIgnoreAtEnd || offset < ignoreUntilOffset)
 			{ 
 				return match;
 			}
+			if (isNotEncoded)
+			{
+				return HtmlEncode(match);
+			}				
 			if (/^!--.*$/.test(tagName))
 			{
 				ignoreUntilOffset = s.indexOf("--", offset + "<!--".length);
@@ -469,7 +474,6 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 			s += "</" + openTagName + ">";
 		}
 
-//		alert(s);
 		return s;
 	}
 
