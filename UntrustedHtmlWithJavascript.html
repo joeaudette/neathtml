@@ -145,10 +145,13 @@
 	// ]]>
 	</script>
 
-    <p>The next bit of content attempts to close its containing &lt;div&gt; element to display content
+    <p>The next bit of content shows how we handle tag soup (specifically HTML3.2 that is not valid XML) and attempts
+    to close the containing &lt;div&gt; element to display content
     outside	the box.  If you don't have javascript enabled, the untrusted content will remain in the box 
-    (because an inner table would need to be closed first).
-    If you have javascript enabled an error message will be displayed in the box.</p>
+    (because an inner table would need to be closed first).  Exactly what is displayed in the box will depend on the 
+    how your browser's tag soup parser works.  If you have javascript enabled, we just javascript to convert the
+    tag soup to XML before letting the browser parse the XML.  The conversion should work pretty well, but if the
+    result isn't valid XML, the worst that will happen is an error message will be displayed in the box.</p>
 	<div style="overflow: hidden; position: relative; border: solid 1px; padding: 0;">
 	<table><tr><td>
 		<!-- test comment --><script type="text/javascript">
@@ -159,7 +162,32 @@
 		
 			<p><em>Start of untrusted content...</em></p>
 			
-			<p>Attempting to break out...</p>
+			<p>This paragraph doesn't have an end tag.
+			
+			<p>Here is a <br> line break with "&lt;br&gt;" instead of "&lt;br /&gt;".
+			
+			<p>Here is a list where the list items don't have end tags:
+			<ul>
+				<li>item #1
+				<li>item #2
+			</ul>
+			
+			<p>Here is a table with lots of missing end tags:
+			<table border=1>
+				<tr><td>0,0<td>0,1<td>0,2
+				<tr><td>1,0<td>1,1<td>1,2
+				<tr><td>2,0<td>2,1<td>2,2
+			</table>
+			
+			<p>Here we close an element that isn't open</em>.  
+			The extra end tag will be removed during conversion to XML.
+			
+			<p>Here is a link with an unquoted attribute value and an attribute with an implicit value:
+			<a implicit_attr href=http://www.google.com>Google</a>
+			
+			<p>Here is some text <B>formatted</B> <i>with</I> <CODE>tags</code> with varying cases.
+			
+			<p>OK.  Enough soup, let's see if we can break out of the box...</p>
             </div>
             </div>
             </div>

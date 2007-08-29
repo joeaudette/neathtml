@@ -337,36 +337,84 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 	
 	function TagSoupToXml(s)
 	{
+		// According to HTML 3.2
+		var endTagsForbidden = { br:1, hr:1, meta:1, col:1, isindex:1, img:1, link:1, area:1, basefont:1, param:1, input:1, base:1 };
+		var endTagsOptional = { li:1, p:1, dt:1, dd:1, thead:1, tfoot:1, tbody:1, colgroup:1, tr:1, th:1, td:1, plaintext:1, option:1 };
 		var openTagNames = [];
 		var lengthToIgnoreAtEnd = 0;
-		s = s.replace(/<(\/?)([^!][^ \t\n\r>]*)([^>]*)>/gm, function(match, isEnd, tagName, attrs, offset) {
+		var ignoreUntilOffset = 0;
+		s = s.replace(/<(\/?)([^ \t\n\r>]*)([^>]*)>/gm, function(match, isEndTag, tagName, attrs, offset) {
 			// If we already set the length to ignore at end, then we are already done.
-			if (lengthToIgnoreAtEnd)
+			if (lengthToIgnoreAtEnd || offset < ignoreUntilOffset)
 			{ 
 				return match;
 			}
+			if (/^!--.*$/.test(tagName))
+			{
+				ignoreUntilOffset = s.indexOf("--", offset + "<!--".length);
+				if (ignoreUntilOffset == -1) return HtmlEncode(match);
+				ignoreUntilOffset = s.indexOf(">", ignoreUntilOffset);
+				if (ignoreUntilOffset == -1) return HtmlEncode(match);
+				return match;
+			}
+			if (/^!\[CDATA\[.*$/.test(tagName))
+			{
+				ignoreUntilOffset = s.indexOf("]]>", offset + "<![CDATA[".length);
+				if (ignoreUntilOffset == -1) return HtmlEncode(match);
+				return match;
+			}
+			if (/^\?.*$/.test(tagName))
+			{
+				ignoreUntilOffset = s.indexOf("?>", offset + "<?".length);
+				if (ignoreUntilOffset == -1) return HtmlEncode(match);
+				return match;
+			}
 			// If it doesn't look like a tag then it is probably an unencoded '<'.
-			if (! /^[A-Z:_a-z][A-Z:_a-z0-9._]*$/.test(tagName) || isEnd && openTagNames.length == 0) 
+			if (! /^[A-Z:_a-z][A-Z:_a-z0-9._]*$/.test(tagName) || isEndTag && openTagNames.length == 0) 
 			{
 				return HtmlEncode(match);
 			}
 			var lcTagName = tagName.toLowerCase();
-			if (isEnd)
+			if (isEndTag)
 			{
-				var result = "";
-				while (openTagNames.length)
+				var result = null;
+				var tagIndex = openTagNames.length - 1;
+				for (var closeTags = ""; tagIndex >= 0; tagIndex--)
 				{
-				 	var openTagName = openTagNames.pop();
-					result += "</" + openTagName + ">";
-					if (openTagName.toLowerCase() == lcTagName)
+				 	var openTagName = openTagNames[tagIndex];
+					lcOpenTagName = openTagName.toLowerCase();
+					closeTags += "</" + openTagName + ">";
+					if (lcOpenTagName == lcTagName)
+					{
+						result = closeTags;
 						break;
+					}
+					// If the open tag must be explicitly closed, ignore those close tag.
+					if (!endTagsOptional.hasOwnProperty(lcOpenTagName))
+					{
+						break;
+					}
 				}
+				// If we didn't find a matching open tag, then remove the close tag
+				if (result == null)
+				{
+					return "";
+				}
+				// Remove the tags from the stack of open tags
+				openTagNames.splice(tagIndex, openTagNames.length - tagIndex);
+				// If there aren't any open tags left, ignore everything else
 				if (openTagNames.length == 0)
 				{
-					lengthToIgnoreAtEnd = s.length - offset - result.length;
+					lengthToIgnoreAtEnd = s.length - offset - match.length;
 				}
 				return result;
 			}
+			// Ignore everything before the first open tag.
+			if (openTagNames.length == 0)
+			{
+				lengthToIgnoreAtBeginning = offset;
+			}
+			// Cleanup the attributes
 			var newAttrs = "";
 			attrs = attrs.replace(/[ \t\n\r]+([A-Z:_a-z][A-Z:_a-z0-9._]*)(=("[^"]*"|'[^']*'|[^"'][^ \t\r\n]*))?/gm, function(attrMatch, attrName, hasValue, attrValue) {
 				if (!hasValue)
@@ -382,17 +430,45 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 				}
 				newAttrs += (" " + attrName + "=" + attrValue);
 			});
-			var newTag = "<" + tagName + newAttrs;
-			var optionalEndTagNames = { br: 1 };
-			if (attrs.charAt(attrs.length-1) == "/" || tagName in optionalEndTagNames )
+			var closeTag = "";
+			// If this tag has an optional end tag and the current open tag has the same, close the one that is open
+			if (endTagsOptional.hasOwnProperty(lcTagName) && openTagNames.length)
 			{
-				newTag += " /";
+				var openTagName = openTagNames[openTagNames.length-1];
+				if (openTagName.toLowerCase() == lcTagName)
+				{
+					closeTag = "</" + openTagName + ">"
+					openTagNames.pop();
+					// If there aren't any open tags left, ignore everything else
+					if (openTagNames.length == 0)
+					{
+						lengthToIgnoreAtEnd = s.length - offset - match.length;
+					}
+				}
 			}
-			newTag += ">";
-			openTagNames.push(tagName);
+			var newTag = closeTag + "<" + tagName + newAttrs;
+			if (attrs.charAt(attrs.length-1) == "/" || endTagsForbidden.hasOwnProperty(lcTagName))
+			{
+				newTag += " />";
+			}
+			else
+			{
+				newTag += ">";
+				openTagNames.push(tagName);
+			}
 			return newTag;
 		});
-		s = s.substring(0, s.length - lengthToIgnoreAtEnd);
+		
+		// Ignore anything before/after the first elem
+		s = s.substring(lengthToIgnoreAtBeginning, s.length - lengthToIgnoreAtEnd);
+
+		// Close any remaining open tags
+		while (openTagNames.length)
+		{
+		 	var openTagName = openTagNames.pop();
+			s += "</" + openTagName + ">";
+		}
+
 //		alert(s);
 		return s;
 	}
