@@ -294,7 +294,7 @@ NeatHtml.Filter.prototype.BeginUntrusted = function() {
 NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 	var my = this;
 	var containingDiv = FindContainingDiv(this.BeginUntrustedScript);
-//	try
+	try
 	{
 		var untrustedContent = GetUntrustedContent();
 		var xmlStr = TagSoupToXml(untrustedContent);
@@ -302,12 +302,10 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 	   containingDiv.innerHTML = xmlStr;
 	   ProcessHtmlElem(containingDiv);
 	}
-/*
 	catch (ex)
 	{
 		containingDiv.innerHTML = "<pre>" + ex.toString().replace("<", "&lt;").replace("&", "&amp;") + "</pre>";
 	}
-*/
 	/***** Local Functions ******/
 	
 	function FindContainingDiv(n) 
@@ -395,7 +393,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 			return newTag;
 		});
 		s = s.substring(0, s.length - lengthToIgnoreAtEnd);
-		alert(s);
+//		alert(s);
 		return s;
 	}
 
