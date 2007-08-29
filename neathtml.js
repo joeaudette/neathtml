@@ -294,18 +294,20 @@ NeatHtml.Filter.prototype.BeginUntrusted = function() {
 NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 	var my = this;
 	var containingDiv = FindContainingDiv(this.BeginUntrustedScript);
-	try
+//	try
 	{
-		var xmlStr = GetUntrustedXml();
+		var untrustedContent = GetUntrustedContent();
+		var xmlStr = TagSoupToXml(untrustedContent);
 		xmlStr = ProcessXml(xmlStr);
 	   containingDiv.innerHTML = xmlStr;
 	   ProcessHtmlElem(containingDiv);
 	}
+/*
 	catch (ex)
 	{
 		containingDiv.innerHTML = "<pre>" + ex.toString().replace("<", "&lt;").replace("&", "&amp;") + "</pre>";
 	}
-
+*/
 	/***** Local Functions ******/
 	
 	function FindContainingDiv(n) 
@@ -317,33 +319,84 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		return n;
 	}
 
-	function GetUntrustedXml() 
+	function GetUntrustedContent() 
 	{
 		// The untrusted content is in the node that immediately follows the script element that called BeginUntrusted. 
 		var n = my.BeginUntrustedScript.nextSibling;
-		var xmlStr;
+		var s;
 		if (n.nodeType == 8 /* Node.COMMENT_NODE */)
 		{
-			xmlStr = n.data;
+			s = n.data;
 		}
 		else if (n.tagName == "XMP")
 		{
-	 		xmlStr = n.innerHTML;
+	 		s = n.innerHTML;
 	 		// Unquote the HTML special characters.
-			xmlStr = xmlStr.replace(/&lt;/gm, "<").replace(/&gt;/gm, ">").replace(/&amp;/gm, "&");
+			s = xmlStr.replace(/&lt;/gm, "<").replace(/&gt;/gm, ">").replace(/&amp;/gm, "&");
 		}
-		
-		// If we don't see the ending </div> tag, the content was probably not escaped properly.
-		var endTag = "</div>";
-		var endTagIndex = xmlStr.lastIndexOf(endTag);
-		if (endTagIndex == -1)
-		{
-			throw "Untrusted HTML is invalid.  It probably contains a '--' or '</xmp>'.";
-		}
-		
-		// Anything after the </div> is extraneous, so remove it.  For example Firefox's parser leaves 
-		xmlStr = xmlStr.substring(0, endTagIndex + endTag.length);
-		return xmlStr;
+		return s;
+	}
+	
+	function TagSoupToXml(s)
+	{
+		var openTagNames = [];
+		var lengthToIgnoreAtEnd = 0;
+		s = s.replace(/<(\/?)([^!][^ \t\n\r>]*)([^>]*)>/gm, function(match, isEnd, tagName, attrs, offset) {
+			// If we already set the length to ignore at end, then we are already done.
+			if (lengthToIgnoreAtEnd)
+			{ 
+				return match;
+			}
+			// If it doesn't look like a tag then it is probably an unencoded '<'.
+			if (! /^[A-Z:_a-z][A-Z:_a-z0-9._]*$/.test(tagName) || isEnd && openTagNames.length == 0) 
+			{
+				return HtmlEncode(match);
+			}
+			var lcTagName = tagName.toLowerCase();
+			if (isEnd)
+			{
+				var result = "";
+				while (openTagNames.length)
+				{
+				 	var openTagName = openTagNames.pop();
+					result += "</" + openTagName + ">";
+					if (openTagName.toLowerCase() == lcTagName)
+						break;
+				}
+				if (openTagNames.length == 0)
+				{
+					lengthToIgnoreAtEnd = s.length - offset - result.length;
+				}
+				return result;
+			}
+			var newAttrs = "";
+			attrs = attrs.replace(/[ \t\n\r]+([A-Z:_a-z][A-Z:_a-z0-9._]*)(=("[^"]*"|'[^']*'|[^"'][^ \t\r\n]*))?/gm, function(attrMatch, attrName, hasValue, attrValue) {
+				if (!hasValue)
+				{
+					attrValue = attrName;
+				}
+				attrValue = attrValue.replace(/</gm, "&lt;");
+				var firstChar = attrValue.charAt(0)
+				
+				if ( firstChar != '"' && firstChar != "'")
+				{
+					attrValue = '"' + HtmlEncode(attrValue) + '"';
+				}
+				newAttrs += (" " + attrName + "=" + attrValue);
+			});
+			var newTag = "<" + tagName + newAttrs;
+			var optionalEndTagNames = { br: 1 };
+			if (attrs.charAt(attrs.length-1) == "/" || tagName in optionalEndTagNames )
+			{
+				newTag += " /";
+			}
+			newTag += ">";
+			openTagNames.push(tagName);
+			return newTag;
+		});
+		s = s.substring(0, s.length - lengthToIgnoreAtEnd);
+		alert(s);
+		return s;
 	}
 
 	function ProcessXml(xmlStr)
