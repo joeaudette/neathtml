@@ -90,7 +90,7 @@
 	<table><tr><td>
 		<!-- test comment --><script type="text/javascript">
 		// <![CDATA[
-		NeatHtml.BeginUntrusted();
+		NeatHtml.DefaultFilter.BeginUntrusted();
 		// ]]>
 		</script><div><?xml-stylesheet href="xss.css" type="text/css" ?>
 			<p>Here we try to display "Let me out!" outside of the box using absolute positioning:</p>
@@ -141,7 +141,7 @@
 	</td></tr></table></div>
 	<script type="text/javascript">
 	// <![CDATA[
-	NeatHtml.ProcessUntrusted();
+	NeatHtml.DefaultFilter.ProcessUntrusted();
 	// ]]>
 	</script>
 
@@ -153,7 +153,7 @@
 	<table><tr><td>
 		<!-- test comment --><script type="text/javascript">
 		// <![CDATA[
-		NeatHtml.BeginUntrusted();
+		NeatHtml.DefaultFilter.BeginUntrusted();
 		// ]]>
 		</script><div>
 		
@@ -173,7 +173,7 @@
 	</td></tr></table></div>
 	<script type="text/javascript">
 	// <![CDATA[
-	NeatHtml.ProcessUntrusted();
+	NeatHtml.DefaultFilter.ProcessUntrusted();
 	// ]]>
 	</script>
 
