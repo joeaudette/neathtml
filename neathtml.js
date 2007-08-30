@@ -330,7 +330,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		{
 	 		s = n.innerHTML;
 	 		// Unquote the HTML special characters.
-			s = xmlStr.replace(/&lt;/gm, "<").replace(/&gt;/gm, ">").replace(/&amp;/gm, "&");
+			s = s.replace(/&lt;/gm, "<").replace(/&gt;/gm, ">").replace(/&amp;/gm, "&");
 		}
 		return s;
 	}
