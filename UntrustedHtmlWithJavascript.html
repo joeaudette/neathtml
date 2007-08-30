@@ -5,7 +5,16 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="content-style-type" content="text/css">
 <meta http-equiv="expires" content="0">
-<script type="text/javascript" src="neathtml.js?49</script>"></script>
+<script type="text/javascript" src="neathtml.js?50</script>"></script>
+<style>
+.Untrusted {
+	counter-increment: untrusted-num;
+}
+
+.Untrusted:after {
+	content: " #" counter(untrusted-num);
+}
+</style>
 </head>
 <body>
 	<h1>Restricting Untrusted HTML With Javascript</h1>
@@ -60,6 +69,14 @@
 	<li>Windows Safari version 3.0.2.</li>
 	<li>Konqueror 3.5.7.</li>
 	</ul>
+	<p>
+	Known limitations:
+	<ul>
+	<li>When javascript is disabled, the untrusted content can increment any CSS counters you have and thereby affect
+	the values of those counters at subsequent places in the document.  For an example, see the end of the first 
+	piece of untrutsed content below.</li>
+	</ul>	
+	</p>
 	<p>Please report bugs and send comments to dean at brettle dot com.
 	</p>
 	</div>
@@ -72,7 +89,7 @@
 	hole.  The script finds the link using document.getElementById("trustedLink"), 
 	so untrusted content needs to be prevented from	containing elements with such an ID.
 	</p>
-	<h3>Untrusted Content</h3>
+	<h3 class="Untrusted">Untrusted Content</h3>
 	<p>The following content is untrusted:</p>
 	<!-- Note: In most browsers, the style="overflow: hidden; position: relative" on the div below prevents 
 	well-formed but untrusted content from getting outside the box when javascript is disabled.  In IE6 and
@@ -93,10 +110,6 @@
 		NeatHtml.DefaultFilter.BeginUntrusted();
 		// ]]>
 		</script><div><?xml-stylesheet href="xss.css" type="text/css" ?>
-			<p>Here we try to display "Let me out!" outside of the box using absolute positioning:</p>
-			<div style="position: absolute; top: 0; right: 0; color: red;">Let me out!</div>
-			<div style="position: absolute; top: -100px; right: 0; color: red;">Let me out with a negative top property!</div>
-
 			<p>Here is a script element...</p>
 			<script type="text/javascript">
 			window.alert("XSS from script element");
@@ -125,7 +138,9 @@
 			]]>
 			</p>
 			<p style="background-color: rgb(192,255,192); nonstandard-attribute1: expression(alert('XSS from style')); nonstandard-attribute2: expr/**/ession(alert('XSS from style with comment')); nonstandard-attribute3: expres\000073ion(alert('XSS from style with escape'));">
-			Here is a paragraph with javascript expressions in the inline style (IE only).
+			Here is a paragraph with javascript expressions in the inline style (IE only).  It should have a green
+			background to show safe styles are still applied even when unsafe styles are present.
+			
 			</p>
 			<p class="XSS">
 			Here is a paragraph that uses a class defined in an external stylesheet 
@@ -133,6 +148,14 @@
 			that contains javascript expressions.  The stylesheet should not be used, so this paragraph should not be
 			red and no scripts should run.
 			</p>
+			<p>Here we try to display "Let me out!" outside of the box using absolute positioning:</p>
+			<div style="position: absolute; top: 0; right: 0; color: red;">Let me out!</div>
+			<div style="position: absolute; top: -100px; right: 0; color: red;">Let me out with a negative top property!</div>
+			
+			<p style="counter-increment: untrusted-num;">Here we try to increment the CSS counter used for the 
+			"Untrusted Content #x" headings.  If the "attack" succeeds, the next section heading will say "Untrusted Content #3"
+			instead of "Untrusted Content #2".  This can only be prevented
+			if javascript is enabled.</p>
 		</div><xmp></xmp>
 		<!-- ' " > -->
 		<!-- The preceding comment ensures that the comment and any attrs and tags started
@@ -144,6 +167,7 @@
 	// ]]>
 	</script>
 
+<h3 class="Untrusted">Untrusted Content</h3>
     <p>The next bit of content shows how we handle tag soup (specifically HTML3.2 that is not valid XML) and attempts
     to close the containing &lt;div&gt; element to display content
     outside	the box.  If you don't have javascript enabled, the untrusted content will remain in the box 

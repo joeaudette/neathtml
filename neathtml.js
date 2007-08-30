@@ -55,20 +55,34 @@ To change the way various tags and attributes are handled:
 
 	1. Create your own filter:
 			var filter = new NeatHtml.Filter();
-	2. Configure it by modifying or replacing the default ElemActions, AttrActions, or StyleRe members.  
-		ElemActions and AttrActions are associative arrays which map element or attribute names to functions which
-		manipulate elements or attributes with those names.  The following functions are predefined:
+	2. Configure it by modifying or replacing the default ElemActions, AttrActions, or StyleActions members.  
+		These are associative arrays which map element or attribute names to functions which
+		manipulate elements/attributes/styles with those names.  The following functions are predefined:
 			NeatHtml.Filter.prototype.AllowElem - Allows the element and filters it's content.
 			NeatHtml.Filter.prototype.RemoveElem - Removes the element and all of it's content.
 			NeatHtml.Filter.prototype.AllowAttr - Allows the attribute unchanged.
+			NeatHtml.Filter.prototype.RemoveAttr - Removes the attribute.
 			NeatHtml.Filter.prototype.HandleUrl - Removes the attribute if the value doesn't start with one of
 							"http:", "https", "ftp:", or "mailto:".
-			NeatHtml.Filter.prototype.HandleStyle - Removes comments, escapes, and calls to functions other than rgb()
-							from the value, compares the result against the StyleRe member, and removes the attribute if
-							it doesn't match.
-		For example, you could strip all tags and attributes except for bold and italic by doing:
-			filter.ElemActions = { b: filter.AllowElem, i: filter.AllowElem };
-			filter.AttrActions = {};
+			NeatHtml.Filter.prototype.HandleStyle - Handles styles according to StyleActions.
+			NeatHtml.Filter.prototype.AllowStyle - Allows the style unchanged.
+			NeatHtml.Filter.prototype.RemoveStyle - Removes the style.
+		For example, you could just allow basic text formatting by doing:
+			filter.ElemActions = { 
+				b: filter.AllowElem,
+				i: filter.AllowElem,
+				u: filter.AllowElem,
+				span: filter.AllowElem 
+			};
+			filter.AttrActions = { style: filter.HandleStyle };
+			filter.StyleActions = { 
+				'font-family': filter.AllowStyle,
+				'font-size': filter.AllowStyle,
+				'font-style': filter.AllowStyle,
+				'font-variant': filter.AllowStyle,
+				'font-weight': filter.AllowStyle,
+				'font': filter.AllowStyle
+			};
 		Or you could add support for <img> elements to the default filter by doing:
 			filter.ElemActions.img = filter.AllowElem;
 			filter.AttrActions.src = filter.AllowAttr;
@@ -78,12 +92,14 @@ To change the way various tags and attributes are handled:
 
 NeatHtml = {};
 
-NeatHtml.Filter = function(elemActions, attrActions)
+NeatHtml.Filter = function(elemActions, attrActions, styleActions)
 {
 	this.ElemActions = elemActions || GetDefaultElemActions();
 	this.AttrActions = attrActions || GetDefaultAttrActions();
-	this.StyleRe = new RegExp("^(\s*((vertical-align|VERTICAL-ALIGN):\s*((text-)?(top|bottom)|middle|baseline|sub|super)|(text-align|TEXT-ALIGN):\s*(left|right|center|justify)|(text-decoration|TEXT-DECORATION):\s*(blink|line-through|overline|underline|none)|(font-style|FONT-STYLE):\s*(normal|oblique|italic)|(font-weight|FONT-WEIGHT):\s*(normal|bold)|((mso-|MSO-)(fareast-|FAREAST-|ansi-|ANSI-|bidi-|BIDI-))?(font-family|FONT-FAMILY|language|LANGUAGE):\s*[a-zA-Z, &quot;'\-]+|(font-size|FONT-SIZE):\s*(([1-9]|1[0-8])pt|([1-3]|[0-2]\.[0-9]*)e[mx]|xx-small|x-small|small|medium|large)|(margin|MARGIN|padding|PADDING)(-(top|TOP|left|LEFT|bottom|BOTTOM|right|RIGHT))?:(\s*(0|[1-9][0-9]*)(.[0-9]*)?(pt|em|ex|in|px|cm)?)+|(width|WIDTH|height|HEIGHT):\s*(0|[1-9][0-9]*)(.[0-9]*)?(pt|em|ex|in|px|cm|%)?|(text-indent|TEXT-INDENT):\s*(0|[1-9][0-9]*)(.[0-9]*)?(pt|em|ex|in|cm)|(mso-spacerun|MSO-SPACERUN):\s*(yes|no)|((background|BACKGROUND)-)?(color|COLOR):\s*((-|[a-zA-Z])+|#[0-9a-fA-F]+|rgb\([0-9, ]+\)))\s*;?)*$");
-
+	this.StyleActions = styleActions || GetDefaultStyleActions()
+	
+	this.StyleDeclRe = /(-?[_a-z][_a-z0-9-]*)[ \t\r\n\f]*:[ \t\r\n\f]*((([-+]?([0-9]+|[0-9]*\.[0-9]+)(%|[_a-z][_a-z0-9-]*)?|[_a-z][_a-z0-9-]*|"[^\n\r\f"]*"|'[^\n\r\f']*'|#([0-9a-f]{3}|[0-9a-f]{6})|rgb\( *[1-9][0-9]*%? *, *[1-9][0-9]*%? *, *[1-9][0-9]*%? *\))[ \t\r\n\f]*[,\/]?)+)(;|$)/igm; // Here is a " to make my IDE format properly again
+	
 	function GetDefaultElemActions()
 	{
 		// These tags and their content is allowed.
@@ -136,6 +152,39 @@ NeatHtml.Filter = function(elemActions, attrActions)
 		
 		return attrActions;
 	}
+
+	function GetDefaultStyleActions()
+	{
+		// These attributes are allowed
+		var allowedProps
+			= ['azimuth','background-attachment','background-color','background-image','background-position',
+				'background-repeat','background','border-collapse','border-color','border-spacing','border-style',
+				'border-top','border-right','border-bottom','border-left','border-top-color','border-right-color',
+				'border-bottom-color','border-left-color','border-top-style','border-right-style','border-bottom-style',
+				'border-left-style','border-top-width','border-right-width','border-bottom-width','border-left-width',
+				'border-width','border','bottom','caption-side','clear','clip','color','content',
+				/* 'counter-increment','counter-reset', */ // Don't allow messing with the counters 
+				'cue-after','cue-before','cue','cursor','direction','display','elevation','empty-cells',
+				'float','font-family','font-size','font-style','font-variant','font-weight','font','height','left',
+				'letter-spacing','line-height','list-style-image','list-style-position','list-style-type','list-style',
+				'margin-right','margin-left','margin-top','margin-bottom','margin','max-height','max-width','min-height',
+				'min-width','orphans','outline-color','outline-style','outline-width','outline','overflow','padding-top',
+				'padding-right','padding-bottom','padding-left','padding','page-break-after','page-break-before',
+				'page-break-inside','pause-after','pause-before','pause','pitch-range','pitch','play-during','position',
+				'quotes','richness','right','speak-header','speak-numeral','speak-punctuation','speak','speech-rate',
+				'stress','table-layout','text-align','text-decoration','text-indent','text-transform','top',
+				'unicode-bidi','vertical-align','visibility','voice-family','volume','white-space','widows','width',
+				'word-spacing','z-index'
+			];
+
+		var styleActions = {};
+		for (var i = 0; i < allowedProps.length ; i++)
+		{
+			var p = allowedProps[i];
+			styleActions[p] = NeatHtml.Filter.prototype.AllowStyle; 
+		}
+		return styleActions;
+	}
 };
 
 NeatHtml.Filter.prototype.AllowAttribute = function(elem, attr, attrsToRemove, attrsToAdd)
@@ -143,6 +192,16 @@ NeatHtml.Filter.prototype.AllowAttribute = function(elem, attr, attrsToRemove, a
 	// Do nothing
 };
 		
+NeatHtml.Filter.prototype.AllowStyle = function(elem, prop)
+{
+	// Do nothing
+};
+		
+NeatHtml.Filter.prototype.RemoveStyle = function(elem, prop)
+{
+	prop.Name = null;
+};
+
 NeatHtml.Filter.prototype.HandleUrl = function(elem, attr, attrsToRemove, attrsToAdd)
 {
 	if (attr.value == null) return;
@@ -154,41 +213,27 @@ NeatHtml.Filter.prototype.HandleUrl = function(elem, attr, attrsToRemove, attrsT
 		
 NeatHtml.Filter.prototype.HandleStyle = function(elem, attr, attrsToRemove, attrsToAdd)
 {
-	// If there was a style attribute, sanitize it's value and then check it against a whitelist regex.
-	// We must sanitize the style before we attempt to access any style properties (e.g. elem.style.overflow) in IE.
-	// There doesn't seem to be a way to access the styles in IE after they have been parsed but before the 
-	// script has been run.  For example, if you do:
-	//
-	// elem.style.cssText = "attr: expression(window.alert('XSS'));";
-	//
-	// the script will not run yet.  But, as soon as you access any of the style properties the script will run. 
+	// Look for safe style declarations in the attribute value and replace the attribute value with just
+	// those safe style declarations.
+	// Safe declarations are a subset of CSS style declaration that accepts most inline styles.  
+	// If the attribute contains comments, escapes outside of strings, or function calls other than rgb(), 
+	// the result will not allow script to run but might not be the same as the style parsed by a standard CSS parser.
 	if (attr.value == null) return;
 
-	s = attr.value;			
-	// Remove comments
-	s = s.replace(/\x2F\*[^*]*\*+([^\x2F][^*]*\*+)*\x2F/gm, "");
-	// Remove any left over comment markers
-	s = s.replace(/\x2F\*|\*\x2F/, "");
-	// Remove Unicode escapes
-	s = s.replace(/\\[0-9a-f]{1,6}[ \n\r\t\f]?/g, "");
-	// Remove all other escapes
-	s = s.replace(/\\./g, "");
-	
-	// Remove all function calls except those to rgb()
-	s = s.replace(/([A-Za-z]|[^\0-\177])([A-Za-z0-9-]|[^\0-\177])*\(/g, function (match) {
-		if (/rgb\(/.test(match) == false)
-		{
-			removedCall = true;
-			match = " (";
-		}
-		return match;
-	});
-	attr.value = s;
-
-	if (this.StyleRe.test(attr.value) == false) // Still looks a little fishy, so delete it to be safe... 
+	var s = attr.value;		
+	var match = null;
+	var newStyle = ""
+	var prop = { Name: null, Value: null };
+	while (null != (match = this.StyleDeclRe.exec(attr.value)))
 	{
-		attrsToRemove.push(attr);
+		prop.Name = match[1];
+		prop.Value = match[2];
+		var action = this.StyleActions[prop.Name] || this.RemoveStyle;
+		action.call(this, elem, prop);
+		if (prop.Name != null)
+			newStyle += prop.Name + ": " + prop.Value + "; ";
 	}
+	attr.value = newStyle;
 };
 
 NeatHtml.Filter.prototype.RemoveTag = function(elem)
@@ -575,15 +620,15 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		}
 		else
 		{
-			try
-			{
-				// Safari/Konqueror...
-				xmlDoc = document.implementation.createDocument("", null, null);
-			}
-			catch (ex) 
+			if (ActiveXObject)
 			{
 				// IE...
 				xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+			}
+			else
+			{
+				// Safari/Konqueror...
+				xmlDoc = document.implementation.createDocument("", null, null);
 			}
 		
 			xmlDoc.async = false;
