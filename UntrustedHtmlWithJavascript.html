@@ -182,13 +182,16 @@
 			<p>Here we close an element that isn't open</em>.  
 			The extra end tag will be removed during conversion to XML.
 			
-			<p>Here is a link with an unquoted attribute value and an attribute with an implicit value:
-			<a implicit_attr href=http://www.google.com>Google</a>
+			<p>Here is a link with an unquoted attribute value with unencoded ampersands
+			and an attribute with an implicit value:
+			<a implicit_attr href=http://www.google.com/search?hl=en&q=neathtml&btnG=Search>Google</a>
 			
-			<p>Here is some text <B>formatted</B> <i>with</I> <CODE>tags</code> with varying cases.
+			<p>Here is some text <B>formatted</B> <i>with</I> <U>tags</u> with varying cases.
 			
-			<p>Here is an '<' that hasn't been encoded.
+			<p>Here is an '<' and an '&' that haven't been encoded.
 			
+			<p>Here are a few character entities: &#65;, &#x41;, &#X41;, "&nbsp;"
+						
 			<p>OK.  Enough soup, let's see if we can break out of the box...</p>
             </div>
             </div>
