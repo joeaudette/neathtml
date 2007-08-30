@@ -515,6 +515,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 										function(attrMatch, attrName, hasValue, attrValue) {
 											newAttrs += HandleAttr(attrName, hasValue, attrValue);
 										});
+			// ' Make syntax highlighting happy
 			var closeTag = "";
 			// If this tag has an optional end tag and the current open elem has the same tag name,
 			// close the one that is open
@@ -556,7 +557,8 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 			
 			if ( firstChar != '"' && firstChar != "'")
 			{
-				attrValue = '"' + HtmlEncode(attrValue) + '"';
+				attrValue = '"' + attrValue.replace(/"/gm, "&quot;") + '"'; 
+				// ' Make syntax highlighting happy
 			}
 			return " " + attrName + "=" + attrValue;
 		}
@@ -735,12 +737,14 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 	function HtmlEncode(s)
 	{
 		return s.replace(/[<>&"']/g, function (c) { 
+			// " Make syntax highlighting happy
 			switch (c)
 			{
 				case '<': return "&lt;";  
 				case '>': return "&gt;";  
 				case '&': return "&amp;";  
 				case '"': return "&quot;";  
+				// ' Make syntax highlighting happy
 				case "'": return "&apos;";
 			}
 		});  
