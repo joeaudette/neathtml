@@ -175,16 +175,17 @@ NeatHtml.Filter.prototype.HandleStyle = function(elem, attr, attrsToRemove, attr
 	s = s.replace(/\\./g, "");
 	
 	// Remove all function calls except those to rgb()
-	s = s.replace(/([A-Za-z]|[^\0-\177])([A-Za-z0-9-]|[^\0-\177])*\([^\(\)]*\)/g, function (match) {
+	s = s.replace(/([A-Za-z]|[^\0-\177])([A-Za-z0-9-]|[^\0-\177])*\(/g, function (match) {
 		if (/rgb\(/.test(match) == false)
 		{
-			match = "";
+			removedCall = true;
+			match = " (";
 		}
 		return match;
 	});
 	attr.value = s;
 
-	if (! this.StyleRe.test(attr.value) == false) // Still looks a little fishy, so delete it to be safe... 
+	if (this.StyleRe.test(attr.value) == false) // Still looks a little fishy, so delete it to be safe... 
 	{
 		attrsToRemove.push(attr);
 	}
@@ -299,8 +300,8 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		var untrustedContent = GetUntrustedContent();
 		var xmlStr = TagSoupToXml(untrustedContent);
 		xmlStr = ProcessXml(xmlStr);
-	   containingDiv.innerHTML = xmlStr;
-	   ProcessHtmlElem(containingDiv);
+		containingDiv.innerHTML = xmlStr;
+		ProcessHtmlElem(containingDiv);
 	}
 	catch (ex)
 	{
@@ -742,7 +743,6 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		}
 	}
 	
-	var testElem;
 	function ProcessHtmlAttrs(elem)
 	{
 		var attrs = elem.attributes;
