@@ -224,6 +224,7 @@ NeatHtml.Filter.prototype.HandleStyle = function(elem, attr, attrsToRemove, attr
 	var match = null;
 	var newStyle = ""
 	var prop = { Name: null, Value: null };
+	this.StyleDeclRe.lastIndex = 0;
 	while (null != (match = this.StyleDeclRe.exec(attr.value)))
 	{
 		prop.Name = match[1];
