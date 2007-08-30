@@ -366,7 +366,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 			crarr:8629,lArr:8656,uArr:8657,rArr:8658,dArr:8659,hArr:8660,
 			forall:8704,part:8706,exist:8707,empty:8709,nabla:8711,isin:8712,
 			notin:8713,ni:8715,prod:8719,sum:8721,minus:8722,lowast:8727,radic:8730,
-			prop:8733,infin:8734,ang:8736,and:8743,or:8744,cap:8745,cup:8746,int:8747,
+			prop:8733,infin:8734,ang:8736,"and":8743,"or":8744,cap:8745,cup:8746,"int":8747,
 			there4:8756,sim:8764,cong:8773,asymp:8776,ne:8800,equiv:8801,le:8804,
 			ge:8805,sub:8834,sup:8835,nsub:8836,sube:8838,supe:8839,oplus:8853,otimes:8855,
 			perp:8869,sdot:8901,lceil:8968,rceil:8969,lfloor:8970,rfloor:8971,
@@ -471,7 +471,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 			var closeTag = "";
 			// If this tag has an optional end tag and the current open elem has the same tag name,
 			// close the one that is open
-			if (endTagsOptional.hasOwnProperty(lcTagName) && openTagNames.length)
+			if (endTagsOptional[lcTagName] && openTagNames.length)
 			{
 				var openTagName = openTagNames[openTagNames.length-1];
 				if (openTagName.toLowerCase() == lcTagName)
@@ -484,7 +484,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 				}
 			}
 			var newTag = closeTag + "<" + tagName + newAttrs;
-			if (attrs.charAt(attrs.length-1) == "/" || endTagsForbidden.hasOwnProperty(lcTagName))
+			if (attrs.charAt(attrs.length-1) == "/" || endTagsForbidden[lcTagName])
 			{
 				newTag += " />";
 			}
@@ -530,7 +530,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 					break;
 				}
 				// If the open tag must be explicitly closed, ignore those close tag.
-				if (!endTagsOptional.hasOwnProperty(lcOpenTagName))
+				if (!endTagsOptional[lcOpenTagName])
 				{
 					break;
 				}
