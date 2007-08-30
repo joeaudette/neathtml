@@ -332,6 +332,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 	 		// Unquote the HTML special characters.
 			s = s.replace(/&lt;/gm, "<").replace(/&gt;/gm, ">").replace(/&amp;/gm, "&");
 		}
+//		alert(s);
 		return s;
 	}
 	
@@ -639,14 +640,11 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		var xmlStr;
 		if (window.XMLSerializer)
 		{
-			xmlStr = new XMLSerializer().serializeToString(xmlDoc.firstChild);
-			if (!xmlStr)
-			{
-				// Safari < 2.0 only accepts XML documents, not nodes.
-				// It also does not correctly serialize attributes that have been accessed with elem.attributes.item(i).
-				// So, we serialize manually.
-				xmlStr = XmlElemToString(xmlDoc.firstChild);
-  			}
+			// Can't use serializeToString() because Safari 2 expands entities like "&lt;".
+			// Also, Safari < 2.0 does not correctly serialize attributes that have been 
+			// accessed with elem.attributes.item(i).
+			// xmlStr = new XMLSerializer().serializeToString(xmlDoc.firstChild);
+			xmlStr = XmlElemToString(xmlDoc.firstChild);
   		} 
   		else
   		{
