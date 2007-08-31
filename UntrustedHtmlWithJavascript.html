@@ -18,41 +18,54 @@
 </head>
 <body>
 	<h1>Restricting Untrusted HTML With Javascript</h1>
-	<p><em>Last updated 8/28/2007 12:55 PM PDT</em></p>
+	<p><em>Last updated 8/31/2007 2:17 AM PDT</em></p>
 	<div>
 	<p>
-	This is inspired by <a href="http://www.mindedsecurity.com/">Stefano Di Paola's</a> work on 
+	This work was inspired by <a href="http://www.mindedsecurity.com/">Stefano Di Paola's</a> work on 
 	<a href="http://www.wisec.it/sectou.php?id=46c5843ea4900">Preventing XSS with Data Binding</a>.
-	My primary contributions are lots of browser compatibility work and the idea to use
-	document.write() to inject some markup that will cause the parser to stop processing normal tags.  We inject this
-	immediately before the untrusted content.  Then we later
-	use javascript to extract the untrusted content, parse it as XML (using the browser's parser), 
-	clean the resulting DOM, and put the result where the injected markup was.
-	For most browsers we inject "&lt;!&#45;&#45;" to start a comment. On browsers where we can't access the contents of
-	comments (e.g. Safari and Konqueror), we inject &lt;xmp&gt;	instead (which for historical reasons stops 
-	processing normal markup.  In either case, the key is that if javascript
-	is not available (e.g. search engines spiders), nothing is injected and the content displays normally.
 	</p>
-	<p>
-	To play with this, save this page and look at the HTML source.  Find the &lt;div&gt;s containing the untrusted
-	content and try replacing their contents with something that will execute script.  The only rules are that you 
-	need to do the following things that the server would normally do to the untrusted content:
+	<p>This page describes and demonstrates a way to display untrusted content (e.g. a blog comment containing
+	HTML markup):
 	</p>
 	<ul>
-	<li>Remove any comments.  They aren't a security threat, but they will corrupt the display of the 
-	untrusted content.  In other words, an app that doesn't expect benign content to contain comments would not need
-	to strip	comments.</li>
-	<li>Replace '&#45;&#45;' with '&amp;#45;&amp;#45;'.  That string is a threat because it would end the enclosing 
-	javascript-generated	comment.</li>
-	<li>Replace '&lt;/xmp' with '&amp;lt;/xmp'.  That string is a threat because it would end the enclosing 
-	javascript-generated	&lt;xmp&gt; element needed by browsers like Safari and Konqueror.</li>
-	<li>If the content contains '&lt;table' or '&lt;/table', either check the content for well-formedness, or 
-	if you are willing to disallow tables in the untrusted content, just replace '&lt;table' with 
-	'&amp;lt;table' and '&lt;/table' with '&amp;lt;/table'.
-	This is necessary because we put the untrusted content in a &lt;table&gt; to prevent parser based attacks on users
-	that don't have javascript.  This works because tag soup parsing seems to ignore end tags for
-	outer elements until it sees the table end tag.</li>
+	<li>safely,</li>
+	<li>without <em>requiring</em> javascript,</li>
+	<li>with minimal server overhead</li>
 	</ul>
+	<p>Here's how it works:</p>
+	<ol>
+	<li>Enclose the untrusted content in a &lt;table&gt; element.  Now the only way for the untrusted content to
+	get it's content out of the table (or trusted content into its table) is by closing the table (or starting a 
+	new one).  To prevent that the server just needs to replace "&lt;table" with 
+	"&amp;lt;table" and "&lt;/table" with "&amp;lt;/table" in the untrusted content.</li>
+	<li>Style the table (or a containing div) to ensure that the content in the table cant use styles to display 
+	something "outside the box".  These first 2 steps are sufficient to protect non-javascript users.</li>
+	<li>Use document.write() to inject some special markup just before the untrusted content.  The injected markup
+	is chosen to cause the browser's
+	parser to not treat subsequent text as markup.  For most browsers, inject "&lt;!&#45;&#45;" to start a comment. 
+	On browsers where the DOM doesn't provide access to the contents of
+	comments (e.g. Safari and Konqueror), inject "&lt;xmp&gt;"	instead (which for historical reasons stops 
+	processing normal markup).</li>
+	<li>Put the close tags that correspond to our injected markup after the untrusted content.  To prevent the 
+	untrusted content from escaping the javascript-injected jail, the server needs to replace "&#45;&#45;" with
+	"&amp;#45;&amp;#45;" and "&lt;/xmp" with "&amp;lt;/xmp".  The server should also remove any HTML comments before
+	doing those replacements.
+	They aren't a security threat, but they will corrupt the display of the 
+	untrusted content.  If the app that doesn't expect benign content to contain comments, it does not need
+	to strip	comments because only malicious content will be corrupted.</li>
+	<li>Use javascript and the DOM to extract the untrusted content, filter it, and replace our javscript-injected
+	jail with the result.  The filter converts the untrusted "tag soup" content into safe well-formed HTML.
+	It can be configured to allow, prohibit, or modify, any element, attribute, or style.  The default
+	configuration is designed to prohibit Cross Site Scripting (XSS) attacks and other similar attacks.  
+	To ensure that "tag soup" is displayed properly and to maximize cross-browser compatibility, the filter uses a 
+	regex based parser instead of using the XML parser available in many browsers.</li>
+	</ol>
+	</p>
+	<p>
+	To play with this, save this page and look at the HTML source.  Find the the untrusted
+	content and try replacing it with something that will execute script.  The only rules are that you 
+	need to do replacements mentioned above that the server would normally do to the untrusted content.
+	</p>
 	<p>
 	The current implementation seems to work with:
 	</p>
@@ -72,12 +85,17 @@
 	<p>
 	Known limitations:
 	<ul>
-	<li>When javascript is disabled, the untrusted content can increment any CSS counters you have and thereby affect
-	the values of those counters at subsequent places in the document.  For an example, see the end of the first 
-	piece of untrutsed content below.</li>
+	<li>No support for tables in untrusted content.  It is possible to workaround this for javascript users by having
+	the server change "table" to "table_<i>nonce</i>" and then having javascript change it back.  The only way to
+	safely support tables for <em>non</em>-javascript users is to parse the
+	untrusted content on the server.  The server overhead associated with such parsing might be acceptable 
+	if it is only done when the untrusted content contains tables.</li>
+	<li>When javascript is disabled, the untrusted content can increment any CSS counters on the page and thereby
+	affect the values of those counters at subsequent places in the document.  For an example, see the end of the first 
+	piece of untrusted content below.  The only way to avoid this is parse the untrusted content on the server.</li>
 	</ul>	
 	</p>
-	<p>Please report bugs and send comments to dean at brettle dot com.
+	<p>Please send bugs, comments, and questions to dean at brettle dot com.
 	</p>
 	</div>
 	<h2>Example</h2>
@@ -183,7 +201,7 @@
 		NeatHtml.DefaultFilter.BeginUntrusted();
 		// ]]>
 		</script><div>
-		
+
 			<p><em>Start of untrusted content...</em></p>
 			
 			<p>This paragraph doesn't have an end tag.

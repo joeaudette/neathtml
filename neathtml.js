@@ -92,13 +92,16 @@ To change the way various tags and attributes are handled:
 
 NeatHtml = {};
 
-NeatHtml.Filter = function(elemActions, attrActions, styleActions)
+NeatHtml.Filter = function(elemActions, attrActions, styleActions, entityCharCodeMap)
 {
+	var my = this;
+	
 	this.ElemActions = elemActions || GetDefaultElemActions();
 	this.AttrActions = attrActions || GetDefaultAttrActions();
-	this.StyleActions = styleActions || GetDefaultStyleActions()
+	this.StyleActions = styleActions || GetDefaultStyleActions();
+	this.EntityCharCodeMap = entityCharCodeMap || GetDefaultEntityCharCodeMap();
 	
-	this.StyleDeclRe = /(-?[_a-z][_a-z0-9-]*)[ \t\r\n\f]*:[ \t\r\n\f]*((([-+]?([0-9]+|[0-9]*\.[0-9]+)(%|[_a-z][_a-z0-9-]*)?|[_a-z][_a-z0-9-]*|"[^\n\r\f"]*"|'[^\n\r\f']*'|#([0-9a-f]{3}|[0-9a-f]{6})|rgb\( *[1-9][0-9]*%? *, *[1-9][0-9]*%? *, *[1-9][0-9]*%? *\))[ \t\r\n\f]*[,\/]?)+)(;|$)/igm; // Here is a " to make my IDE format properly again
+	this.StyleDeclRe = /(-?[_a-z][_a-z0-9-]*)[ \t\r\n\f]*:[ \t\r\n\f]*((([-+]?([0-9]+|[0-9]*\.[0-9]+)(%|[_a-z][_a-z0-9-]*)?|[_a-z][_a-z0-9-]*|"[^\n\r\f"]*"|'[^\n\r\f']*'|#([0-9a-f]{3}|[0-9a-f]{6})|rgb\( *[1-9][0-9]*%? *, *[1-9][0-9]*%? *, *[1-9][0-9]*%? *\))[ \t\r\n\f]*[,\/]?)+)(;|$)/igm;    // " 
 	
 	function GetDefaultElemActions()
 	{
@@ -117,13 +120,13 @@ NeatHtml.Filter = function(elemActions, attrActions, styleActions)
 		for (var i = 0; i < allowedTags.length ; i++)
 		{
 			var t = allowedTags[i];
-			elemActions[t] = NeatHtml.Filter.prototype.AllowElem; 
+			elemActions[t] = my.AllowElem; 
 		}
 	
 		for (var i = 0; i < prohibitedTags.length ; i++)
 		{
 			var t = prohibitedTags[i];
-			elemActions[t] = NeatHtml.Filter.prototype.RemoveElem; 
+			elemActions[t] = my.RemoveElem; 
 		}
 		
 		return elemActions;
@@ -144,11 +147,12 @@ NeatHtml.Filter = function(elemActions, attrActions, styleActions)
 		for (var i = 0; i < allowedAttrs.length ; i++)
 		{
 			var a = allowedAttrs[i];
-			attrActions[a] = NeatHtml.Filter.prototype.AllowAttribute; 
+			attrActions[a] = my.AllowAttr; 
 		}
 	
-		attrActions["href"] = NeatHtml.Filter.prototype.HandleUrl; 
-		attrActions["style"] = NeatHtml.Filter.prototype.HandleStyle;
+		attrActions["href"] = my.HandleUrl; 
+		attrActions["style"] = my.HandleStyle;
+		attrActions["id"] = my.AddPrefixToValue;
 		
 		return attrActions;
 	}
@@ -181,212 +185,15 @@ NeatHtml.Filter = function(elemActions, attrActions, styleActions)
 		for (var i = 0; i < allowedProps.length ; i++)
 		{
 			var p = allowedProps[i];
-			styleActions[p] = NeatHtml.Filter.prototype.AllowStyle; 
+			styleActions[p] = my.AllowStyle; 
 		}
 		return styleActions;
 	}
-};
-
-NeatHtml.Filter.prototype.AllowAttribute = function(elem, attr, attrsToRemove, attrsToAdd)
-{
-	// Do nothing
-};
-		
-NeatHtml.Filter.prototype.AllowStyle = function(elem, prop)
-{
-	// Do nothing
-};
-		
-NeatHtml.Filter.prototype.RemoveStyle = function(elem, prop)
-{
-	prop.Name = null;
-};
-
-NeatHtml.Filter.prototype.HandleUrl = function(elem, attr, attrsToRemove, attrsToAdd)
-{
-	if (attr.value == null) return;
-	if (/^(http:|https:|ftp:|mailto:)/i.test(attr.value) == false)   // ... invalid protocol
-	{
-		attrsToRemove.push(attr);
-	}
-};
-		
-NeatHtml.Filter.prototype.HandleStyle = function(elem, attr, attrsToRemove, attrsToAdd)
-{
-	// Look for safe style declarations in the attribute value and replace the attribute value with just
-	// those safe style declarations.
-	// Safe declarations are a subset of CSS style declaration that accepts most inline styles.  
-	// If the attribute contains comments, escapes outside of strings, or function calls other than rgb(), 
-	// the result will not allow script to run but might not be the same as the style parsed by a standard CSS parser.
-	if (attr.value == null) return;
-
-	var s = attr.value;		
-	var match = null;
-	var newStyle = ""
-	var prop = { Name: null, Value: null };
-	this.StyleDeclRe.lastIndex = 0;
-	while (null != (match = this.StyleDeclRe.exec(attr.value)))
-	{
-		prop.Name = match[1];
-		prop.Value = match[2];
-		var action = this.StyleActions[prop.Name] || this.RemoveStyle;
-		action.call(this, elem, prop);
-		if (prop.Name != null)
-			newStyle += prop.Name + ": " + prop.Value + "; ";
-	}
-	attr.value = newStyle;
-};
-
-NeatHtml.Filter.prototype.RemoveTag = function(elem)
-{
-	// move all the children out of the element and then delete the empty element.
-	var nextSibling = null;
-	for (var n = elem.firstChild; n != null; n = nextSibling)
-	{
-		nextSibling = n.nextSibling;
-		elem.removeChild(n);
-		elem.parentNode.insertBefore(n, elem.nextSibling);
-	}
-	this.RemoveElem(elem);
-};
-
-NeatHtml.Filter.prototype.AllowElem = function(elem)
-{
-	var my = this;
-	ProcessAttributes(elem);
-	var nextSibling = null;
-	for (var n = elem.firstChild; n != null; n = nextSibling)
-	{
-		nextSibling = n.nextSibling; // Remember the nextSibling in case n gets removed.
-		switch (n.nodeType)
-		{
-			case 1: // ELEMENT_NODE
-				var action = this.ElemActions[n.tagName] 			// Use the case-sensitive name if available,
-					|| this.ElemActions[n.tagName.toLowerCase()] // otherwise, check for the lowercase version,
-					|| this.RemoveTag;									// otherwise, remove the tag and process the children
-				nextSibling = action.call(this, n);
-				break;
-			case 3: // TEXT_NODE
-			case 5: // ENTITY_REFERENCE_NODE
-				break;
-			case 4: // CDATA_SECTION_NODE
-			case 8: // COMMENT_NODE
-			default: // Remove everything else, including comments and CDATA sections
-				elem.removeChild(n);
-		}
-	}
-
-	return elem.nextSibling;
 	
-	function ProcessAttributes(elem)
+	function GetDefaultEntityCharCodeMap()
 	{
-		var attrs = elem.attributes;
-		var attrsToRemove = [];
-		var attrsToAdd = [];
-		for (var i = 0; i < attrs.length; i++)
-		{
-			var attr = attrs.item(i);
-			var action = my.AttrActions[attr.name] || my.AttrActions[attr.name.toLowerCase()];
-			if (action)
-			{
-				action.call(my, elem, attr, attrsToRemove, attrsToAdd);
-			}
-			else
-			{
-				attrsToRemove.push(attr);
-			}
-		}
-
-		// Remove the unwanted attributes
-		for (var i = 0; i < attrsToRemove.length; i++)
-		{
-			elem.removeAttributeNode(attrsToRemove[i]);
-		}
-		// Add new attributes
-		for (var i = 0; i < attrsToAdd.length; i++)
-		{
-			elem.setAttribute(attrsToAdd[i].name, attrsToAdd[i].value);
-		}
-	}
-};
-		
-NeatHtml.Filter.prototype.RemoveElem = function(elem)
-{
-	var nextSibling = elem.nextSibling;
-	elem.parentNode.removeChild(elem);
-	return nextSibling;
-};
-	
-NeatHtml.Filter.prototype.BeginUntrusted = function() {
-	// Inject markup to prevent the untrusted content from being parsed as HTML.  
-	// If we are able to extract content from comments, start a comment.
-	// Otherwise (e.g. Safari and Konqueror), start an <xmp> element.
-
-	// Find the calling script element and remember it so we can use it to find the untrusted content.
-	var scriptElems = document.getElementsByTagName("script");
-	this.BeginUntrustedScript = scriptElems[scriptElems.length - 1];
-
-	// The calling script element must be preceded by an HTML comment (i.e. <!-- something -->).  
-	if (this.BeginUntrustedScript.previousSibling 
-		&& this.BeginUntrustedScript.previousSibling.nodeType == 8 /* Node.COMMENT_NODE */)
-	{
-		document.write("<!--");
-	}
-	else
-	{
-		document.write("<xmp>");
-	}
-};
-
-NeatHtml.Filter.prototype.ProcessUntrusted = function() {
-	var my = this;
-	var containingDiv = FindContainingDiv(this.BeginUntrustedScript);
-	try
-	{
-		var untrustedContent = GetUntrustedContent();
-		var xmlStr = TagSoupToXml(untrustedContent);
-		xmlStr = ProcessXml(xmlStr);
-		containingDiv.innerHTML = xmlStr;
-		ProcessHtmlElem(containingDiv);
-	}
-	catch (ex)
-	{
-		containingDiv.innerHTML = "<pre>" + ex.toString().replace("<", "&lt;").replace("&", "&amp;") + "</pre>";
-	}
-	/***** Local Functions ******/
-	
-	function FindContainingDiv(n) 
-	{
-		while (n.tagName != "DIV")
-		{
-			n = n.parentNode;
-		}
-		return n;
-	}
-
-	function GetUntrustedContent() 
-	{
-		// The untrusted content is in the node that immediately follows the script element that called BeginUntrusted. 
-		var n = my.BeginUntrustedScript.nextSibling;
-		var s;
-		if (n.nodeType == 8 /* Node.COMMENT_NODE */)
-		{
-			s = n.data;
-		}
-		else if (n.tagName == "XMP")
-		{
-	 		s = n.innerHTML;
-	 		// Unquote the HTML special characters.
-			s = s.replace(/&lt;/gm, "<").replace(/&gt;/gm, ">").replace(/&amp;/gm, "&");
-		}
-//		alert(s);
-		return s;
-	}
-	
-	function TagSoupToXml(s)
-	{
-		// According to HTML 3.2
-		var entityCharCodes = { 
+		return { 
+			quot:34,amp:38,lt:60,gt:62,apos:39,
 			nbsp:160,iexcl:161,cent:162,pound:163,curren:164,yen:165,brvbar:166,
 			sect:167,uml:168,copy:169,ordf:170,laquo:171,not:172,shy:173,reg:174,
 			macr:175,deg:176,plusmn:177,sup2:178,sup3:179,acute:180,micro:181,
@@ -424,40 +231,243 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 			ndash:8211,mdash:8212,lsquo:8216,rsquo:8217,sbquo:8218,ldquo:8220,rdquo:8221,
 			bdquo:8222,dagger:8224,Dagger:8225,permil:8240,lsaquo:8249,rsaquo:8250,euro:8364 
 		};
+	}
+};
+
+NeatHtml.Filter.prototype.AllowAttr = function(tagName, attr)
+{
+	return true;
+};
+		
+NeatHtml.Filter.prototype.RemoveAttr = function(tagName, attr)
+{
+	return false;
+};
+		
+NeatHtml.Filter.prototype.AllowStyle = function(tagName, prop)
+{
+	// Do nothing
+};
+		
+NeatHtml.Filter.prototype.RemoveStyle = function(tagName, prop)
+{
+	prop.Name = null;
+};
+
+NeatHtml.Filter.prototype.HandleUrl = function(tagName, attr)
+{
+	return /^(http:|https:|ftp:|mailto:)/i.test(attr.value);
+};
+		
+NeatHtml.Filter.prototype.AddPrefixToValue = function(tagName, attr)
+{
+	attr.value = "NeatHtml_" + attr.value;
+};
+
+NeatHtml.Filter.prototype.HandleStyle = function(tagName, attr)
+{
+	// Look for safe style declarations in the attribute value and replace the attribute value with just
+	// those safe style declarations.
+	// Safe declarations are a subset of CSS style declaration that accepts most inline styles.  
+	// If the attribute contains comments, escapes outside of strings, or function calls other than rgb(), 
+	// the result will not allow script to run but might not be the same as the style parsed by a standard CSS parser.
+	var s = attr.value;		
+	var match = null;
+	var newStyle = ""
+	var prop = { Name: null, Value: null };
+	this.StyleDeclRe.lastIndex = 0;
+	while (null != (match = this.StyleDeclRe.exec(attr.value)))
+	{
+		prop.Name = match[1];
+		prop.Value = match[2];
+		var action = this.StyleActions[prop.Name] || this.RemoveStyle;
+		action.call(this, tagName, prop);
+		if (prop.Name != null)
+			newStyle += prop.Name + ": " + prop.Value + "; ";
+	}
+	attr.value = newStyle;
+	return true;
+};
+
+NeatHtml.Filter.prototype.RemoveTag = function(tagInfo)
+{
+	tagInfo.bOutputTags = false;
+};
+
+NeatHtml.Filter.prototype.AllowElem = function(tagInfo)
+{
+	var my = this;
+
+	// Parse the attributes
+	var attrArray = [];
+	var attrRe = /[ \t\n\r]+([A-Z:_a-z][A-Z:_a-z0-9._]*)(=("[^"]*"|'[^']*'|[^"'][^ \t\r\n]*))?/gm;    // '
+	var match = null;
+	attrRe.lastIndex = 0;
+	while (null != (matches = attrRe.exec(tagInfo.attrs)))
+	{
+		HandleAttr.apply(this, matches);
+	}
+
+	ProcessAttributes(tagInfo.tagName);
+	
+	var newAttrs = "";
+	for (var i = 0; i < attrArray.length; i++)
+	{
+		newAttrs += " " + attrArray[i].name 
+			+ '="' + this.HtmlEncode(attrArray[i].value) + '"';   // '
+	}
+	
+	tagInfo.attrs = newAttrs;
+	return;
+
+	/* Local Functions */
+	function HandleAttr(match, attrName, hasValue, attrValue)
+	{
+		if (!hasValue)
+		{
+			attrValue = attrName;
+		}
+		var firstChar = attrValue.charAt(0)
+		if (firstChar == '"' || firstChar == "'")
+			attrValue = attrValue.substring(1, attrValue.length-1);
+		attrValue = my.HtmlDecode(attrValue);
+		attrArray.push({name: attrName, value: attrValue});			
+	}
+	
+	function ProcessAttributes(tagName)
+	{
+		for (var i = 0; i < attrArray.length;)
+		{
+			var attr = attrArray[i];
+			var action = my.AttrActions[attr.name] || my.AttrActions[attr.name.toLowerCase()] || my.RemoveAttr;
+			if (!action.call(my, tagName, attr))
+			{
+				attrArray.splice(i, 1);
+			}
+			else
+			{
+				i++;
+			}
+		}
+	}
+};
+		
+NeatHtml.Filter.prototype.RemoveElem = function(tagInfo)
+{
+	tagInfo.bOutputTags = tagInfo.bOutputContent = null;
+};
+	
+NeatHtml.Filter.prototype.BeginUntrusted = function() {
+	// Inject markup to prevent the untrusted content from being parsed as HTML.  
+	// If we are able to extract content from comments, start a comment.
+	// Otherwise (e.g. Safari and Konqueror), start an <xmp> element.
+
+	// Find the calling script element and remember it so we can use it to find the untrusted content.
+	var scriptElems = document.getElementsByTagName("script");
+	this.BeginUntrustedScript = scriptElems[scriptElems.length - 1];
+
+	// The calling script element must be preceded by an HTML comment (i.e. <!-- something -->).  
+	if (this.BeginUntrustedScript.previousSibling 
+		&& this.BeginUntrustedScript.previousSibling.nodeType == 8 /* Node.COMMENT_NODE */)
+	{
+		document.write("<!--");
+	}
+	else
+	{
+		document.write("<xmp>");
+	}
+};
+
+NeatHtml.Filter.prototype.ProcessUntrusted = function() {
+	var my = this;
+	var containingDiv = FindContainingDiv(this.BeginUntrustedScript);
+	try
+	{
+		var untrustedContent = GetUntrustedContent();
+		var xmlStr = FilterTagSoupToXml(untrustedContent);
+		containingDiv.innerHTML = xmlStr;
+		ResizeContainer(containingDiv);
+	}
+	catch (ex)
+	{
+		containingDiv.innerHTML = "<pre>" + ex.toString().replace("<", "&lt;").replace("&", "&amp;") + "</pre>";
+	}
+	/***** Local Functions ******/
+	
+	function FindContainingDiv(n) 
+	{
+		while (n.tagName != "DIV")
+		{
+			n = n.parentNode;
+		}
+		return n;
+	}
+
+	function GetUntrustedContent() 
+	{
+		// The untrusted content is in the node that immediately follows the script element that called BeginUntrusted. 
+		var n = my.BeginUntrustedScript.nextSibling;
+		var s;
+		if (n.nodeType == 8 /* Node.COMMENT_NODE */)
+		{
+			s = n.data;
+		}
+		else if (n.tagName == "XMP")
+		{
+	 		s = n.innerHTML;
+	 		// Unquote the HTML special characters.
+			s = my.HtmlDecode(s);
+		}
+//		alert(s);
+		return s;
+	}
+	
+	function FilterTagSoupToXml(s)
+	{
+		// According to HTML 3.2
 		var endTagsForbidden = { br:1, hr:1, meta:1, col:1, isindex:1, img:1, link:1, area:1, basefont:1, param:1, input:1, base:1 };
 		var endTagsOptional = { li:1, p:1, dt:1, dd:1, thead:1, tfoot:1, tbody:1, colgroup:1, tr:1, th:1, td:1, plaintext:1, option:1 };
-		var openTagNames = [];
-		var lengthToIgnoreAtEnd = 0;
-		var lengthToIgnoreAtBeginning = 0;
-		var ignoreUntilOffset = 0;
-		s = s.replace(/(&((#[0-9]{1,10};|#x[0-9a-fA-F]{1,8};|amp;|lt;|gt;|quot;|apos;)|([A-Z:_a-z][A-Z:_a-z0-9._]{0,10};|(#X[0-9a-fA-F]{1,8};|))))|(<(\/?)(([!\?A-Z:_a-z][^ \t\n\r>]*)([^>]*)>|([^!\?A-Z:_a-z])))/gm, 
-			function(match, isAmp, afterAmp, isValidXmlEntityRef, charEntityRef, upperCaseHexEntityRef, isOpenAngle, isEndTag, raw, tagName, attrs, isNotEncoded, offset) {
-			// If we already set the length to ignore at end, then we are already done.
-			if (lengthToIgnoreAtEnd || offset < ignoreUntilOffset) return match;
-			if (isAmp) return HandleAmpersand(match, isValidXmlEntityRef, afterAmp, charEntityRef, upperCaseHexEntityRef);
-			if (isNotEncoded)	return HtmlEncode(match);
-			if (isOpenAngle) return HandleOpenAngle(match, isEndTag, tagName, attrs, offset);
-		});
-		
-		// Ignore anything before/after the first elem
-		s = s.substring(lengthToIgnoreAtBeginning, s.length - lengthToIgnoreAtEnd);
-
-		// Close any remaining open tags
-		while (openTagNames.length)
+		var openTagInfos = [];
+		var matches = null;
+		var filteredXml = "";
+		var tagSoupRe = /(&((#[0-9]{1,10};|#x[0-9a-fA-F]{1,8};|amp;|lt;|gt;|quot;)|([A-Z:_a-z][A-Z:_a-z0-9._]{0,10};|(#X[0-9a-fA-F]{1,8};|))))|(<(\/?)(([!\?A-Z:_a-z][^ \t\n\r>]*)([^>]*)>|([^!\?A-Z:_a-z])))/gm; 
+		tagSoupRe.lastIndex = 0;
+		var searchStartIndex = 0;
+		while (null != (matches = tagSoupRe.exec(s)))
 		{
-		 	var openTagName = openTagNames.pop();
-			s += "</" + openTagName + ">";
+			var text = s.substring(searchStartIndex, matches.index);
+			// Text should not be the start of the output 
+			if (openTagInfos.length && openTagInfos[openTagInfos.length-1].bOutputContent)
+				filteredXml += text;
+			
+			filteredXml += HandleAmpOrOpenAngle.apply(this, matches);
+			searchStartIndex = tagSoupRe.lastIndex;
+		}
+		
+		// Close any remaining open tags
+		while (openTagInfos.length)
+		{
+		 	var openTagInfo = openTagInfos.pop();
+		 	if (openTagInfo.bOutputTags)
+				filteredXml += "</" + openTagInfo.outTagName + ">";
 		}
 // alert(s);
-		return s;
+		return filteredXml;
 
 		/* Local functions */
+		function HandleAmpOrOpenAngle(match, isAmp, afterAmp, isValidXmlEntityRef, charEntityRef, upperCaseHexEntityRef, isOpenAngle, isEndTag, raw, tagName, attrs, isNotEncoded) 
+		{
+			if (isAmp) return HandleAmpersand(match, isValidXmlEntityRef, afterAmp, charEntityRef, upperCaseHexEntityRef);
+			if (isNotEncoded)	return my.HtmlEncode(match);
+			if (isOpenAngle) return HandleOpenAngle(match, isEndTag, tagName, attrs);
+		}
+
 		function HandleAmpersand(match, isValidXmlEntityRef, afterAmp, charEntityRef, upperCaseHexEntityRef)
 		{
 			if (isValidXmlEntityRef)
 				return match;
 			if (!charEntityRef)
-				return HtmlEncode(match);
+				return my.HtmlEncode(match);
 			if (upperCaseHexEntityRef)
 				return match.toLowerCase();
 			// It is a character entity reference but it isn't supported in XML
@@ -466,73 +476,83 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 				// Strip the trailing semicolon
 				charEntityRef = charEntityRef.substring(0, charEntityRef.length-1);
 			}
-			var charCode = entityCharCodes[charEntityRef];
+			var charCode = my.EntityCharCodeMap[charEntityRef];
 			if (!charCode)
-				return HtmlEncode(match);
+				return my.HtmlEncode(match);
 			return "&#" + charCode + ";";
 		}
 
-		function HandleOpenAngle(match, isEndTag, tagName, attrs, offset)
+		function HandleOpenAngle(match, isEndTag, tagName, attrs)
 		{
 			if (/^!--.*$/.test(tagName))
 			{
-				ignoreUntilOffset = s.indexOf("--", offset + "<!--".length);
-				if (ignoreUntilOffset == -1) return HtmlEncode(match);
-				ignoreUntilOffset = s.indexOf(">", ignoreUntilOffset);
-				if (ignoreUntilOffset == -1) return HtmlEncode(match);
-				return match;
+				tagSoupRe.lastIndex = s.indexOf("--", match.index + "<!--".length);
+				if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match);
+				tagSoupRe.lastIndex = s.indexOf(">", tagSoupRe.lastIndex);
+				if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match);
+				tagSoupRe.lastIndex += ">".length;
+				return "";
 			}
 			if (/^!\[CDATA\[.*$/.test(tagName))
 			{
-				ignoreUntilOffset = s.indexOf("]]>", offset + "<![CDATA[".length);
-				if (ignoreUntilOffset == -1) return HtmlEncode(match);
-				return match;
+				tagSoupRe.lastIndex = s.indexOf("]]>", match.index + "<![CDATA[".length);
+				if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match);
+				tagSoupRe.lastIndex += "]]>".length;
+				return "";
 			}
 			if (/^\?.*$/.test(tagName))
 			{
-				ignoreUntilOffset = s.indexOf("?>", offset + "<?".length);
-				if (ignoreUntilOffset == -1) return HtmlEncode(match);
-				return match;
+				tagSoupRe.lastIndex = s.indexOf("?>", match.index + "<?".length);
+				if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match);
+				tagSoupRe.lastIndex += "?>".length;
+				return "";
 			}
 			// If it doesn't look like a tag then it is probably an unencoded '<'.
-			if (! /^[A-Z:_a-z][A-Z:_a-z0-9._]*$/.test(tagName) || isEndTag && openTagNames.length == 0) 
-				return HtmlEncode(match);
+			if (! /^[A-Z:_a-z][A-Z:_a-z0-9._]*$/.test(tagName) || isEndTag && openTagInfos.length == 0) 
+				return my.HtmlEncode(match);
 			// Otherwise it is a begin or end tag
 			if (isEndTag)
-				return HandleEndTag(match, tagName, offset);
+				return HandleEndTag(match, tagName);
 			else
-				return HandleBeginTag(match, tagName, attrs, offset);
+			{
+				return HandleBeginTag(match, tagName, attrs);
+			}
 		}
 			
-		function HandleBeginTag(match, tagName, attrs, offset)
+		function HandleBeginTag(match, tagName, attrs)
 		{
 			var lcTagName = tagName.toLowerCase();
-			// Ignore everything before the first open tag.
-			if (openTagNames.length == 0)
-				lengthToIgnoreAtBeginning = offset;
-			// Cleanup the attributes
-			var newAttrs = "";
-			attrs = attrs.replace(/[ \t\n\r]+([A-Z:_a-z][A-Z:_a-z0-9._]*)(=("[^"]*"|'[^']*'|[^"'][^ \t\r\n]*))?/gm, 
-										function(attrMatch, attrName, hasValue, attrValue) {
-											newAttrs += HandleAttr(attrName, hasValue, attrValue);
-										});
-			// ' Make syntax highlighting happy
-			var closeTag = "";
+			var output = "";
 			// If this tag has an optional end tag and the current open elem has the same tag name,
 			// close the one that is open
-			if (endTagsOptional[lcTagName] && openTagNames.length)
+			if (endTagsOptional[lcTagName] && openTagInfos.length)
 			{
-				var openTagName = openTagNames[openTagNames.length-1];
-				if (openTagName.toLowerCase() == lcTagName)
+				var openTagInfo = openTagInfos[openTagInfos.length-1];
+				if (openTagInfo.tagName.toLowerCase() == lcTagName)
 				{
-					closeTag = "</" + openTagName + ">"
-					openTagNames.pop();
+					if (openTagInfo.bOutputTags)
+						output = "</" + openTagInfo.outTagName + ">";
+					openTagInfos.pop();
 					// If there aren't any open tags left, ignore everything else
-					if (openTagNames.length == 0)
-						lengthToIgnoreAtEnd = s.length - offset - match.length;
+					if (openTagInfo.length == 0)
+						tagSoupRe.lastIndex = s.length;
 				}
 			}
-			var newTag = closeTag + "<" + tagName + newAttrs;
+			
+			attrs = attrs.replace(/&((#[0-9]{1,10};|#x[0-9a-fA-F]{1,8};|amp;|lt;|gt;|quot;|apos;)|([A-Z:_a-z][A-Z:_a-z0-9._]{0,10};|(#X[0-9a-fA-F]{1,8};|)))/gm,
+												HandleAmpersand);
+
+			var action = my.ElemActions[tagName] || my.ElemActions[lcTagName] || my.RemoveTag;
+			var tagInfo = { };
+			tagInfo.tagName = tagInfo.outTagName = tagName;
+			tagInfo.attrs = attrs;
+			tagInfo.bOutputTags = tagInfo.bOutputContent = true;
+
+			action.call(my, tagInfo);
+			if (openTagInfos.length && !openTagInfos[openTagInfos.length-1].bOutputContent)
+				tagInfo.bOutputTags = tagInfo.bOutputContent = false;
+			
+			var newTag = "<" + tagInfo.outTagName + tagInfo.attrs;
 			if (attrs.charAt(attrs.length-1) == "/" || endTagsForbidden[lcTagName])
 			{
 				newTag += " />";
@@ -540,40 +560,26 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 			else
 			{
 				newTag += ">";
-				openTagNames.push(tagName);
-			}
-			return newTag;
-		}
-
-		function HandleAttr(attrName, hasValue, attrValue)
-		{
-			if (!hasValue)
-			{
-				attrValue = attrName;
-			}
-			attrValue = attrValue.replace(/</gm, "&lt;");
-			attrValue = attrValue.replace(/&((#[0-9]{1,10};|#x[0-9a-fA-F]{1,8};|amp;|lt;|gt;|quot;|apos;)|([A-Z:_a-z][A-Z:_a-z0-9._]{0,10};|(#X[0-9a-fA-F]{1,8};|)))/gm,
-													HandleAmpersand);
-			var firstChar = attrValue.charAt(0)
-			
-			if ( firstChar != '"' && firstChar != "'")
-			{
-				attrValue = '"' + attrValue.replace(/"/gm, "&quot;") + '"'; 
-				// ' Make syntax highlighting happy
-			}
-			return " " + attrName + "=" + attrValue;
+				openTagInfos.push(tagInfo);
+			}			
+			if (tagInfo.bOutputTags)
+				output += newTag;
+			return output;
 		}
 		
-		function HandleEndTag(match, tagName, offset)
+		function HandleEndTag(match, tagName)
 		{
 			var lcTagName = tagName.toLowerCase();
 			var result = null;
-			var tagIndex = openTagNames.length - 1;
+			var tagIndex = openTagInfos.length - 1;
 			for (var closeTags = ""; tagIndex >= 0; tagIndex--)
 			{
-			 	var openTagName = openTagNames[tagIndex];
-				lcOpenTagName = openTagName.toLowerCase();
-				closeTags += "</" + openTagName + ">";
+			 	var openTagInfo = openTagInfos[tagIndex];
+				lcOpenTagName = openTagInfo.tagName.toLowerCase();
+				if (openTagInfo.bOutputTags)
+				{
+					closeTags += "</" + openTagInfo.outTagName + ">";
+				}
 				if (lcOpenTagName == lcTagName)
 				{
 					result = closeTags;
@@ -591,185 +597,18 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 				return "";
 			}
 			// Remove the tags from the stack of open tags
-			openTagNames.splice(tagIndex, openTagNames.length - tagIndex);
+			openTagInfos.splice(tagIndex, openTagInfos.length - tagIndex);
 			// If there aren't any open tags left, ignore everything else
-			if (openTagNames.length == 0)
+			if (openTagInfos.length == 0)
 			{
-				lengthToIgnoreAtEnd = s.length - offset - match.length;
+				tagSoupRe.lastIndex = s.length;
 			}
 			return result;
 		}
 	}
-
-	function ProcessXml(xmlStr)
-	{
-		// Parse the XML string.
-		var xmlDoc = ParseXml(xmlStr);
 	
-		// Process the document.
-		ProcessXmlElem(xmlDoc.documentElement);
-		
-		// Serialize the XML document back to a string
-		return XmlDocToString(xmlDoc);
-	}
-	
-	function ParseXml(xmlStr)
+	function ResizeContainer(parent)
 	{
-		var xmlDoc;
-		if (window.DOMParser)
-		{
-			// Mozilla...
-			xmlDoc = (new DOMParser()).parseFromString(xmlStr, "text/xml");
-		}
-		else
-		{
-			if (ActiveXObject)
-			{
-				// IE...
-				xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-			}
-			else
-			{
-				// Safari/Konqueror...
-				xmlDoc = document.implementation.createDocument("", null, null);
-			}
-		
-			xmlDoc.async = false;
-			xmlDoc.loadXML(xmlStr);
-		}
-		var parseErrorText = GetParseErrorText(xmlDoc);
-      if (parseErrorText)
-      {
-	  		throw "Untrusted HTML could not be parsed: " + parseErrorText;
-		}
-		return xmlDoc;
-	}
-	
-	function GetParseErrorText(xmlDoc)
-	{
-		var parseErrorText = null;
-		if (xmlDoc.parseError && xmlDoc.parseError.errorCode)
-		{
-			parseErrorText = xmlDoc.parseError.reason + 
-				"\nLocation: " + xmlDoc.parseError.url + 
-				"\nLine Number " + xmlDoc.parseError.line + ", Column " + 
-			xmlDoc.parseError.linepos + 
-				":\n" + xmlDoc.parseError.srcText +
-				"\n";
-			for(var i = 0;  i < xmlDoc.parseError.linepos;i++)
-			{
-				parseErrorText += "-";
-			};
-			parseErrorText +=  "^\n";
-		}
-		else if (!xmlDoc.documentElement)
-		{
-			parseErrorText = "Unknown reason";
-		}
-		else if (xmlDoc.documentElement.tagName == "parsererror"
-					|| xmlDoc.documentElement.tagName == "html" // Konqueror returns an error HTML document
-					|| xmlDoc.getElementsByTagName("parsererror").length > 0)
-		{
-			parseErrorText = "Unknown reason";
-			if (xmlDoc.documentElement.firstChild && xmlDoc.documentElement.firstChild.data)
-			{ 
-				parseErrorText = xmlDoc.documentElement.firstChild.data;
-				if (xmlDoc.documentElement.firstChild.nextSibling
-					&& xmlDoc.documentElement.firstChild.nextSibling.firstChild)
-				{
-      			parseErrorText += "\n" +  xmlDoc.documentElement.firstChild.nextSibling.firstChild.data;
-      		}
-      	}
-      }
-      return parseErrorText;
-	}
-	
-	function XmlDocToString(xmlDoc)
-	{
-		var xmlStr;
-		if (window.XMLSerializer)
-		{
-			// Can't use serializeToString() because Safari 2 expands entities like "&lt;".
-			// Also, Safari < 2.0 does not correctly serialize attributes that have been 
-			// accessed with elem.attributes.item(i).
-			// xmlStr = new XMLSerializer().serializeToString(xmlDoc.firstChild);
-			xmlStr = XmlElemToString(xmlDoc.firstChild);
-  		} 
-  		else
-  		{
-  			xmlStr = xmlDoc.documentElement.xml;
-  		}
-		return xmlStr;
-	}
-	
-	function XmlElemToString(elem)
-	{
-		var xmlStr = "";
-		
-		xmlStr = "<" + elem.tagName;
-		var attrs = elem.attributes;
-		for (var i = 0; i < attrs.length; i++)
-		{
-			var attr = attrs.item(i);
-			xmlStr += " " + attr.name + '="' + HtmlEncode(attr.value) + '"';
-		}
-		xmlStr += ">";
-		var nextSibling = null;
-		for (var n = elem.firstChild; n != null; n = nextSibling)
-		{
-			nextSibling = n.nextSibling; // Remember the nextSibling in case n gets removed.
-			switch (n.nodeType)
-			{
-				case 1: // ELEMENT_NODE
-					xmlStr += XmlElemToString(n);
-					break;
-				case 3: // TEXT_NODE
-					xmlStr += HtmlEncode(n.nodeValue);
-					break;
-				default:
-					// There shouldn't be anything else.  We removed comments and CDATA sections.
-					// Character entity references should have been expanded by the parser.
-			}
-		}
-		xmlStr += "</" + elem.tagName + ">";
-		return xmlStr;
-	}
-	
-	function HtmlEncode(s)
-	{
-		return s.replace(/[<>&"']/g, function (c) { 
-			// " Make syntax highlighting happy
-			switch (c)
-			{
-				case '<': return "&lt;";  
-				case '>': return "&gt;";  
-				case '&': return "&amp;";  
-				case '"': return "&quot;";  
-				// ' Make syntax highlighting happy
-				case "'": return "&apos;";
-			}
-		});  
-	}
-	
-	function ProcessXmlElem(elem)
-	{
-		my.ElemActions[elem.tagName].call(my, elem);
-		return;
-	}
-
-	
-	function ProcessHtmlElem(parent)
-	{
-		var elems = parent.getElementsByTagName("*");
-		for (var i = 0; i < elems.length; i++)
-		{
-			var e = elems[i];
-			if (e.attributes.length > 0)
-			{
-				ProcessHtmlAttrs(e);
-			}
-		}
-
 		// Set the dimensions of the div based on the new content.  This allows IE6 to hide overflow that was
 		// absolutely positioned.
 		if (parent.firstChild.scrollHeight)
@@ -792,23 +631,37 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 			parent.style.overflow = "hidden";
 		}
 	}
-	
-	function ProcessHtmlAttrs(elem)
-	{
-		var attrs = elem.attributes;
-		for (var i = 0; i < attrs.length; i++)
-		{
-			var attr = attrs.item(i);
-			var name = attr.name;
-			var val = attr.value;
-			if (name.toLowerCase() == "id")
-			{
-				newIdValue = "NeatHtml_" + val;
-				elem.setAttribute(name, "NeatHtml_" + val);
-			}
-		}
-	}
 };
+
+NeatHtml.Filter.prototype.HtmlEncode = function(s)
+{
+	return s.replace(/[<>&"']/g,    // " 
+						function (c) { 
+		switch (c)
+		{
+			case '<': return "&lt;";  
+			case '>': return "&gt;";  
+			case '&': return "&amp;";  
+			case '"': return "&quot;";
+			case "'": return "&#39;";
+		}
+	});  
+}
+	
+NeatHtml.Filter.prototype.HtmlDecode = function(s)
+{
+	var my = this;
+	return s.replace(/&(#([1-9][0-9]{1,9})|#[xX]([0-9a-fA-F]{1,8})|([A-Z:_a-z][A-Z:_a-z0-9._]{0,10}));/g, 
+						function (match, isEntity, decDigits, hexDigits, name) {
+		if (decDigits != null && decDigits.length > 0)
+			return String.fromCharCode(parseInt(decDigits, 10));
+		if (hexDigits != null && hexDigits.length > 0)
+			return String.fromCharCode(parseInt(hexDigits, 16));
+		if (name != null && name.length > 0)
+			return String.fromCharCode(my.EntityCharCodeMap[name]);
+		return match;
+	});  
+}
 
 NeatHtml.DefaultFilter = new NeatHtml.Filter();
 
