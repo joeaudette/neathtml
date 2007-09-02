@@ -41,11 +41,18 @@ Simplest usage (note that comments and absence of whitespace between tags can be
 where:
 
 	PREPROCESSED_UNTRUSTED_CONTENT has had the following preprocessing done on the server:
-		1. Remove all comments (i.e. anything matching this regex: "<!--([^-]*-)+-[^>]*>")
-		2. Replace all remaining "--" with "&#45;&#45;"
-		3. Replace all "<xmp>" and "</xmp>" with "&lt;xmp&gt;" and "&lt;/xmp&gt;".  
-		4. Either ensure that the untrusted content is well-formed XML 
-			or replace all "<table>" and "</table>" with "&lt;table&gt;" and "&lt;/table&gt;".
+		1. Replace all:
+				<table
+			with:
+				<NeatHtmlParserReset single='' double=""></NeatHtmlParserReset></td></tr></table><table
+		2. Replace all:
+				</table
+			with:
+				<NeatHtmlParserReset single='' double=""></table><table><tr><td
+		3. Remove all comments (i.e. anything matching this regex: "<!--([^-]*-)+-[^>]*>")
+		4. Replace all remaining "--" with "&#45;&#45;"
+		5. Replace all "<xmp>" and "</xmp>" with "&lt;xmp&gt;" and "&lt;/xmp&gt;".  
+				
 	NOSCRIPT_IE6_WIDTH and NOSCRIPT_IE6_HEIGHT are the desired dimensions of the div that will display the
 		untrusted content in IE6 and earlier when script is disabled.  If the untrusted content is larger, 
 		scrollbars will be added to the div.  These values have no effect on other browsers nor do they have
@@ -62,8 +69,11 @@ To change the way various tags and attributes are handled:
 			NeatHtml.Filter.prototype.RemoveElem - Removes the element and all of it's content.
 			NeatHtml.Filter.prototype.AllowAttr - Allows the attribute unchanged.
 			NeatHtml.Filter.prototype.RemoveAttr - Removes the attribute.
+			NeatHtml.Filter.prototype.AddPrefixToValue - Prepends filter.IdPrefix to the attribute value.  Used for
+							ID attributes to prevent the untrusted content from stealing element IDs. 
 			NeatHtml.Filter.prototype.HandleUrl - Removes the attribute if the value doesn't start with one of
-							"http:", "https", "ftp:", or "mailto:".
+							"http:", "https", "ftp:", "mailto:", or "#".  If it starts with "#", it adds filter.IdPrefix
+							after the "#", so that the untrusted content can link to it's own anchors
 			NeatHtml.Filter.prototype.HandleStyle - Handles styles according to StyleActions.
 			NeatHtml.Filter.prototype.AllowStyle - Allows the style unchanged.
 			NeatHtml.Filter.prototype.RemoveStyle - Removes the style.
@@ -100,6 +110,7 @@ NeatHtml.Filter = function(elemActions, attrActions, styleActions, entityCharCod
 	this.AttrActions = attrActions || GetDefaultAttrActions();
 	this.StyleActions = styleActions || GetDefaultStyleActions();
 	this.EntityCharCodeMap = entityCharCodeMap || GetDefaultEntityCharCodeMap();
+	this.IdPrefix = "NeatHtml_";
 	
 	this.StyleDeclRe = /(-?[_a-z][_a-z0-9-]*)[ \t\r\n\f]*:[ \t\r\n\f]*((([-+]?([0-9]+|[0-9]*\.[0-9]+)(%|[_a-z][_a-z0-9-]*)?|[_a-z][_a-z0-9-]*|"[^\n\r\f"]*"|'[^\n\r\f']*'|#([0-9a-f]{3}|[0-9a-f]{6})|rgb\( *[1-9][0-9]*%? *, *[1-9][0-9]*%? *, *[1-9][0-9]*%? *\))[ \t\r\n\f]*[,\/]?)+)(;|$)/igm;    // " 
 	
@@ -256,12 +267,20 @@ NeatHtml.Filter.prototype.RemoveStyle = function(tagName, prop)
 
 NeatHtml.Filter.prototype.HandleUrl = function(tagName, attr)
 {
-	return /^(http:|https:|ftp:|mailto:)/i.test(attr.value);
+	if (! /^(http:|https:|ftp:|mailto:|#)/i.test(attr.value))
+	{
+		return false;
+	}
+	if (attr.value.charAt(0) == "#")
+	{
+		attr.value = "#" + this.IdPrefix + attr.value.substring(1, attr.value.length);
+	}
+	return true;
 };
 		
 NeatHtml.Filter.prototype.AddPrefixToValue = function(tagName, attr)
 {
-	attr.value = "NeatHtml_" + attr.value;
+	attr.value = this.IdPrefix + attr.value;
 };
 
 NeatHtml.Filter.prototype.HandleStyle = function(tagName, attr)
@@ -390,7 +409,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 	}
 	catch (ex)
 	{
-		containingDiv.innerHTML = "<pre>" + ex.toString().replace("<", "&lt;").replace("&", "&amp;") + "</pre>";
+		containingDiv.innerHTML = "<pre>" + ex.toString().replace(/</g, "&lt;").replace(/&/g, "&amp;") + "</pre>";
 	}
 	/***** Local Functions ******/
 	
@@ -418,6 +437,12 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 	 		// Unquote the HTML special characters.
 			s = my.HtmlDecode(s);
 		}
+		
+		s = s.replace(/<NeatHtmlParserReset single='' double=""><\/NeatHtmlParserReset><\/td><\/tr><\/table><table/g,
+							"<table");
+		s = s.replace(/<NeatHtmlParserReset single='' double=""><\/table><table><tr><td/g,
+							"</table");
+		
 //		alert(s);
 		return s;
 	}
