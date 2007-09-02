@@ -113,6 +113,10 @@ NeatHtmlTest.AppendOutput = function(html) {
 	NeatHtmlTest.StatusDiv.innerHTML += html;
 };
 
+NeatHtmlTest.Log = function(msg) {
+	NeatHtmlTest.AppendOutput('<span>' + NeatHtmlTest.HtmlEncode(msg) + '</span><br />');
+};
+
 NeatHtmlTest.AlertCalls = 0;
 NeatHtmlTest.AlertFromScript = function(msg) {
 	if (NeatHtmlTest.GetMode() == "noscript") {
