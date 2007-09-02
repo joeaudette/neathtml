@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>NeatHtml Test</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="content-style-type" content="text/css">
+<meta http-equiv="expires" content="0">
+<script type="text/javascript" src="neathtml.js"></script>
+<script type="text/javascript" src="neathtmltest.js"></script>
+<style>
+.Untrusted {
+	counter-increment: untrusted-num;
+}
+
+.Untrusted:after {
+	content: " #" counter(untrusted-num);
+}
+</style>
+</head>
+<body>
+	<script type="text/javascript">
+	// <![CDATA[
+NeatHtmlTest.AppendTestStatusElement();	
+	// ]]></script>
+	<p><em>Please send bugs, comments, and questions to dean at brettle dot com</em>.
+	<h3>The Test</h3>
+	<p id="trustedLinkBeforeParent"><a id="trustedLinkBefore" href="#">This link</a> will be wired up by trusted script
+	based on it's ID.
+	Clicking the link should log a message above.  If it doesn't or a link in untrusted content does, then there is a
+	hole.  The script finds the link using document.getElementById("trustedLinkBefore"), 
+	so untrusted content needs to be prevented from	containing elements with such an ID.</p>
+
+	<p>Here is the untrusted content:</p>
+	<!-- 
+		NOTE: After doing the required replace, place the untrusted content inside the div with an ID of "untrusted".
+		Everything between here and there is boilerplate that the server would generate.
+	-->
+	<![if gte IE 7]>
+	<div style="overflow: hidden; position: relative; border: solid 1px;">
+	<![endif]>
+	<!--[if lt IE 7]>
+	<div style="overflow: auto; position: relative; border: solid 1px; width: 100%; height: 400px;">	
+	<![endif]-->
+	<table><tr><td>
+		<!-- test comment --><script type="text/javascript">
+		// <![CDATA[
+		NeatHtml.DefaultFilter.BeginUntrusted();
+		// ]]>
+		</script><div id="untrusted"><?xml-stylesheet href="xss.css" type="text/css" ?>
+			<p>Here is a script element...</p>
+			<script type="text/javascript">
+			window.alert("XSS from script element");
+			</script>
+			<p>Here is a normal link:
+			<a href="http://www.google.com/">normal link to google</a>
+			</p>
+			<p>Here is the same link with an onclick handler added:
+			<a onclick="window.alert('XSS on click')" href="http://www.google.com/">onclick link</a>
+			</p>
+			<p>Here is a link that uses the javascript protocol:
+			<a href="javascript:alert('XSS on link')">javascript link</a>
+			</p>
+			<p>Here are some links which try to spoof trusted element IDs (i.e. IDs that trusted script later uses to
+			find elements and attach handlers):
+			a
+			<a id="trustedLinkBefore" href="http://www.google.com/">link with an ID that already exists</a> 
+			and a
+			<a id="trustedLinkAfter" href="http://www.google.com/">link with an ID that will be used later</a>
+			</p>
+			<p>Here is a CDATA section containing a script element:
+			<![CDATA[
+			<script type="text/javascript">
+			window.alert("XSS from script element in CDATA section");
+			</script>
+			]]>
+			</p>
+			<p style="background-color: rgb(192,255,192); nonstandard-attribute1: expression(alert('XSS from style')); nonstandard-attribute2: expr/**/ession(alert('XSS from style with comment')); nonstandard-attribute3: expres\000073ion(alert('XSS from style with escape'));">
+			Here is a paragraph with javascript expressions in the inline style (IE only).  It should have a green
+			background to show safe styles are still applied even when unsafe styles are present.
+			
+			</p>
+			<p class="XSS">
+			Here is a paragraph that uses a class defined in an external stylesheet 
+			(referenced by an &lt;?xml-stylesheet?&gt; processing instruction) 
+			that contains javascript expressions.  The stylesheet should not be used, so this paragraph should not be
+			red and no scripts should run.
+			</p>
+			<p>Here we try to display "Let me out!" outside of the box using absolute positioning:</p>
+			<div style="position: absolute; top: 0; right: 0; color: red;">Let me out!</div>
+			<div style="position: absolute; top: -100px; right: 0; color: red;">Let me out with a negative top property!</div>
+			
+			<p style="counter-increment: untrusted-num;">Here we try to increment the CSS counter used for the 
+			"Untrusted Content #x" headings.  If the "attack" succeeds, the next section heading will say "Untrusted Content #3"
+			instead of "Untrusted Content #2".  This can only be prevented
+			if javascript is enabled.  If the heading just says "Untrusted Content", that just means your browser doesn't support
+			the CSS that would be needed for the attack to succeed.</p>
+			
+			<p>This paragraph has some <font face="&#0;
+			">non-printable</font> and <font face="&#xdead;">non-ascii</font> characters in attribute values.  
+			We just want to be sure that they don't mess up the parsing.</p>
+		</div><xmp></xmp>
+		<!-- ' " > -->
+		<!-- The preceding comment ensures that the comment and any attrs and tags started
+		by the untrusted content have been closed. -->
+	</td></tr></table></div>
+	<script type="text/javascript">
+	// <![CDATA[
+	NeatHtml.DefaultFilter.ProcessUntrusted();
+	// ]]>
+	</script>
+	<p id="trustedLinkAfterParent"><a id="trustedLinkAfter" href="#">Another link</a> that some trusted script will wire
+	up	based on it's ID.
+	</p>
+	<h3>Expected Result</h3>
+
+  
+	<script type="text/javascript">
+	// <![CDATA[
+	window.onload = function() 
+	{
+		NeatHtmlTest.RunTests([
+			["XSS", function () {
+				if (NeatHtmlTest.GetMode() == "noscript")
+				{
+					NeatHtmlTest.Status = "DISABLED in noscript mode";
+					return;
+				}
+				NeatHtmlTest.AssertEquals(NeatHtmlTest.AlertCalls, 0);
+			}],
+			["ID spoofing", function () {
+				if (NeatHtmlTest.GetMode() == "noscript")
+				{
+					NeatHtmlTest.Status = "DISABLED in noscript mode";
+					return;
+				}
+				function BeforeClicked()
+				{
+					NeatHtmlTest.Log("Trusted link before untrusted content clicked."); 
+					return false;
+				}
+				function AfterClicked()
+				{
+					NeatHtmlTest.Log("Trusted link before untrusted content clicked."); 
+					return false;
+				}
+				document.getElementById("trustedLinkBefore").onclick = BeforeClicked;
+				document.getElementById("trustedLinkAfter").onclick = AfterClicked;
+				NeatHtmlTest.AssertEquals(BeforeClicked, document.getElementById("trustedLinkBeforeParent").firstChild.onclick);
+				NeatHtmlTest.AssertEquals(AfterClicked, document.getElementById("trustedLinkAfterParent").firstChild.onclick);			
+			}],
+		]);
+	}
+	// ]]>
+	</script>
+</body>
+</html>
