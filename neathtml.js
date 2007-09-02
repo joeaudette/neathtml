@@ -333,7 +333,7 @@ NeatHtml.Filter.prototype.AllowElem = function(tagInfo)
 	for (var i = 0; i < attrArray.length; i++)
 	{
 		newAttrs += " " + attrArray[i].name 
-			+ '="' + this.HtmlEncode(attrArray[i].value) + '"';   // '
+			+ '="' + this.HtmlEncodeAttribute(attrArray[i].value) + '"';   // '
 	}
 	
 	tagInfo.attrs = newAttrs;
@@ -669,6 +669,22 @@ NeatHtml.Filter.prototype.HtmlEncode = function(s)
 			case '&': return "&amp;";  
 			case '"': return "&quot;";
 			case "'": return "&#39;";
+		}
+	});  
+}
+	
+NeatHtml.Filter.prototype.HtmlEncodeAttribute = function(s)
+{
+	return s.replace(/[<>&"'\x00-\x1F\u007F-\uFFFF]/g,    // " 
+						function (c) { 
+		switch (c)
+		{
+			case '<': return "&lt;";  
+			case '>': return "&gt;";  
+			case '&': return "&amp;";  
+			case '"': return "&quot;";
+			case "'": return "&#39;";
+			default: return "&#" + c.charCodeAt(0) + ";";
 		}
 	});  
 }
