@@ -2,8 +2,6 @@
 NeatHtml - for preventing XSS in untrusted HTML
 Copyright (C) 2007  Dean Brettle
 
-GetParseErrorText() based on code from LGPLed sarissa.js which is Copyright 2004-2007 Emmanouil Batsis.
-
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
