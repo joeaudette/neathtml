@@ -61,7 +61,8 @@ NeatHtmlTest.RunTests = function(tests) {
 		}
 		catch (ex)
 		{
-			NeatHtmlTest.Status = "FAILED";
+			if (NeatHtmlTest.Status == "PASSED")
+				NeatHtmlTest.Status = "FAILED";
 			NeatHtmlTest.StatusDetails += ex;
 		}
 		if (typeof(statusCounts[NeatHtmlTest.Status]) == "undefined")
@@ -104,7 +105,7 @@ NeatHtmlTest.RunTests = function(tests) {
 		{
 			if (msg.length > 0) 
 				msg += ", ";
-			msg += NeatHtmlTest.HtmlEncode(name) + ": " + count + "/" + tests.length;
+			msg += count + "/" + tests.length + " " + NeatHtmlTest.HtmlEncode(name);
 		}
 	}
 	summary.innerHTML = "<span style='color: " + color + ";'>" + msg + "</span>";
@@ -147,6 +148,7 @@ NeatHtmlTest.AssertEquals = function (expected, actual, msg)
 
 NeatHtmlTest.QuoteString = function(s)
 {
+	if (typeof(s) != "string") return s;
 	return "'" + s.replace(/'/g, "\\'").replace(/\n/g, "\\n'\n+'") + "'";    // " '
 }
 
