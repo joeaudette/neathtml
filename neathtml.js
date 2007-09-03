@@ -722,7 +722,7 @@ NeatHtml.Filter.prototype.HtmlEncodeAttribute = function(s)
 NeatHtml.Filter.prototype.HtmlDecode = function(s)
 {
 	var my = this;
-	return s.replace(/&(#([1-9][0-9]{1,9})|#[xX]([0-9a-fA-F]{1,8})|([A-Z:_a-z][A-Z:_a-z0-9._]{0,10}));/g, 
+	return s.replace(/&(#(0|[1-9][0-9]{0,9})|#[xX]([0-9a-fA-F]{1,8})|([A-Z:_a-z][A-Z:_a-z0-9._]{0,10}));/g, 
 						function (match, isEntity, decDigits, hexDigits, name) {
 		if (decDigits != null && decDigits.length > 0)
 			return String.fromCharCode(parseInt(decDigits, 10));

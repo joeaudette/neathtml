@@ -149,6 +149,20 @@ NeatHtmlTest.AssertEquals = function (expected, actual, msg)
 	}
 };
 
+NeatHtmlTest.AssertEqualsIgnoreWhitespace = function (expected, actual, msg)
+{
+	if (typeof(msg) == "undefined")
+		msg = "";
+	else
+		msg += ": ";
+	if (typeof(expected) != typeof(actual)) {
+		throw msg + "AssertEquals() Failed: types unequal: " + typeof(expected) + "!=" + typeof(actual);
+	}
+	if (expected.replace(/[\r\n\t ]+/gm, " ") != actual.replace(/[\r\n\t ]+/gm, " ")) {
+		throw msg + "AssertEquals() Failed: " + NeatHtmlTest.QuoteString(expected) + "!=" + NeatHtmlTest.QuoteString(actual);
+	}
+};
+
 NeatHtmlTest.AssertMatches = function (re, actual, msg)
 {
 	if (typeof(msg) == "undefined")

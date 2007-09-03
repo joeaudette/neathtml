@@ -90,8 +90,8 @@ NeatHtmlTest.AppendTestStatusElement();
 				<tr>
 					<th>Special characters and attributes
 					<td><a implicit_attr href=http://www.google.com/search?hl=en&q=neathtml&btnG=Search>unquoted and unencoded link</a>
-					<td><font face='	&#0;
-			'>non-printable</font> and <font face='&#xdead;'>non-ascii</font> attr values
+					<td><font face='&#9;&#0;
+'>non-printable</font> and <font face='&#xdead;'>non-ascii</font> attr values
 					<td>A B C with entities: &#65;&nbsp;&#x42;&nbsp;&#X43;
 					<td>Unencoded <, and &
 			<NeatHtmlParserReset single='' double=""></table><table><tr><td></div>
@@ -192,7 +192,7 @@ NeatHtmlTest.AppendTestStatusElement();
 					return;
 				}
 				var container = document.getElementById(NeatHtml.DefaultFilter.IdPrefix + "tagSoup");
-				NeatHtmlTest.AssertEquals('<div id="NeatHtml_untrusted">\n'
+				NeatHtmlTest.AssertEqualsIgnoreWhitespace(('<div id="NeatHtml_untrusted">\n'
     +'			<p>Here is a table with lots of XSS attacks and tag soup markup:</p>\n'
     +'			<div id="NeatHtml_tagSoup"><table border="1">\n'
     +'				<tr>\n'
@@ -218,7 +218,7 @@ NeatHtmlTest.AppendTestStatusElement();
     +'				<tr>\n'
     +'					<th>Special characters and attributes\n'
     +'					<td><a href="http://www.google.com/search?hl=en&amp;q=neathtml&amp;btnG=Search">unquoted and unencoded link</a>\n'
-    +'					</td><td><font face="&#9;&amp;#0;&#10;&#9;&#9;&#9;">non-printable</font> and <font face="&#57005;">non-ascii</font> attr values\n'
+    +'					</td><td><font face="&#9;&#0;&#10;">non-printable</font> and <font face="&#57005;">non-ascii</font> attr values\n'
     +'					</td><td>A B C with entities: &#65;&#160;&#x42;&#160;&#x43;\n'
     +'					</td><td>Unencoded &lt;, and &amp;\n'
     +'			</td></th></tr></p></td></th></tr></td></th></tr></table></div>\n'
@@ -243,7 +243,7 @@ NeatHtmlTest.AppendTestStatusElement();
     +'			\n'
     +'			<p>Try to break out of the markup jail:</p>\n'
     +'				\n'
-    +'            </div>', NeatHtml.DefaultFilter.FilteredContent.replace(/\r\n?/, "\n"));
+    +'            </div>'), NeatHtml.DefaultFilter.FilteredContent);
 			}],
 			["Support for tables not at top level", function () {
 				var prefix = NeatHtml.DefaultFilter.IdPrefix;
