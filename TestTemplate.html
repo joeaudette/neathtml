@@ -99,7 +99,7 @@ NeatHtmlTest.AppendTestStatusElement();
 			<p>Here is a nested table which will display as 3 tables when javascript is disabled (known limitation).
 			<NeatHtmlParserReset single='' double=""></NeatHtmlParserReset></td></tr></table><table border=1>
 				<tr><td>0,0</td><td>0,1</td><td>0,2</td></tr>
-				<tr><td>1,0</td><td><NeatHtmlParserReset single='' double=""></NeatHtmlParserReset></td></tr></table><table border=1>
+				<tr><td>1,0</td><td id="innerTableContainer"><NeatHtmlParserReset single='' double=""></NeatHtmlParserReset></td></tr></table><table id="innerTable" border=1>
 				<tr><td>A,A</td><td>A,B</td><td>A,C</td></tr>
 				<tr><td>B,A</td><td>B,B</td><td>B,C</td></tr>
 				<tr><td>C,A</td><td>C,B</td><td>C,C</td></tr>
@@ -150,7 +150,7 @@ NeatHtmlTest.AppendTestStatusElement();
 			["XSS blocked", function () {
 				if (NeatHtmlTest.GetMode() == "noscript")
 				{
-					NeatHtmlTest.Status = "DISABLED in noscript mode";
+					NeatHtmlTest.Status = "disabled in noscript mode";
 					return;
 				}
 				NeatHtmlTest.AssertEquals(NeatHtmlTest.AlertCalls, 0);
@@ -158,7 +158,7 @@ NeatHtmlTest.AppendTestStatusElement();
 			["ID spoofing blocked", function () {
 				if (NeatHtmlTest.GetMode() == "noscript")
 				{
-					NeatHtmlTest.Status = "DISABLED in noscript mode";
+					NeatHtmlTest.Status = "disabled in noscript mode";
 					return;
 				}
 				function BeforeClicked()
@@ -179,71 +179,85 @@ NeatHtmlTest.AppendTestStatusElement();
 			["Good styles kept", function () {
 				if (NeatHtmlTest.GetMode() == "noscript")
 				{
-					NeatHtmlTest.Status = "DISABLED in noscript mode";
+					NeatHtmlTest.Status = "disabled in noscript mode";
 					return;
 				}
 				var elemWithXssStyle = document.getElementById(NeatHtml.DefaultFilter.IdPrefix + "styleXss");
-				NeatHtmlTest.AssertEquals("rgb(192, 255, 192)", elemWithXssStyle.style.backgroundColor);
+				NeatHtmlTest.AssertEquals("rgb(192,255,192)", elemWithXssStyle.style.backgroundColor.replace(/ /g,""));
 			}],
 			["Tag soup cleaned up", function () {
 				if (NeatHtmlTest.GetMode() == "noscript")
 				{
-					NeatHtmlTest.Status = "DISABLED in noscript mode";
+					NeatHtmlTest.Status = "disabled in noscript mode";
 					return;
 				}
 				var container = document.getElementById(NeatHtml.DefaultFilter.IdPrefix + "tagSoup");
 				NeatHtmlTest.AssertEquals('<div id="NeatHtml_untrusted">\n'
-+'			<p>Here is a table with lots of XSS attacks and tag soup markup:</p>\n'
-+'			<div id="NeatHtml_tagSoup"><table border="1">\n'
-+'				<tr>\n'
-+'					<th>Script attacks\n'
-+'					<td>script element<br />\n'
-+'						\n'
-+'						script elem in CDATA<br />\n'
-+'												\n'
-+'					</td><td>\n'
-+'						<a href="http://www.google.com/">on* attr</a><br />\n'
-+'						<a>javascript href</a><br />\n'
-+'					</td><td id="NeatHtml_styleXss" style="background-color: rgb(192,255,192); ">\n'
-+'						green despite script in style\n'
-+'					</td><td>\n'
-+'						<a id="NeatHtml_trustedLinkBefore" href="http://www.google.com/">spoof existing ID</a><br />\n'
-+'						<a id="NeatHtml_trustedLinkAfter" href="http://www.google.com/">spoof future ID</a><br />\n'
-+'				<tr>\n'
-+'					<th>Tag soup\n'
-+'					<td><ul><li>no &lt;/li> 1/2</li><li>no &lt;/li> 2/2</li></ul>\n'
-+'					</td><td>unmatched &lt;/em> \n'
-+'					</td><td><B>varying</B> <i>case</i> <U>tags</U>\n'
-+'					</td><td><p>line<br />break with &lt;br&gt;\n'
-+'				<tr>\n'
-+'					<th>Special characters and attributes\n'
-+'					<td><a href="http://www.google.com/search?hl=en&amp;q=neathtml&amp;btnG=Search">unquoted and unencoded link</a>\n'
-+'					</td><td><font face="&amp;#0;&#10;&#9;&#9;&#9;">non-printable</font> and <font face="&#57005;">non-ascii</font> attr values\n'
-+'					</td><td>A B C with entities: &#65;&#160;&#x42;&#160;&#x43;\n'
-+'					</td><td>Unencoded &lt;, and &amp;\n'
-+'			</td></th></tr></p></td></th></tr></td></th></tr></table></div>\n'
-+'			\n'
-+'			<p>Here is a nested table which will display as 3 tables when javascript is disabled (known limitation).\n'
-+'			<table border="1">\n'
-+'				<tr><td>0,0</td><td>0,1</td><td>0,2</td></tr>\n'
-+'				<tr><td>1,0</td><td><table border="1">\n'
-+'				<tr><td>A,A</td><td>A,B</td><td>A,C</td></tr>\n'
-+'				<tr><td>B,A</td><td>B,B</td><td>B,C</td></tr>\n'
-+'				<tr><td>C,A</td><td>C,B</td><td>C,C</td></tr>\n'
-+'			</table></td><td>1,2</td></tr>\n'
-+'				<tr><td>2,0</td><td>2,1</td><td>2,2</td></tr>\n'
-+'			</table>\n'
-+'\n'
-+'			</p><p style="">Increment a CSS counter.  For result, see just under the\n'
-+'			untrusted content box.</p>\n'
-+'			\n'
-+'			<p>Try to break out of the layout jail:</p>\n'
-+'			<div style="position: absolute; top: 0; right: 0; color: red; ">Let me out!</div>\n'
-+'			<div style="position: absolute; top: -100px; right: 0; color: red; ">Let me out with a negative top property!</div>\n'
-+'			\n'
-+'			<p>Try to break out of the markup jail:</p>\n'
-+'				\n'
-+'            </div>', NeatHtml.DefaultFilter.FilteredContent);
+    +'			<p>Here is a table with lots of XSS attacks and tag soup markup:</p>\n'
+    +'			<div id="NeatHtml_tagSoup"><table border="1">\n'
+    +'				<tr>\n'
+    +'					<th>Script attacks\n'
+    +'					<td>script element<br />\n'
+    +'						\n'
+    +'						script elem in CDATA<br />\n'
+    +'												\n'
+    +'					</td><td>\n'
+    +'						<a href="http://www.google.com/">on* attr</a><br />\n'
+    +'						<a>javascript href</a><br />\n'
+    +'					</td><td id="NeatHtml_styleXss" style="background-color: rgb(192,255,192); ">\n'
+    +'						green despite script in style\n'
+    +'					</td><td>\n'
+    +'						<a id="NeatHtml_trustedLinkBefore" href="http://www.google.com/">spoof existing ID</a><br />\n'
+    +'						<a id="NeatHtml_trustedLinkAfter" href="http://www.google.com/">spoof future ID</a><br />\n'
+    +'				<tr>\n'
+    +'					<th>Tag soup\n'
+    +'					<td><ul><li>no &lt;/li> 1/2</li><li>no &lt;/li> 2/2</li></ul>\n'
+    +'					</td><td>unmatched &lt;/em> \n'
+    +'					</td><td><B>varying</B> <i>case</i> <U>tags</U>\n'
+    +'					</td><td><p>line<br />break with &lt;br&gt;\n'
+    +'				<tr>\n'
+    +'					<th>Special characters and attributes\n'
+    +'					<td><a href="http://www.google.com/search?hl=en&amp;q=neathtml&amp;btnG=Search">unquoted and unencoded link</a>\n'
+    +'					</td><td><font face="&amp;#0;&#10;&#9;&#9;&#9;">non-printable</font> and <font face="&#57005;">non-ascii</font> attr values\n'
+    +'					</td><td>A B C with entities: &#65;&#160;&#x42;&#160;&#x43;\n'
+    +'					</td><td>Unencoded &lt;, and &amp;\n'
+    +'			</td></th></tr></p></td></th></tr></td></th></tr></table></div>\n'
+    +'			\n'
+    +'			<p>Here is a nested table which will display as 3 tables when javascript is disabled (known limitation).\n'
+    +'			<table border="1">\n'
+    +'				<tr><td>0,0</td><td>0,1</td><td>0,2</td></tr>\n'
+    +'				<tr><td>1,0</td><td id="NeatHtml_innerTableContainer"><table id="NeatHtml_innerTable" border="1">\n'
+    +'				<tr><td>A,A</td><td>A,B</td><td>A,C</td></tr>\n'
+    +'				<tr><td>B,A</td><td>B,B</td><td>B,C</td></tr>\n'
+    +'				<tr><td>C,A</td><td>C,B</td><td>C,C</td></tr>\n'
+    +'			</table></td><td>1,2</td></tr>\n'
+    +'				<tr><td>2,0</td><td>2,1</td><td>2,2</td></tr>\n'
+    +'			</table>\n'
+    +'\n'
+    +'			</p><p style="">Increment a CSS counter.  For result, see just under the\n'
+    +'			untrusted content box.</p>\n'
+    +'			\n'
+    +'			<p>Try to break out of the layout jail:</p>\n'
+    +'			<div style="position: absolute; top: 0; right: 0; color: red; ">Let me out!</div>\n'
+    +'			<div style="position: absolute; top: -100px; right: 0; color: red; ">Let me out with a negative top property!</div>\n'
+    +'			\n'
+    +'			<p>Try to break out of the markup jail:</p>\n'
+    +'				\n'
+    +'            </div>', NeatHtml.DefaultFilter.FilteredContent);
+			}],
+			["Support for tables not at top level", function () {
+				var prefix = NeatHtml.DefaultFilter.IdPrefix;
+				if (NeatHtmlTest.GetMode() != "normal")
+				{
+					prefix = "";
+				}
+				if (NeatHtmlTest.GetMode() == "noscript")
+				{
+					NeatHtmlTest.Status = "known limitation in noscript mode";
+				}
+				var innerTableContainer = document.getElementById(prefix + "innerTableContainer");
+				var innerTable = document.getElementById(prefix + "innerTable");
+				NeatHtmlTest.AssertEquals(innerTableContainer, innerTable.parentNode);
 			}],
 		]);
 	}
