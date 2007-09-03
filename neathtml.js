@@ -680,8 +680,33 @@ NeatHtml.Filter.prototype.HtmlEncode = function(s)
 	
 NeatHtml.Filter.prototype.HtmlEncodeAttribute = function(s)
 {
-	return s.replace(/[<>&"'\x00-\x1F\u007F-\uFFFF]/g,    // " 
-						function (c) { 
+	if (String.fromCharCode(65535).match(/\uFFFF/))
+	{	
+		return s.replace(/[<>&"'\x00-\x1F\u007F-\uFFFF]/g,    // " 
+							HtmlEncodeChar);
+	}
+	else
+	{
+		// \uXXXX not recognized in regular expressions on Safari...
+		s = s.replace(/[<>&"'\x00-\x1F]/g,    // " 
+						HtmlEncodeChar);
+		var newS = "";
+		var lastIndex = 0;
+		for (var i = 0; i < s.length; i++)
+		{
+			if (s.charCodeAt(i) >= 127)
+			{
+				newS += s.substring(lastIndex, i);
+				newS += HtmlEncodeChar(s.charAt(i));
+				lastIndex = i + 1;
+			}
+		}
+		newS += s.substring(lastIndex, s.length);
+		return newS;
+	}
+						
+	function HtmlEncodeChar(c)
+	{ 
 		switch (c)
 		{
 			case '<': return "&lt;";  
@@ -691,7 +716,7 @@ NeatHtml.Filter.prototype.HtmlEncodeAttribute = function(s)
 			case "'": return "&#39;";
 			default: return "&#" + c.charCodeAt(0) + ";";
 		}
-	});  
+	}
 }
 	
 NeatHtml.Filter.prototype.HtmlDecode = function(s)

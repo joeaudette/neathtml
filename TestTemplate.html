@@ -51,7 +51,7 @@ NeatHtmlTest.AppendTestStatusElement();
 	<div id="container" style="overflow: hidden; position: relative; border: solid 1px;">
 	<![endif]>
 	<!--[if lt IE 7]>
-	<div style="overflow: auto; position: relative; border: solid 1px; width: 100%; height: 400px;">	
+	<div id="container" style="overflow: auto; position: relative; border: solid 1px; width: 100%; height: 400px;">	
 	<![endif]-->
 	<table><tr><td>
 		<!-- test comment --><script type="text/javascript">
@@ -90,7 +90,7 @@ NeatHtmlTest.AppendTestStatusElement();
 				<tr>
 					<th>Special characters and attributes
 					<td><a implicit_attr href=http://www.google.com/search?hl=en&q=neathtml&btnG=Search>unquoted and unencoded link</a>
-					<td><font face='&#0;
+					<td><font face='	&#0;
 			'>non-printable</font> and <font face='&#xdead;'>non-ascii</font> attr values
 					<td>A B C with entities: &#65;&nbsp;&#x42;&nbsp;&#X43;
 					<td>Unencoded <, and &
@@ -183,7 +183,7 @@ NeatHtmlTest.AppendTestStatusElement();
 					return;
 				}
 				var elemWithXssStyle = document.getElementById(NeatHtml.DefaultFilter.IdPrefix + "styleXss");
-				NeatHtmlTest.AssertEquals("rgb(192,255,192)", elemWithXssStyle.style.backgroundColor.replace(/ /g,""));
+				NeatHtmlTest.AssertMatches(/rgb\(192, ?255, ?192\)|#c0ffc0/i, elemWithXssStyle.style.backgroundColor);
 			}],
 			["Tag soup cleaned up", function () {
 				if (NeatHtmlTest.GetMode() == "noscript")
@@ -218,7 +218,7 @@ NeatHtmlTest.AppendTestStatusElement();
     +'				<tr>\n'
     +'					<th>Special characters and attributes\n'
     +'					<td><a href="http://www.google.com/search?hl=en&amp;q=neathtml&amp;btnG=Search">unquoted and unencoded link</a>\n'
-    +'					</td><td><font face="&amp;#0;&#10;&#9;&#9;&#9;">non-printable</font> and <font face="&#57005;">non-ascii</font> attr values\n'
+    +'					</td><td><font face="&#9;&amp;#0;&#10;&#9;&#9;&#9;">non-printable</font> and <font face="&#57005;">non-ascii</font> attr values\n'
     +'					</td><td>A B C with entities: &#65;&#160;&#x42;&#160;&#x43;\n'
     +'					</td><td>Unencoded &lt;, and &amp;\n'
     +'			</td></th></tr></p></td></th></tr></td></th></tr></table></div>\n'
@@ -243,7 +243,7 @@ NeatHtmlTest.AppendTestStatusElement();
     +'			\n'
     +'			<p>Try to break out of the markup jail:</p>\n'
     +'				\n'
-    +'            </div>', NeatHtml.DefaultFilter.FilteredContent);
+    +'            </div>', NeatHtml.DefaultFilter.FilteredContent.replace(/\r\n?/, "\n"));
 			}],
 			["Support for tables not at top level", function () {
 				var prefix = NeatHtml.DefaultFilter.IdPrefix;

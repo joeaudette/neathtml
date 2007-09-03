@@ -80,9 +80,13 @@ NeatHtmlTest.RunTests = function(tests) {
 			+ NeatHtmlTest.HtmlEncode(tests[i][0]) + "</span><br />");
 		if (NeatHtmlTest.StatusDetails.length > 0)
 		{
-			NeatHtmlTest.AppendOutput("<blockquote style='color: " + color + ";'><pre>" 
+			NeatHtmlTest.AppendOutput("" 
+				+ "<blockquote style='color: " + color + ";'>"
+				+ "<pre>"
 				+ NeatHtmlTest.HtmlEncode(NeatHtmlTest.StatusDetails)
-				+ "</pre></blockquote><br />");
+				+ "</pre>"
+				+ "</blockquote>" 
+				+ "<br />");
 		}
 	}
 	var summary = document.createElement("h2");
@@ -131,18 +135,25 @@ NeatHtmlTest.AlertFromScript = function(msg) {
 NeatHtmlTest.AssertEquals = function (expected, actual, msg)
 {
 	if (typeof(msg) == "undefined")
-	{
 		msg = "";
-	}
 	else
-	{
 		msg += ": ";
-	}
 	if (typeof(expected) != typeof(actual)) {
 		throw msg + "AssertEquals() Failed: types unequal: " + typeof(expected) + "!=" + typeof(actual);
 	}
 	if (expected != actual) {
 		throw msg + "AssertEquals() Failed: " + NeatHtmlTest.QuoteString(expected) + "!=" + NeatHtmlTest.QuoteString(actual);
+	}
+};
+
+NeatHtmlTest.AssertMatches = function (re, actual, msg)
+{
+	if (typeof(msg) == "undefined")
+		msg = "";
+	else
+		msg += ": ";
+	if (! re.test(actual)) {
+		throw msg + "AssertMatches() Failed: " + NeatHtmlTest.QuoteString(re) + "!=" + NeatHtmlTest.QuoteString(actual);
 	}
 };
 
