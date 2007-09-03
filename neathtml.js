@@ -399,10 +399,11 @@ NeatHtml.Filter.prototype.BeginUntrusted = function() {
 NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 	var my = this;
 	var containingDiv = FindContainingDiv(this.BeginUntrustedScript);
+	var xmlStr;
 	try
 	{
 		var untrustedContent = GetUntrustedContent();
-		var xmlStr = FilterTagSoupToXml(untrustedContent);
+		xmlStr = FilterTagSoupToXml(untrustedContent);
 		containingDiv.innerHTML = xmlStr;
 		ResizeContainer(containingDiv);
 	}
@@ -410,6 +411,11 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 	{
 		containingDiv.innerHTML = "<pre>" + ex.toString().replace(/</g, "&lt;").replace(/&/g, "&amp;") + "</pre>";
 	}
+	
+	// Make the result available for use by tests 
+	this.FilteredContent = xmlStr; 
+	return this.FilteredContent;
+	
 	/***** Local Functions ******/
 	
 	function FindContainingDiv(n) 
