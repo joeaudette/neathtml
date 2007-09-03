@@ -32,17 +32,10 @@
 NeatHtmlTest.AppendTestStatusElement();	
 	// ]]></script>
 
-	<p><em>Please send bugs, comments, and questions to dean at brettle dot com</em>.
-	
-	<h3 class="Untrusted" id="theTest">The Test</h3>
+	<h3 class="Untrusted" id="theTest" style="display: none">The Test</h3>
 
 	<p id="trustedLinkBeforeParent"><a id="trustedLinkBefore" href="#">This link</a>
-	will be wired up by trusted script based on it's ID.
-	Clicking the link should log a message above.  If it doesn't or a link in untrusted content does, then there is a
-	hole.  The script finds the link using document.getElementById("trustedLinkBefore"), 
-	so untrusted content needs to be prevented from	containing elements with such an ID.</p>
-
-	<p>Here is the untrusted content:</p>
+	is for the ID spoofing test.  Here is the untrusted content:</p>
 	<!-- 
 		NOTE: After doing the required replace, place the untrusted content inside the div with an ID of "untrusted".
 		Everything between here and there is boilerplate that the server would generate.
@@ -108,13 +101,9 @@ NeatHtmlTest.AppendTestStatusElement();
 			<NeatHtmlParserReset single='' double=""></table><table><tr><td>
 
 			<p style="counter-increment: untrusted-num;">Increment a CSS counter.  For result, see just under the
-			untrusted content box.</p>
-			
-			<p>Try to break out of the layout jail:</p>
+			untrusted content box.  Try to break out of the layout jail and markup jail...
 			<div style="position: absolute; top: 0; right: 0; color: red;">Let me out!</div>
 			<div style="position: absolute; top: -100px; right: 0; color: red;">Let me out with a negative top property!</div>
-			
-			<p>Try to break out of the markup jail:</p>
 				<NeatHtmlParserReset single='' double=""></table><table><tr><td>
             </div>
             </div>
@@ -130,8 +119,7 @@ NeatHtmlTest.AppendTestStatusElement();
 	NeatHtml.DefaultFilter.ProcessUntrusted();
 	// ]]>
 	</script>
-	<p id="trustedLinkAfterParent"><a id="trustedLinkAfter" href="#">Another link</a> that some trusted script will wire
-	up	based on it's ID.
+	<p id="trustedLinkAfterParent"><a id="trustedLinkAfter" href="#">Another link</a> for the ID spoofing test.
 	</p>
 
 	<h3 id="counterTest" class="Untrusted">Known limitation - displays "#3" when script is disabled: </h3>
@@ -142,40 +130,7 @@ NeatHtmlTest.AppendTestStatusElement();
 	window.onload = function() 
 	{
 		NeatHtmlTest.RunTests([
-			["Markup invasion blocked", function () {
-				var container = document.getElementById("container");
-				var afterContainer = document.getElementById("afterContainer");
-				NeatHtmlTest.AssertEquals(afterContainer, container.nextSibling);
-			}],
-			["XSS blocked", function () {
-				if (NeatHtmlTest.GetMode() == "noscript")
-				{
-					NeatHtmlTest.Status = "disabled in noscript mode";
-					return;
-				}
-				NeatHtmlTest.AssertEquals(NeatHtmlTest.AlertCalls, 0);
-			}],
-			["ID spoofing blocked", function () {
-				if (NeatHtmlTest.GetMode() == "noscript")
-				{
-					NeatHtmlTest.Status = "disabled in noscript mode";
-					return;
-				}
-				function BeforeClicked()
-				{
-					NeatHtmlTest.Log("Trusted link before untrusted content clicked."); 
-					return false;
-				}
-				function AfterClicked()
-				{
-					NeatHtmlTest.Log("Trusted link before untrusted content clicked."); 
-					return false;
-				}
-				document.getElementById("trustedLinkBefore").onclick = BeforeClicked;
-				document.getElementById("trustedLinkAfter").onclick = AfterClicked;
-				NeatHtmlTest.AssertEquals(BeforeClicked, document.getElementById("trustedLinkBeforeParent").firstChild.onclick);
-				NeatHtmlTest.AssertEquals(AfterClicked, document.getElementById("trustedLinkAfterParent").firstChild.onclick);			
-			}],
+			["Default test suite", NeatHtmlTest.DefaultTests],
 			["Good styles kept", function () {
 				if (NeatHtmlTest.GetMode() == "noscript")
 				{
@@ -192,58 +147,54 @@ NeatHtmlTest.AppendTestStatusElement();
 					return;
 				}
 				var container = document.getElementById(NeatHtml.DefaultFilter.IdPrefix + "tagSoup");
-				NeatHtmlTest.AssertEqualsIgnoreWhitespace(('<div id="NeatHtml_untrusted">\n'
-    +'			<p>Here is a table with lots of XSS attacks and tag soup markup:</p>\n'
-    +'			<div id="NeatHtml_tagSoup"><table border="1">\n'
-    +'				<tr>\n'
-    +'					<th>Script attacks\n'
-    +'					<td>script element<br />\n'
-    +'						\n'
-    +'						script elem in CDATA<br />\n'
-    +'												\n'
-    +'					</td><td>\n'
-    +'						<a href="http://www.google.com/">on* attr</a><br />\n'
-    +'						<a>javascript href</a><br />\n'
-    +'					</td><td id="NeatHtml_styleXss" style="background-color: rgb(192,255,192); ">\n'
-    +'						green despite script in style\n'
-    +'					</td><td>\n'
-    +'						<a id="NeatHtml_trustedLinkBefore" href="http://www.google.com/">spoof existing ID</a><br />\n'
-    +'						<a id="NeatHtml_trustedLinkAfter" href="http://www.google.com/">spoof future ID</a><br />\n'
-    +'				<tr>\n'
-    +'					<th>Tag soup\n'
-    +'					<td><ul><li>no &lt;/li> 1/2</li><li>no &lt;/li> 2/2</li></ul>\n'
-    +'					</td><td>unmatched &lt;/em> \n'
-    +'					</td><td><B>varying</B> <i>case</i> <U>tags</U>\n'
-    +'					</td><td><p>line<br />break with &lt;br&gt;\n'
-    +'				<tr>\n'
-    +'					<th>Special characters and attributes\n'
-    +'					<td><a href="http://www.google.com/search?hl=en&amp;q=neathtml&amp;btnG=Search">unquoted and unencoded link</a>\n'
-    +'					</td><td><font face="&#9;&#0;&#10;">non-printable</font> and <font face="&#57005;">non-ascii</font> attr values\n'
-    +'					</td><td>A B C with entities: &#65;&#160;&#x42;&#160;&#x43;\n'
-    +'					</td><td>Unencoded &lt;, and &amp;\n'
-    +'			</td></th></tr></p></td></th></tr></td></th></tr></table></div>\n'
-    +'			\n'
-    +'			<p>Here is a nested table which will display as 3 tables when javascript is disabled (known limitation).\n'
-    +'			<table border="1">\n'
-    +'				<tr><td>0,0</td><td>0,1</td><td>0,2</td></tr>\n'
-    +'				<tr><td>1,0</td><td id="NeatHtml_innerTableContainer"><table id="NeatHtml_innerTable" border="1">\n'
-    +'				<tr><td>A,A</td><td>A,B</td><td>A,C</td></tr>\n'
-    +'				<tr><td>B,A</td><td>B,B</td><td>B,C</td></tr>\n'
-    +'				<tr><td>C,A</td><td>C,B</td><td>C,C</td></tr>\n'
-    +'			</table></td><td>1,2</td></tr>\n'
-    +'				<tr><td>2,0</td><td>2,1</td><td>2,2</td></tr>\n'
-    +'			</table>\n'
-    +'\n'
-    +'			</p><p style="">Increment a CSS counter.  For result, see just under the\n'
-    +'			untrusted content box.</p>\n'
-    +'			\n'
-    +'			<p>Try to break out of the layout jail:</p>\n'
-    +'			<div style="position: absolute; top: 0; right: 0; color: red; ">Let me out!</div>\n'
-    +'			<div style="position: absolute; top: -100px; right: 0; color: red; ">Let me out with a negative top property!</div>\n'
-    +'			\n'
-    +'			<p>Try to break out of the markup jail:</p>\n'
-    +'				\n'
-    +'            </div>'), NeatHtml.DefaultFilter.FilteredContent);
+				NeatHtmlTest.AssertEqualsIgnoreWhitespace('<div id="NeatHtml_untrusted">\n'
++'			<p>Here is a table with lots of XSS attacks and tag soup markup:</p>\n'
++'			<div id="NeatHtml_tagSoup"><table border="1">\n'
++'				<tr>\n'
++'					<th>Script attacks\n'
++'					<td>script element<br />\n'
++'						\n'
++'						script elem in CDATA<br />\n'
++'												\n'
++'					</td><td>\n'
++'						<a href="http://www.google.com/">on* attr</a><br />\n'
++'						<a>javascript href</a><br />\n'
++'					</td><td id="NeatHtml_styleXss" style="background-color: rgb(192,255,192); ">\n'
++'						green despite script in style\n'
++'					</td><td>\n'
++'						<a id="NeatHtml_trustedLinkBefore" href="http://www.google.com/">spoof existing ID</a><br />\n'
++'						<a id="NeatHtml_trustedLinkAfter" href="http://www.google.com/">spoof future ID</a><br />\n'
++'				<tr>\n'
++'					<th>Tag soup\n'
++'					<td><ul><li>no &lt;/li> 1/2</li><li>no &lt;/li> 2/2</li></ul>\n'
++'					</td><td>unmatched &lt;/em> \n'
++'					</td><td><B>varying</B> <i>case</i> <U>tags</U>\n'
++'					</td><td><p>line<br />break with &lt;br&gt;\n'
++'				<tr>\n'
++'					<th>Special characters and attributes\n'
++'					<td><a href="http://www.google.com/search?hl=en&amp;q=neathtml&amp;btnG=Search">unquoted and unencoded link</a>\n'
++'					</td><td><font face="&#9;&#0;&#10;">non-printable</font> and <font face="&#57005;">non-ascii</font> attr values\n'
++'					</td><td>A B C with entities: &#65;&#160;&#x42;&#160;&#x43;\n'
++'					</td><td>Unencoded &lt;, and &amp;\n'
++'			</td></th></tr></p></td></th></tr></td></th></tr></table></div>\n'
++'			\n'
++'			<p>Here is a nested table which will display as 3 tables when javascript is disabled (known limitation).\n'
++'			<table border="1">\n'
++'				<tr><td>0,0</td><td>0,1</td><td>0,2</td></tr>\n'
++'				<tr><td>1,0</td><td id="NeatHtml_innerTableContainer"><table id="NeatHtml_innerTable" border="1">\n'
++'				<tr><td>A,A</td><td>A,B</td><td>A,C</td></tr>\n'
++'				<tr><td>B,A</td><td>B,B</td><td>B,C</td></tr>\n'
++'				<tr><td>C,A</td><td>C,B</td><td>C,C</td></tr>\n'
++'			</table></td><td>1,2</td></tr>\n'
++'				<tr><td>2,0</td><td>2,1</td><td>2,2</td></tr>\n'
++'			</table>\n'
++'\n'
++'			</p><p style="">Increment a CSS counter.  For result, see just under the\n'
++'			untrusted content box.  Try to break out of the layout jail and markup jail...\n'
++'			<div style="position: absolute; top: 0; right: 0; color: red; ">Let me out!</div>\n'
++'			<div style="position: absolute; top: -100px; right: 0; color: red; ">Let me out with a negative top property!</div>\n'
++'				\n'
++'            </p></div>', NeatHtml.DefaultFilter.FilteredContent);
 			}],
 			["Support for tables not at top level", function () {
 				var prefix = NeatHtml.DefaultFilter.IdPrefix;

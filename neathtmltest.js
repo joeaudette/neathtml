@@ -22,9 +22,27 @@ NeatHtmlTest = {};
 NeatHtmlTest.AppendTestStatusElement = function() {
 	var scriptElems = document.getElementsByTagName("script");
 	var callingScriptElem = scriptElems[scriptElems.length - 1];
-	NeatHtmlTest.StatusDiv = document.createElement("div");
+	NeatHtmlTest.DetailsLink = document.createElement("a");
+	NeatHtmlTest.DetailsLink.setAttribute("href", "#");
+	callingScriptElem.parentNode.appendChild(NeatHtmlTest.DetailsLink);
+	NeatHtmlTest.StatusDiv = document.createElement("blockquote");
 	callingScriptElem.parentNode.appendChild(NeatHtmlTest.StatusDiv);
+	NeatHtmlTest.ShowDetails();
 };
+
+NeatHtmlTest.ShowDetails = function()
+{
+	NeatHtmlTest.StatusDiv.style.display = "block";
+	NeatHtmlTest.DetailsLink.innerHTML = "Hide details";
+	NeatHtmlTest.DetailsLink.onclick = NeatHtmlTest.HideDetails;
+}
+
+NeatHtmlTest.HideDetails = function()
+{
+	NeatHtmlTest.StatusDiv.style.display = "none";
+	NeatHtmlTest.DetailsLink.innerHTML = "Show details";
+	NeatHtmlTest.DetailsLink.onclick = NeatHtmlTest.ShowDetails;
+}
 
 NeatHtmlTest.GetMode = function()
 {
@@ -46,63 +64,34 @@ NeatHtmlTest.GetMode = function()
 
 NeatHtmlTest.HtmlEncode = NeatHtml.Filter.prototype.HtmlEncode;
 
-NeatHtmlTest.RunTests = function(tests) {
-	NeatHtmlTest.Log("Starting tests");
+NeatHtmlTest.RunTests = function(topSuite) {
+	NeatHtmlTest.AppendOutput("<em>Please send bugs, comments, and questions to dean at brettle dot com</em><br/>");
 	var statusCounts = {FAILED: 0, PASSED: 0};
 	var statusNames = ["FAILED", "PASSED"];
 	var statusColors = { FAILED: "#FF0000", PASSED: "#00FF00" };
 	var numTests = 0;
-	for (var i = 0; i < tests.length; i++)
-	{
-		if (tests[i] == null)
-			continue;
-		numTests++;
-		NeatHtmlTest.Status = "PASSED"
-		NeatHtmlTest.StatusDetails = "";
-		try
-		{
-			tests[i][1].call(window);
-		}
-		catch (ex)
-		{
-			if (NeatHtmlTest.Status == "PASSED")
-				NeatHtmlTest.Status = "FAILED";
-			NeatHtmlTest.StatusDetails += ex;
-		}
-		if (typeof(statusCounts[NeatHtmlTest.Status]) == "undefined")
-		{
-			statusNames.push(NeatHtmlTest.Status);
-			statusCounts[NeatHtmlTest.Status] = 1;
-		}
-		else
-		{
-			statusCounts[NeatHtmlTest.Status]++;
-		}
-		var color = statusColors[NeatHtmlTest.Status] || "#FF9900";
-		NeatHtmlTest.AppendOutput("<span style='color: " + color + ";'>" 
-			+ NeatHtmlTest.HtmlEncode(NeatHtmlTest.Status) + ": "
-			+ NeatHtmlTest.HtmlEncode(tests[i][0]) + "</span><br />");
-		if (NeatHtmlTest.StatusDetails.length > 0)
-		{
-			NeatHtmlTest.AppendOutput("" 
-				+ "<blockquote style='color: " + color + ";'>"
-				+ "<pre>"
-				+ NeatHtmlTest.HtmlEncode(NeatHtmlTest.StatusDetails)
-				+ "</pre>"
-				+ "</blockquote>" 
-				+ "<br />");
-		}
-	}
-	var summary = document.createElement("h2");
-	NeatHtmlTest.StatusDiv.parentNode.insertBefore(summary, NeatHtmlTest.StatusDiv);
+	
+	RunTestSuite(topSuite);
+		
+	var summary = document.createElement("div");
+	summary.style.fontSize="18pt";
+	NeatHtmlTest.StatusDiv.parentNode.insertBefore(summary, NeatHtmlTest.DetailsLink);
 	var color;
 	if (statusCounts["PASSED"] == numTests)
+	{
+		NeatHtmlTest.HideDetails();
 		color = statusColors["PASSED"];
+	}
 	else if (statusCounts["FAILED"] > 0)
+	{
+		NeatHtmlTest.ShowDetails();
 		color = statusColors["FAILED"];
+	}
 	else
+	{
+		NeatHtmlTest.HideDetails();
 		color = "#FF9900";
-
+	}
 	var msg = "";	
 	for (var i = 0; i < statusNames.length; i ++)
 	{
@@ -115,7 +104,57 @@ NeatHtmlTest.RunTests = function(tests) {
 			msg += count + "/" + numTests + " " + NeatHtmlTest.HtmlEncode(name);
 		}
 	}
-	summary.innerHTML = "<span style='color: " + color + ";'>" + msg + "</span>";
+	summary.innerHTML = "<span style='background-color: " + color + ";'>" + msg + "</span>";
+	
+	function RunTestSuite(tests)
+	{
+		for (var i = 0; i < tests.length; i++)
+		{
+			if (tests[i] == null)
+				continue;
+			if (typeof(tests[i][1]) != "function")
+			{
+				RunTestSuite(tests[i][1]);
+				continue;
+			}
+			numTests++;
+			NeatHtmlTest.Status = "PASSED"
+			NeatHtmlTest.StatusDetails = "";
+			try
+			{
+				tests[i][1].call(window);
+			}
+			catch (ex)
+			{
+				if (NeatHtmlTest.Status == "PASSED")
+					NeatHtmlTest.Status = "FAILED";
+				NeatHtmlTest.StatusDetails += ex;
+			}
+			if (typeof(statusCounts[NeatHtmlTest.Status]) == "undefined")
+			{
+				statusNames.push(NeatHtmlTest.Status);
+				statusCounts[NeatHtmlTest.Status] = 1;
+			}
+			else
+			{
+				statusCounts[NeatHtmlTest.Status]++;
+			}
+			var color = statusColors[NeatHtmlTest.Status] || "#FF9900";
+			NeatHtmlTest.AppendOutput("<span style='color: " + color + ";'>" 
+				+ NeatHtmlTest.HtmlEncode(NeatHtmlTest.Status) + ": "
+				+ NeatHtmlTest.HtmlEncode(tests[i][0]) + "</span><br />");
+			if (NeatHtmlTest.StatusDetails.length > 0)
+			{
+				NeatHtmlTest.AppendOutput("" 
+					+ "<blockquote style='color: " + color + ";'>"
+					+ "<pre>"
+					+ NeatHtmlTest.HtmlEncode(NeatHtmlTest.StatusDetails)
+					+ "</pre>"
+					+ "</blockquote>" 
+					+ "<br />");
+			}
+		}
+	}
 };
 
 NeatHtmlTest.AppendOutput = function(html) {
@@ -124,6 +163,7 @@ NeatHtmlTest.AppendOutput = function(html) {
 
 NeatHtmlTest.Log = function(msg) {
 	NeatHtmlTest.AppendOutput('<span>' + NeatHtmlTest.HtmlEncode(msg) + '</span><br />');
+	NeatHtmlTest.ShowDetails();
 };
 
 NeatHtmlTest.AlertCalls = 0;
@@ -133,6 +173,7 @@ NeatHtmlTest.AlertFromScript = function(msg) {
 	}
 	NeatHtmlTest.AlertCalls++;
 	NeatHtmlTest.AppendOutput('<span style="color: red;">' + NeatHtmlTest.HtmlEncode(msg) + '</span><br />');
+	NeatHtmlTest.ShowDetails();
 };
 
 NeatHtmlTest.AssertEquals = function (expected, actual, msg)
@@ -195,3 +236,41 @@ window.alert = function(msg)
 {
 	NeatHtmlTest.AlertFromScript(msg);
 };
+
+NeatHtmlTest.DefaultTests = [
+			["Markup invasion blocked", function () {
+				var container = document.getElementById("container");
+				var afterContainer = document.getElementById("afterContainer");
+				NeatHtmlTest.AssertEquals(afterContainer, container.nextSibling);
+			}],
+			["XSS blocked", function () {
+				if (NeatHtmlTest.GetMode() == "noscript")
+				{
+					NeatHtmlTest.Status = "disabled in noscript mode";
+					return;
+				}
+				NeatHtmlTest.AssertEquals(NeatHtmlTest.AlertCalls, 0);
+			}],
+			["ID spoofing blocked", function () {
+				if (NeatHtmlTest.GetMode() == "noscript")
+				{
+					NeatHtmlTest.Status = "disabled in noscript mode";
+					return;
+				}
+				function BeforeClicked()
+				{
+					NeatHtmlTest.Log("Trusted link before untrusted content clicked."); 
+					return false;
+				}
+				function AfterClicked()
+				{
+					NeatHtmlTest.Log("Trusted link before untrusted content clicked."); 
+					return false;
+				}
+				document.getElementById("trustedLinkBefore").onclick = BeforeClicked;
+				document.getElementById("trustedLinkAfter").onclick = AfterClicked;
+				NeatHtmlTest.AssertEquals(BeforeClicked, document.getElementById("trustedLinkBeforeParent").firstChild.onclick);
+				NeatHtmlTest.AssertEquals(AfterClicked, document.getElementById("trustedLinkAfterParent").firstChild.onclick);			
+			}],
+			null
+];
