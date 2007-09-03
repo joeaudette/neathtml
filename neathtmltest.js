@@ -51,8 +51,12 @@ NeatHtmlTest.RunTests = function(tests) {
 	var statusCounts = {FAILED: 0, PASSED: 0};
 	var statusNames = ["FAILED", "PASSED"];
 	var statusColors = { FAILED: "#FF0000", PASSED: "#00FF00" };
+	var numTests = 0;
 	for (var i = 0; i < tests.length; i++)
 	{
+		if (tests[i] == null)
+			continue;
+		numTests++;
 		NeatHtmlTest.Status = "PASSED"
 		NeatHtmlTest.StatusDetails = "";
 		try
@@ -90,10 +94,9 @@ NeatHtmlTest.RunTests = function(tests) {
 		}
 	}
 	var summary = document.createElement("h2");
-	
 	NeatHtmlTest.StatusDiv.parentNode.insertBefore(summary, NeatHtmlTest.StatusDiv);
 	var color;
-	if (statusCounts["PASSED"] == tests.length)
+	if (statusCounts["PASSED"] == numTests)
 		color = statusColors["PASSED"];
 	else if (statusCounts["FAILED"] > 0)
 		color = statusColors["FAILED"];
@@ -109,7 +112,7 @@ NeatHtmlTest.RunTests = function(tests) {
 		{
 			if (msg.length > 0) 
 				msg += ", ";
-			msg += count + "/" + tests.length + " " + NeatHtmlTest.HtmlEncode(name);
+			msg += count + "/" + numTests + " " + NeatHtmlTest.HtmlEncode(name);
 		}
 	}
 	summary.innerHTML = "<span style='color: " + color + ";'>" + msg + "</span>";
