@@ -279,6 +279,7 @@ NeatHtml.Filter.prototype.HandleUrl = function(tagName, attr)
 NeatHtml.Filter.prototype.AddPrefixToValue = function(tagName, attr)
 {
 	attr.value = this.IdPrefix + attr.value;
+	return true;
 };
 
 NeatHtml.Filter.prototype.HandleStyle = function(tagName, attr)
@@ -453,7 +454,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		var openTagInfos = [];
 		var matches = null;
 		var filteredXml = "";
-		var tagSoupRe = /(&((#[0-9]{1,10};|#x[0-9a-fA-F]{1,8};|amp;|lt;|gt;|quot;)|([A-Z:_a-z][A-Z:_a-z0-9._]{0,10};|(#X[0-9a-fA-F]{1,8};|))))|(<(\/?)(([!\?A-Z:_a-z][^ \t\n\r>]*)([^>]*)>|([^!\?A-Z:_a-z])))/gm; 
+		var tagSoupRe = /(&((#[0-9]{1,10};|#x[0-9a-fA-F]{1,8};|amp;|lt;|gt;|quot;)|([A-Z:_a-z][A-Z:_a-z0-9._]{0,10};|(#X[0-9a-fA-F]{1,8};|))))|(<(\/?)(([!\?A-Z:_a-z][^ \t\n\r\/>]*)([^>]*)>|([^!\?A-Z:_a-z])))/gm; 
 		tagSoupRe.lastIndex = 0;
 		var searchStartIndex = 0;
 		while (null != (matches = tagSoupRe.exec(s)))
