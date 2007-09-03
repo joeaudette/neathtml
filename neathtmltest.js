@@ -47,6 +47,7 @@ NeatHtmlTest.GetMode = function()
 NeatHtmlTest.HtmlEncode = NeatHtml.Filter.prototype.HtmlEncode;
 
 NeatHtmlTest.RunTests = function(tests) {
+	NeatHtmlTest.Log("Starting tests");
 	var statusCounts = {FAILED: 0, PASSED: 0};
 	var statusNames = ["FAILED", "PASSED"];
 	var statusColors = { FAILED: "#FF0000", PASSED: "#00FF00" };
@@ -78,9 +79,9 @@ NeatHtmlTest.RunTests = function(tests) {
 			+ NeatHtmlTest.HtmlEncode(tests[i][0]) + "</span><br />");
 		if (NeatHtmlTest.StatusDetails.length > 0)
 		{
-			NeatHtmlTest.AppendOutput("<blockquote style='color: " + color + ";'>" 
-				+ NeatHtmlTest.StatusDetails
-				+ "</blockquote><br />");
+			NeatHtmlTest.AppendOutput("<blockquote style='color: " + color + ";'><pre>" 
+				+ NeatHtmlTest.HtmlEncode(NeatHtmlTest.StatusDetails)
+				+ "</pre></blockquote><br />");
 		}
 	}
 	var summary = document.createElement("h2");
