@@ -141,9 +141,15 @@ NeatHtmlTest.AssertEquals = function (expected, actual, msg)
 		throw msg + "AssertEquals() Failed: types unequal: " + typeof(expected) + "!=" + typeof(actual);
 	}
 	if (expected != actual) {
-		throw msg + "AssertEquals() Failed: " + expected + "!=" + actual;
+		throw msg + "AssertEquals() Failed: " + NeatHtmlTest.QuoteString(expected) + "!=" + NeatHtmlTest.QuoteString(actual);
 	}
 };
+
+NeatHtmlTest.QuoteString = function(s)
+{
+	return "'" + s.replace(/'/g, "\\'").replace(/\n/g, "\\n'\n+'") + "'";    // " '
+}
+
 
 NeatHtml.DefaultFilter.BeginUntrusted = function() {
 	if (NeatHtmlTest.GetMode() == "normal")
