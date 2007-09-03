@@ -91,15 +91,12 @@ NeatHtmlTest.AppendTestStatusElement();
 					<th>Special characters and attributes
 					<td><a implicit_attr href=http://www.google.com/search?hl=en&q=neathtml&btnG=Search>unquoted and unencoded link</a>
 					<td><font face='&#0;
-			">non-printable</font> and <font face="&#xdead;'>non-ascii</font> attr values
+			'>non-printable</font> and <font face='&#xdead;'>non-ascii</font> attr values
 					<td>A B C with entities: &#65;&nbsp;&#x42;&nbsp;&#X43;
 					<td>Unencoded <, and &
 			<NeatHtmlParserReset single='' double=""></table><table><tr><td></div>
 			
-			<p>Below is a 3x3 table nested in the middle cell of another 3x3 table.  If javascript is disabled,
-			this will display as 3 separate
-			tables (the outer table will be split into 2 pieces).  
-			This behavior is a <a href="#Limitations">known limitation</a>.
+			<p>Here is a nested table which will display as 3 tables when javascript is disabled (known limitation).
 			<NeatHtmlParserReset single='' double=""></NeatHtmlParserReset></td></tr></table><table border=1>
 				<tr><td>0,0</td><td>0,1</td><td>0,2</td></tr>
 				<tr><td>1,0</td><td><NeatHtmlParserReset single='' double=""></NeatHtmlParserReset></td></tr></table><table border=1>
@@ -110,17 +107,14 @@ NeatHtmlTest.AppendTestStatusElement();
 				<tr><td>2,0</td><td>2,1</td><td>2,2</td></tr>
 			<NeatHtmlParserReset single='' double=""></table><table><tr><td>
 
+			<p style="counter-increment: untrusted-num;">Increment a CSS counter.  For result, see just under the
+			untrusted content box.</p>
+			
 			<p>Try to break out of the layout jail:</p>
 			<div style="position: absolute; top: 0; right: 0; color: red;">Let me out!</div>
 			<div style="position: absolute; top: -100px; right: 0; color: red;">Let me out with a negative top property!</div>
 			
-			<p style="counter-increment: untrusted-num;">Here we try to increment the CSS counter used for the 
-			"Untrusted Content #x" headings.  If the "attack" succeeds, the next section heading will say "Untrusted Content #3"
-			instead of "Untrusted Content #2".  This can only be prevented
-			if javascript is enabled.  If the heading just says "Untrusted Content", that just means your browser doesn't support
-			the CSS that would be needed for the attack to succeed.</p>
-			
-			<p>Try to break out of the markup jail...</p>
+			<p>Try to break out of the markup jail:</p>
 				<NeatHtmlParserReset single='' double=""></table><table><tr><td>
             </div>
             </div>
@@ -140,7 +134,7 @@ NeatHtmlTest.AppendTestStatusElement();
 	up	based on it's ID.
 	</p>
 
-	<h3 class="Untrusted">It is a known limitation that we can't keep this from saying "#3" when script is disabled: </h3>
+	<h3 class="Untrusted">Known limitation - displays "#3" when script is disabled: </h3>
 
   
 	<script type="text/javascript">
@@ -198,34 +192,58 @@ NeatHtmlTest.AppendTestStatusElement();
 					return;
 				}
 				var container = document.getElementById(NeatHtml.DefaultFilter.IdPrefix + "tagSoup");
-				NeatHtmlTest.AssertEquals('<table border="1">\n'
-+'				<tbody><tr>\n'
+				NeatHtmlTest.AssertEquals('<div id="NeatHtml_untrusted">\n'
++'			<p>Here is a table with lots of XSS attacks and tag soup markup:</p>\n'
++'			<div id="NeatHtml_tagSoup"><table border="1">\n'
++'				<tr>\n'
 +'					<th>Script attacks\n'
-+'					</th><td>script element<br>\n'
++'					<td>script element<br />\n'
 +'						\n'
-+'						script elem in CDATA<br>\n'
++'						script elem in CDATA<br />\n'
 +'												\n'
 +'					</td><td>\n'
-+'						<a href="http://www.google.com/">on* attr</a><br>\n'
-+'						<a>javascript href</a><br>\n'
-+'					</td><td id="NeatHtml_styleXss" style="background-color: rgb(192, 255, 192);">\n'
++'						<a href="http://www.google.com/">on* attr</a><br />\n'
++'						<a>javascript href</a><br />\n'
++'					</td><td id="NeatHtml_styleXss" style="background-color: rgb(192,255,192); ">\n'
 +'						green despite script in style\n'
 +'					</td><td>\n'
-+'						<a id="NeatHtml_trustedLinkBefore" href="http://www.google.com/">spoof existing ID</a><br>\n'
-+'						<a id="NeatHtml_trustedLinkAfter" href="http://www.google.com/">spoof future ID</a><br>\n'
-+'				</td></tr><tr>\n'
++'						<a id="NeatHtml_trustedLinkBefore" href="http://www.google.com/">spoof existing ID</a><br />\n'
++'						<a id="NeatHtml_trustedLinkAfter" href="http://www.google.com/">spoof future ID</a><br />\n'
++'				<tr>\n'
 +'					<th>Tag soup\n'
-+'					</th><td><ul><li>no &lt;/li&gt; 1/2</li><li>no &lt;/li&gt; 2/2</li></ul>\n'
-+'					</td><td>unmatched &lt;/em&gt; \n'
-+'					</td><td><b>varying</b> <i>case</i> <u>tags</u>\n'
-+'					</td><td><p>line<br>break with &lt;br&gt;\n'
-+'				</p></td></tr><tr>\n'
++'					<td><ul><li>no &lt;/li> 1/2</li><li>no &lt;/li> 2/2</li></ul>\n'
++'					</td><td>unmatched &lt;/em> \n'
++'					</td><td><B>varying</B> <i>case</i> <U>tags</U>\n'
++'					</td><td><p>line<br />break with &lt;br&gt;\n'
++'				<tr>\n'
 +'					<th>Special characters and attributes\n'
-+'					</th><td><a href="http://www.google.com/search?hl=en&amp;q=neathtml&amp;btnG=Search">unquoted and unencoded link</a>\n'
-+'					</td><td><font face="face">non-printable</font> and <font face="face">non-ascii</font> attr values\n'
-+'					</td><td>A B C with entities: A&nbsp;B&nbsp;C\n'
++'					<td><a href="http://www.google.com/search?hl=en&amp;q=neathtml&amp;btnG=Search">unquoted and unencoded link</a>\n'
++'					</td><td><font face="&amp;#0;&#10;&#9;&#9;&#9;">non-printable</font> and <font face="&#57005;">non-ascii</font> attr values\n'
++'					</td><td>A B C with entities: &#65;&#160;&#x42;&#160;&#x43;\n'
 +'					</td><td>Unencoded &lt;, and &amp;\n'
-+'			</td></tr></tbody></table>', container.innerHTML);
++'			</td></th></tr></p></td></th></tr></td></th></tr></table></div>\n'
++'			\n'
++'			<p>Here is a nested table which will display as 3 tables when javascript is disabled (known limitation).\n'
++'			<table border="1">\n'
++'				<tr><td>0,0</td><td>0,1</td><td>0,2</td></tr>\n'
++'				<tr><td>1,0</td><td><table border="1">\n'
++'				<tr><td>A,A</td><td>A,B</td><td>A,C</td></tr>\n'
++'				<tr><td>B,A</td><td>B,B</td><td>B,C</td></tr>\n'
++'				<tr><td>C,A</td><td>C,B</td><td>C,C</td></tr>\n'
++'			</table></td><td>1,2</td></tr>\n'
++'				<tr><td>2,0</td><td>2,1</td><td>2,2</td></tr>\n'
++'			</table>\n'
++'\n'
++'			</p><p style="">Increment a CSS counter.  For result, see just under the\n'
++'			untrusted content box.</p>\n'
++'			\n'
++'			<p>Try to break out of the layout jail:</p>\n'
++'			<div style="position: absolute; top: 0; right: 0; color: red; ">Let me out!</div>\n'
++'			<div style="position: absolute; top: -100px; right: 0; color: red; ">Let me out with a negative top property!</div>\n'
++'			\n'
++'			<p>Try to break out of the markup jail:</p>\n'
++'				\n'
++'            </div>', NeatHtml.DefaultFilter.FilteredContent);
 			}],
 		]);
 	}
