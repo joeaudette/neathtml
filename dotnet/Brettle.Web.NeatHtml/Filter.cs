@@ -48,9 +48,18 @@ namespace Brettle.Web.NeatHtml
 			return String.Format(Format, ClientSideName, preprocessedFragment, NoScriptDownlevelIEWidth, NoScriptDownlevelIEHeight);
 		} 
 
+		private static string[] tagsAllowedWhenScriptDisabled
+			= { "a", "abbr", "acronym", "address", "b", "basefont", "bdo", "big", "blockquote", "br",
+		 		"caption", "center", "cite", "code", "col", "colgroup", "dd", "del", "dfn", "dir", "div", "dl", "dt", 
+		 		"em", "font", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "ins", "kbd", "li", "ol", "p", "pre", "q",
+		 		"s", "samp", "small", "span", "strike", "strong", "sub", "sup", "table", "tbody", "td", "tfoot", "th",
+		 		"thead", "tr", "tt", "u", "ul", "var"
+			};
+			
 		private static Regex PreprocessingRE 
-			= new Regex("(<table)|(</table)|(<!--([^-]*-)+-[^>]*>)|(--)|(</xmp)|(<xmp)", 
-				RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+			= new Regex("(<table)|(</table)|(<!--([^-]*-)+-[^>]*>)|(--)|((</?)(?!(" 
+							+ String.Join("|", tagsAllowedWhenScriptDisabled) + ")[ \t\r\n/>])([_a-z]))",
+						RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
 		private string Preprocess(Match m)
 		{
@@ -60,12 +69,10 @@ namespace Brettle.Web.NeatHtml
 				return @"<NeatHtmlParserReset single='' double=""""></table><table style='border-spacing: 0;'><tr><td style='padding: 0;'";
 			else if (m.Groups[3].Success)
 				return "";
-			else if (m.Groups[4].Success)
-				return "&#45;&#45;";
 			else if (m.Groups[5].Success)
-				return "&lt;/xmp";
+				return "&#45;&#45;";
 			else if (m.Groups[6].Success)
-				return "&lt;xmp";
+				return m.Groups[7].Value + "NeatHtmlReplace_" + m.Groups[9].Value;
 			else
 				return ""; // Should never get here			
 		}
@@ -79,7 +86,7 @@ namespace Brettle.Web.NeatHtml
 		<table style='border-spacing: 0;'><tr><td style='padding: 0;'><!-- test comment --><script type='text/javascript'>// <![CDATA[
 			try {{ {0}.BeginUntrusted(); }} catch (ex) {{ document.writeln('NeatHtml not found<!-' + '-'); }} // ]]></script><div>
 			{1}
-			<xmp></xmp><!-- ' "" > --></td></tr></table>
+			<xmp></xmp><!-- ' "" ]]> --></td></tr></table>
 	</div><script type='text/javascript'>// <![CDATA[
 		{0}.ProcessUntrusted();
 	// ]]></script>";
