@@ -85,9 +85,14 @@ NeatHtmlTest.AppendTestStatusElement();
 			</table></td><td>1,2</td></tr>
 				<tr><td>2,0</td><td>2,1</td><td>2,2</td></tr>
 			</table>
+			
+			
 
 			<p style="counter-increment: trusted-num;">Increment a CSS counter.  For result, see just under the
-			untrusted content box.  Try to break out of the layout jail and markup jail...
+			untrusted content box.  
+			Check <span style="background-image: url(http://www.brettle.com/Data/Sites/1/logos/deanatwork_sidesmall.jpg)">style="url(...)"</span>
+			vs <span style="background-color: rgb(0,255,0);">style="background-color: rgb(...);"</span>.
+			Try to break out of the layout jail and markup jail...
 			<div style="position: absolute; top: 0; right: 0; color: red;">Let me out!</div>
 			<div style="position: absolute; top: -100px; right: 0; color: red;">Let me out with a negative top property!</div>
 				</table>
@@ -95,6 +100,8 @@ NeatHtmlTest.AppendTestStatusElement();
             </div>
             </div>
 			<p>Help! Let me out of this box!</p>
+			<p>Try to pull trusted content in to the box:</p>
+			<plaintext><iframe><object><script>
 	</NeatHtml:UntrustedContent>
 	</div>
 	<p id="trustedLinkAfterParent"><a id="trustedLinkAfter" href="#">Another link</a> for the ID spoofing test.

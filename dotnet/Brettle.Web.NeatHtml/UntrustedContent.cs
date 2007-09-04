@@ -98,7 +98,7 @@ namespace Brettle.Web.NeatHtml
 			htw.Close();
 
 			// Filter the string and write the result
-			writer.Write(Filter.GetByName(ClientSideFilterName).FilterFragment(sw.ToString()));
+			writer.Write(Filter.GetByName(ClientSideFilterName).FilterUntrusted(sw.ToString()));
 		}
 	}
 }

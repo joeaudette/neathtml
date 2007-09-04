@@ -42,26 +42,29 @@ namespace Brettle.Web.NeatHtml
 		public string NoScriptDownlevelIEWidth = "100%";
 		public string NoScriptDownlevelIEHeight = "400px";
 		
-		public string FilterFragment(string origHtmlFragment)
+		public string FilterUntrusted(string untrusted)
 		{
-			string preprocessedFragment = PreprocessingRE.Replace(origHtmlFragment, new MatchEvaluator(Preprocess));
-			return String.Format(Format, ClientSideName, preprocessedFragment, NoScriptDownlevelIEWidth, NoScriptDownlevelIEHeight);
-		} 
-
-		private static string[] tagsAllowedWhenScriptDisabled
+			string markupJailed = MarkupJailRE.Replace(untrusted, new MatchEvaluator(GuardMarkupJail));
+			// To prevent url() in inline styles (a potential CSRF vector), do this:
+			string preprocessed = StyleAttributeRE.Replace(markupJailed, new MatchEvaluator(DisableSuspiciousStyles));
+			return String.Format(Format, ClientSideName, preprocessed, NoScriptDownlevelIEWidth, NoScriptDownlevelIEHeight);
+		}
+		
+		private static string[] tagsAllowedWhenNoScript
 			= { "a", "abbr", "acronym", "address", "b", "basefont", "bdo", "big", "blockquote", "br",
 		 		"caption", "center", "cite", "code", "col", "colgroup", "dd", "del", "dfn", "dir", "div", "dl", "dt", 
 		 		"em", "font", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "ins", "kbd", "li", "ol", "p", "pre", "q",
 		 		"s", "samp", "small", "span", "strike", "strong", "sub", "sup", "table", "tbody", "td", "tfoot", "th",
-		 		"thead", "tr", "tt", "u", "ul", "var"
+		 		"thead", "tr", "tt", "u", "ul", "var",
+		 		"script" // OK when script is disabled.  Hides script source from user.
 			};
-			
-		private static Regex PreprocessingRE 
-			= new Regex("(<table)|(</table)|(<!--([^-]*-)+-[^>]*>)|(--)|((</?)(?!(" 
-							+ String.Join("|", tagsAllowedWhenScriptDisabled) + ")[ \t\r\n/>])([_a-z]))",
+		
+		private static Regex MarkupJailRE 
+			= new Regex("(<table)|(</table)|(<!--([^-]*-)+-[^>]*>)|(--)|(<(?!/?(" 
+							+ String.Join("|", tagsAllowedWhenNoScript) + ")[ \t\r\n/>])([!\\?/])?([a-z])?)",
 						RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
-		private string Preprocess(Match m)
+		private string GuardMarkupJail(Match m)
 		{
 			if (m.Groups[1].Success)
 				return @"<NeatHtmlParserReset single='' double=""""></NeatHtmlParserReset></td></tr></table><table";
@@ -72,9 +75,43 @@ namespace Brettle.Web.NeatHtml
 			else if (m.Groups[5].Success)
 				return "&#45;&#45;";
 			else if (m.Groups[6].Success)
-				return m.Groups[7].Value + "NeatHtmlReplace_" + m.Groups[9].Value;
+			{
+				if (m.Groups[9].Success)
+				{
+					// Looks like the start of a tag.  It might be safe when javascript
+					// is enabled.  Prepend NeatHtmlReplace_ to the tag name so that NeatHtml.js can still see it.
+					return "<" + m.Groups[8].Value + "NeatHtmlReplace_" + m.Groups[9].Value;
+				}
+				else
+				{
+					// Not a tag, so let it go.
+					return m.Groups[6].Value;
+				}
+			}
 			else
 				return ""; // Should never get here			
+		}
+
+		// Style value whitelist.  Note: '&' '\' and '(' [except 'rgb('] are not on it.[\\r\\n\\t !#$%)-~]]
+		private static string StyleValueREString = "\\((?<=rgb\\()|[\\r\\n\\t !#$%)-[\\]-~]"; 
+		private static Regex StyleAttributeRE
+			= new Regex("style[^=a-z0-9 \\t\\r\\n]*=(?!(" // "style=" (roughly) followed by something other than
+								+ "\"('|" + StyleValueREString + ")*\"" // "value"
+								+ "|'(\"|" + StyleValueREString + ")*'" // or 'value'
+							+ ")([ \\r\\n\\t]|/?>))", // value must be followed by whitespace or end of tag  
+						RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+						
+		private string DisableSuspiciousStyles(Match m)
+		{
+			// Insert 2 zero-width joiner entities (&zwj;) so that "style" becomes "sty&zwj;&zwj;le"
+			// The zero-width joiner is invisible in displayed text but significant to the browser's HTML parser.
+			// We use "&zwj;&zwj;" instead of just "&zwj;" because there is no reason for normal markup 
+			// to contain "&zwj;&zwj;" -- its redundant.  That means on the client side it should be safe to 
+			// replace "sty&zwj;&zwj;le" with "style" without affecting any of the author's "&zwj;".
+			// NOTE: This will unfortunately break URLs that contain "style=".  It might be possible
+			// to fix that using a negative look-behind assertion, but I'm concerned that such an assertion
+			// might open the Regex to a DoS attack from a string like "style=style=style=style=...".
+			return m.Value.Substring(0,3) + "&zwj;&zwj;" + m.Value.Substring(3, m.Value.Length - 3);
 		}
 
 		private static string Format = @"<![if gte IE 7]>
@@ -86,7 +123,7 @@ namespace Brettle.Web.NeatHtml
 		<table style='border-spacing: 0;'><tr><td style='padding: 0;'><!-- test comment --><script type='text/javascript'>// <![CDATA[
 			try {{ {0}.BeginUntrusted(); }} catch (ex) {{ document.writeln('NeatHtml not found<!-' + '-'); }} // ]]></script><div>
 			{1}
-			<xmp></xmp><!-- ' "" ]]> --></td></tr></table>
+			<xmp></xmp><!-- ' "" ]]> --><script></script></td></tr></table>
 	</div><script type='text/javascript'>// <![CDATA[
 		{0}.ProcessUntrusted();
 	// ]]></script>";

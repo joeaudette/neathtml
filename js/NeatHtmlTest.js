@@ -243,9 +243,17 @@ NeatHtmlTest.DefaultFilter.ProcessUntrusted = function() {
 		NeatHtml.DefaultFilter.ProcessUntrusted();
 };
 
+// Override the functions called by test XSS vectors so that we can detect that they
+// were called and pretend that they weren't in noscript mode 
 window.alert = function(msg)
 {
 	NeatHtmlTest.AlertFromScript(msg);
+};
+
+window.resizeTo = function(w, h)
+{
+	// Just count it as another alert() call. 
+	alert("resizeTo(" + w + "," + h + ") called");
 };
 
 NeatHtmlTest.DefaultTests = [

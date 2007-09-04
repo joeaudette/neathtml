@@ -30,14 +30,15 @@ Simplest usage (note that comments and absence of whitespace between tags can be
 		<table style='border-spacing: 0;'><tr><td style='padding: 0;'><!-- test comment --><script type="text/javascript">// <![CDATA[
 			try { NeatHtml.DefaultFilter.BeginUntrusted(); } catch (ex) { document.writeln('NeatHtml not found<!-' + '-'); } // ]]></script><div>
 				PREPROCESSED_UNTRUSTED_CONTENT
-		<xmp></xmp><!-- ' " > --></td></tr></table>
+		<xmp></xmp><!-- ' " > ]]> --><script></script></td></tr></table>
 	</div><script type="text/javascript">// <![CDATA[
 		NeatHtml.DefaultFilter.ProcessUntrusted();
 	// ]]></script>
 	
 where:
 
-	PREPROCESSED_UNTRUSTED_CONTENT has had the following preprocessing done on the server:
+	PREPROCESSED_UNTRUSTED_CONTENT has had the following preprocessing done on the server 
+	(see ../dotnet/Brettle.Web.NeatHtml/Filter.cs for an example):
 		1. Replace all:
 				<table
 			with:
@@ -48,7 +49,13 @@ where:
 				<NeatHtmlParserReset single='' double=""></table><table style='border-spacing: 0;'><tr><td style='padding: 0;'
 		3. Remove all comments (i.e. anything matching this regex: "<!--([^-]*-)+-[^>]*>")
 		4. Replace all remaining "--" with "&#45;&#45;"
-		5. Replace all "<xmp>" and "</xmp>" with "&lt;xmp&gt;" and "&lt;/xmp&gt;".  
+		5. Replace the "<xmp", with "<NeatHtmlReplace_xmp" and "</xmp" with "</NeatHtmlReplace_xmp" and do the same
+			with iframe, object and any other tags you want to hide from nonscript users (e.g. img tags to fight CSRF).
+			To fight CSRF attacks, also encode <img>.  Filter.cs shows how to all these replacements in one pass and
+			use a whitelist of tags.
+			DO NOT replace <script> because it causes the browser to hide script source from the user.
+		6. To fight CSRF attacks, replace "style" with "sty&zwj;&zwj;le" wherever it looks suspicious.  See Filter.cs
+			for an example Regex.
 				
 	NOSCRIPT_IE6_WIDTH and NOSCRIPT_IE6_HEIGHT are the desired dimensions of the div that will display the
 		untrusted content in IE6 and earlier when script is disabled.  If the untrusted content is larger, 
@@ -109,7 +116,7 @@ NeatHtml.Filter = function(elemActions, attrActions, styleActions, entityCharCod
 	this.EntityCharCodeMap = entityCharCodeMap || GetDefaultEntityCharCodeMap();
 	this.IdPrefix = "NeatHtml_";
 	
-	this.StyleDeclRe = /(-?[_a-z][_a-z0-9-]*)[ \t\r\n\f]*:[ \t\r\n\f]*((([-+]?([0-9]+|[0-9]*\.[0-9]+)(%|[_a-z][_a-z0-9-]*)?|[_a-z][_a-z0-9-]*|"[^\n\r\f"]*"|'[^\n\r\f']*'|#([0-9a-f]{3}|[0-9a-f]{6})|rgb\( *[1-9][0-9]*%? *, *[1-9][0-9]*%? *, *[1-9][0-9]*%? *\))[ \t\r\n\f]*[,\/]?)+)(;|$)/igm;    // " 
+	this.StyleDeclRe = /(-?[_a-z][_a-z0-9-]*)[ \t\r\n\f]*:[ \t\r\n\f]*((([-+]?([0-9]+|[0-9]*\.[0-9]+)(%|[_a-z][_a-z0-9-]*)?|[_a-z][_a-z0-9-]*|"[^\n\r\f"]*"|'[^\n\r\f']*'|#([0-9a-f]{3}|[0-9a-f]{6})|rgb\( *[0-9]*%? *, *[0-9]*%? *, *[0-9]*%? *\))[ \t\r\n\f]*[,\/]?)+)(;|$)/igm;    // " 
 	
 	function GetDefaultElemActions()
 	{
@@ -457,6 +464,9 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 							"<table");
 		s = s.replace(/<NeatHtmlParserReset single='' double=""><\/table><table style='border-spacing: 0;'><tr><td style='padding: 0;'/g,
 							"</table");
+		s = s.replace(/<([!\?/]?)NeatHtmlReplace_([a-z]?)/g, "$1$2");
+
+		s = s.replace(/sty&zwj;&zwj;le/g, "style");
 		
 //		alert(s);
 		return s;
