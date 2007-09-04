@@ -410,7 +410,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		// Add some branding 
 		var endTagPos = xmlStr.lastIndexOf("/") - 1;
 		xmlStr = xmlStr.substring(0, endTagPos)
-			+ "<div style='text-align: right;'><em><a href='http://www.brettle.com'>Powered by NeatHtml&trade;</a></em></div>" 
+			+ "<div style='text-align: right;'><em><a href='http://www.brettle.com/neathtml'>Powered by NeatHtml&trade;</a></em></div>" 
 			+ xmlStr.substring(endTagPos, xmlStr.length);
 
 		// Replace the original untrusted content (and surrounding table)
