@@ -30,6 +30,7 @@ using System.Diagnostics;
 
 namespace Brettle.Web.NeatHtml
 {
+	[Obsolete("This class is obsolete and will be removed in a future version.  Instead use Filter.")]
 	public class XssFilter
 	{
 		public static XssFilter GetForSchema(string schemaLocation)

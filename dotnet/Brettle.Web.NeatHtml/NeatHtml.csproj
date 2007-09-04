@@ -94,6 +94,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Filter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UntrustedContent.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "XssFilter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

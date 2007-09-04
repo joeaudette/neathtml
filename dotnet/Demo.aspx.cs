@@ -23,19 +23,15 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
-using System.Xml;
-using System.Xml.Schema;
 using System.IO;
 
 namespace Brettle.Web.NeatHtml
 {
 	public class Demo : System.Web.UI.Page
 	{	
-		protected HtmlForm form;
 		protected HtmlTextArea textarea;
 		protected Button submitButton;
-		protected Button cancelButton;
-		protected HtmlGenericControl outputDiv;
+		protected UntrustedContent untrustedContent;
 		
 		protected override void OnInit(EventArgs e)
 		{
@@ -50,6 +46,17 @@ namespace Brettle.Web.NeatHtml
 		
 		private void Page_Load(object sender, EventArgs e)
 		{
+			if (!IsPostBack || textarea.Value.Length == 0)
+			{
+				StringWriter sw = new StringWriter();
+				HtmlTextWriter htw = new HtmlTextWriter(sw);
+				for (int i = 0; i < untrustedContent.Controls.Count; i++)
+				{
+					untrustedContent.Controls[i].RenderControl(htw);
+				}
+				htw.Close();
+				textarea.Value = sw.ToString();
+			}
 			submitButton.Click += new System.EventHandler(this.Button_Clicked);
 			// Works around a Mono bug (http://bugzilla.ximian.com/show_bug.cgi?id=78948) which causes
 			// the textarea content to render without being encoded.
@@ -58,52 +65,13 @@ namespace Brettle.Web.NeatHtml
 
 		private void Button_Clicked(object sender, EventArgs e)
 		{
-			FileInfo currentFile = new FileInfo(Request.PhysicalPath);
-			string schemaLocation = Path.Combine(currentFile.Directory.Parent.FullName, "schema");
-			schemaLocation = Path.Combine(schemaLocation, "NeatHtml.xsd");
-			XssFilter filter = XssFilter.GetForSchema(schemaLocation);
-			
-			try
+			string html = textarea.Value;
+			if (Environment.Version.Major < 2)
 			{
-				string html = textarea.Value;
-				if (Environment.Version.Major < 2)
-				{
-					html = HttpUtility.HtmlDecode(html);
-				}
-				filter.FilterFragment(html);
-				outputDiv.InnerHtml = html;
+				html = HttpUtility.HtmlDecode(html);
 			}
-			catch (Exception ex)
-			{
-				outputDiv.InnerHtml = "<span style='color: red;'>" + ex.Message + "</span><br/>";
-				
-				int lineNumber = -1;
-				int linePosition = -1;
-				XmlException xmlEx = ex as XmlException;
-				if (xmlEx != null)
-				{
-					lineNumber = xmlEx.LineNumber-1;
-					linePosition = xmlEx.LinePosition;
-				}
-				XmlSchemaException schemaEx = ex as XmlSchemaException;
-				if (schemaEx != null)
-				{
-					lineNumber = schemaEx.LineNumber-1;
-					linePosition = schemaEx.LinePosition;
-				}
-				if (lineNumber > 0)
-				{
-					int position = 0;
-					for (int i = 0; i < lineNumber - 1; i++)
-					{
-						position = textarea.Value.IndexOf("\n", position);
-						position = position + 1;
-					}
-					position -= (lineNumber - 1); // Because newlines aren't counted when javascript moves to the position
-					position += linePosition - 1;
-					RegisterStartupScript("moveto-error", "<script>NeatHtml_MoveTo('textarea', " + position + ");</script>");
-				}				
-			}
+			untrustedContent.Controls.Clear();
+			untrustedContent.Controls.Add(new LiteralControl(html));
 		}
 	}
 }
