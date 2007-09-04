@@ -32,26 +32,23 @@
 NeatHtmlTest.AppendTestStatusElement();	
 	// ]]></script>
 
-	<h3 class="Untrusted" id="theTest" style="display: none">The Test</h3>
-
-	<p id="trustedLinkBeforeParent"><a id="trustedLinkBefore" href="#">This link</a>
+	<p class="Untrusted" id="trustedLinkBeforeParent"><a id="trustedLinkBefore" href="#">This link</a>
 	is for the ID spoofing test.  Here is the untrusted content:</p>
+	<div style="border: solid red 1px;">
 	<!-- 
-		NOTE: After doing the required replace, place the untrusted content inside the div with an ID of "untrusted".
+		NOTE: After doing the required replace, place the untrusted content inside the div that follows the next
+		<script> element.
 		Everything between here and there is boilerplate that the server would generate.
 	-->
 	<![if gte IE 7]>
-	<div id="container" style="overflow: hidden; position: relative; border: solid 1px;">
-	<![endif]>
-	<!--[if lt IE 7]>
-	<div id="container" style="overflow: auto; position: relative; border: solid 1px; width: 100%; height: 400px;">	
-	<![endif]-->
-	<table><tr><td>
-		<!-- test comment --><script type="text/javascript">
-		// <![CDATA[
-		NeatHtml.DefaultFilter.BeginUntrusted();
-		// ]]>
-		</script><div id="untrusted">
+	<div class='NeatHtml' style='overflow: hidden; position: relative; border: none; padding: 0; margin: 0;'>
+<![endif]>
+<!--[if lt IE 7]>
+	<div class='NeatHtml' style='width: 100%; height: 400px; overflow: auto; position: relative; border: none; padding: 0; margin: 0;'>	
+<![endif]-->
+		<table style='border-spacing: 0;'><tr><td style='padding: 0;'><!-- test comment --><script type='text/javascript'>// <![CDATA[
+			try { NeatHtmlTest.DefaultFilter.BeginUntrusted(); } catch (ex) { document.writeln('NeatHtml not found<!-' + '-'); } // ]]></script><div>
+			
 			<p>Here is a table with lots of XSS attacks and tag soup markup:</p>
 			<div id="tagSoup"><NeatHtmlParserReset single='' double=""></NeatHtmlParserReset></td></tr></table><table border=1>
 				<tr>
@@ -61,6 +58,7 @@ NeatHtmlTest.AppendTestStatusElement();
 						window.alert('XSS from script element');
 						</script>
 						script elem in CDATA<br/>
+
 						<![CDATA[
 						<script>
 						window.alert('XSS from script element in CDATA section');
@@ -73,12 +71,14 @@ NeatHtmlTest.AppendTestStatusElement();
 						green despite script in style
 					<td>
 						<a id='trustedLinkBefore' href='http://www.google.com/'>spoof existing ID</a><br />
+
 						<a id='trustedLinkAfter' href='http://www.google.com/'>spoof future ID</a><br />
 				<tr>
 					<th>Tag soup
 					<td><ul><li>no &lt;/li> 1/2<li>no &lt;/li> 2/2</ul>
 					<td>unmatched &lt;/em> </em>
 					<td><B>varying</B> <i>case</I> <U>tags</u>
+
 					<td><p>line<br>break with &lt;br&gt;
 				<tr>
 					<th>Special characters and attributes
@@ -86,39 +86,39 @@ NeatHtmlTest.AppendTestStatusElement();
 					<td><font face='&#9;&#0;
 '>non-printable</font> and <font face='&#xdead;'>non-ascii</font> attr values
 					<td>A B C with entities: &#65;&nbsp;&#x42;&nbsp;&#X43;
+
 					<td>Unencoded <, and &
-			<NeatHtmlParserReset single='' double=""></table><table><tr><td></div>
+			<NeatHtmlParserReset single='' double=""></table><table style='border-spacing: 0;'><tr><td style='padding: 0;'>
 			
 			<p>Here is a nested table which will display as 3 tables when javascript is disabled (known limitation).
 			<NeatHtmlParserReset single='' double=""></NeatHtmlParserReset></td></tr></table><table border=1>
 				<tr><td>0,0</td><td>0,1</td><td>0,2</td></tr>
 				<tr><td>1,0</td><td id="innerTableContainer"><NeatHtmlParserReset single='' double=""></NeatHtmlParserReset></td></tr></table><table id="innerTable" border=1>
 				<tr><td>A,A</td><td>A,B</td><td>A,C</td></tr>
+
 				<tr><td>B,A</td><td>B,B</td><td>B,C</td></tr>
 				<tr><td>C,A</td><td>C,B</td><td>C,C</td></tr>
-			<NeatHtmlParserReset single='' double=""></table><table><tr><td></td><td>1,2</td></tr>
+			<NeatHtmlParserReset single='' double=""></table><table style='border-spacing: 0;'><tr><td style='padding: 0;'></td><td>1,2</td></tr>
 				<tr><td>2,0</td><td>2,1</td><td>2,2</td></tr>
-			<NeatHtmlParserReset single='' double=""></table><table><tr><td>
 
-			<p style="counter-increment: untrusted-num;">Increment a CSS counter.  For result, see just under the
+			<NeatHtmlParserReset single='' double=""></table><table style='border-spacing: 0;'><tr><td style='padding: 0;'>
+
+			<p style="counter-increment: trusted-num;">Increment a CSS counter.  For result, see just under the
 			untrusted content box.  Try to break out of the layout jail and markup jail...
 			<div style="position: absolute; top: 0; right: 0; color: red;">Let me out!</div>
 			<div style="position: absolute; top: -100px; right: 0; color: red;">Let me out with a negative top property!</div>
-				<NeatHtmlParserReset single='' double=""></table><table><tr><td>
+				<NeatHtmlParserReset single='' double=""></table><table style='border-spacing: 0;'><tr><td style='padding: 0;'>
             </div>
             </div>
             </div>
+
 			<p>Help! Let me out of this box!</p>
-			
-		</div><xmp></xmp>
-		<!-- ' " > -->
-		<!-- The preceding comment ensures that the comment and any attrs and tags started
-		by the untrusted content have been closed. -->
-	</td></tr></table></div><script id="afterContainer" type="text/javascript">
-	// <![CDATA[
-	NeatHtml.DefaultFilter.ProcessUntrusted();
-	// ]]>
-	</script>
+	
+			<xmp></xmp><!-- ' " > --></td></tr></table>
+	</div><script type='text/javascript'>// <![CDATA[
+		NeatHtmlTest.DefaultFilter.ProcessUntrusted();
+	// ]]></script>
+	</div>
 	<p id="trustedLinkAfterParent"><a id="trustedLinkAfter" href="#">Another link</a> for the ID spoofing test.
 	</p>
 
@@ -147,7 +147,8 @@ NeatHtmlTest.AppendTestStatusElement();
 					return;
 				}
 				var container = document.getElementById(NeatHtml.DefaultFilter.IdPrefix + "tagSoup");
-				NeatHtmlTest.AssertEqualsIgnoreWhitespace('<div id="NeatHtml_untrusted">\n'
+				NeatHtmlTest.AssertEqualsIgnoreWhitespace('<div>\n'
++'			\n'
 +'			<p>Here is a table with lots of XSS attacks and tag soup markup:</p>\n'
 +'			<div id="NeatHtml_tagSoup"><table border="1">\n'
 +'				<tr>\n'
@@ -155,6 +156,7 @@ NeatHtmlTest.AppendTestStatusElement();
 +'					<td>script element<br />\n'
 +'						\n'
 +'						script elem in CDATA<br />\n'
++'\n'
 +'												\n'
 +'					</td><td>\n'
 +'						<a href="http://www.google.com/">on* attr</a><br />\n'
@@ -163,30 +165,35 @@ NeatHtmlTest.AppendTestStatusElement();
 +'						green despite script in style\n'
 +'					</td><td>\n'
 +'						<a id="NeatHtml_trustedLinkBefore" href="http://www.google.com/">spoof existing ID</a><br />\n'
++'\n'
 +'						<a id="NeatHtml_trustedLinkAfter" href="http://www.google.com/">spoof future ID</a><br />\n'
 +'				<tr>\n'
 +'					<th>Tag soup\n'
 +'					<td><ul><li>no &lt;/li> 1/2</li><li>no &lt;/li> 2/2</li></ul>\n'
 +'					</td><td>unmatched &lt;/em> \n'
 +'					</td><td><B>varying</B> <i>case</i> <U>tags</U>\n'
++'\n'
 +'					</td><td><p>line<br />break with &lt;br&gt;\n'
 +'				<tr>\n'
 +'					<th>Special characters and attributes\n'
 +'					<td><a href="http://www.google.com/search?hl=en&amp;q=neathtml&amp;btnG=Search">unquoted and unencoded link</a>\n'
 +'					</td><td><font face="&#9;&#0;&#10;">non-printable</font> and <font face="&#57005;">non-ascii</font> attr values\n'
 +'					</td><td>A B C with entities: &#65;&#160;&#x42;&#160;&#x43;\n'
++'\n'
 +'					</td><td>Unencoded &lt;, and &amp;\n'
-+'			</td></th></tr></p></td></th></tr></td></th></tr></table></div>\n'
++'			</td></th></tr></p></td></th></tr></td></th></tr></table>\n'
 +'			\n'
 +'			<p>Here is a nested table which will display as 3 tables when javascript is disabled (known limitation).\n'
 +'			<table border="1">\n'
 +'				<tr><td>0,0</td><td>0,1</td><td>0,2</td></tr>\n'
 +'				<tr><td>1,0</td><td id="NeatHtml_innerTableContainer"><table id="NeatHtml_innerTable" border="1">\n'
 +'				<tr><td>A,A</td><td>A,B</td><td>A,C</td></tr>\n'
++'\n'
 +'				<tr><td>B,A</td><td>B,B</td><td>B,C</td></tr>\n'
 +'				<tr><td>C,A</td><td>C,B</td><td>C,C</td></tr>\n'
 +'			</table></td><td>1,2</td></tr>\n'
 +'				<tr><td>2,0</td><td>2,1</td><td>2,2</td></tr>\n'
++'\n'
 +'			</table>\n'
 +'\n'
 +'			</p><p style="">Increment a CSS counter.  For result, see just under the\n'
@@ -194,7 +201,9 @@ NeatHtmlTest.AppendTestStatusElement();
 +'			<div style="position: absolute; top: 0; right: 0; color: red; ">Let me out!</div>\n'
 +'			<div style="position: absolute; top: -100px; right: 0; color: red; ">Let me out with a negative top property!</div>\n'
 +'				\n'
-+'            </p></div>', NeatHtml.DefaultFilter.FilteredContent);
++'            </p></div>\n'
++'            <div style=\'text-align: right;\'><em><a href=\'http://www.brettle.com\'>Powered by NeatHtml&trade;</a></em></div></div>',
+				 NeatHtml.DefaultFilter.FilteredContent);
 			}],
 			["Support for tables not at top level", function () {
 				var prefix = NeatHtml.DefaultFilter.IdPrefix;
