@@ -128,7 +128,7 @@
 	<tr><th>Regular Expression</th><th>Replacement</th><th>Notes</th></tr>
 	<tr><td>&lt;table</td><td>&lt;NeatHtmlParserReset&nbsp;single=''&nbsp;double=&quot;&quot;&gt;&lt;/NeatHtmlParserReset&gt;&lt;/td>&lt;/tr>&lt;/table>&lt;table</td>
 		<td rowspan="2">Prevents intermingling of untrusted and trusted markup.</td></tr>
-	<tr><td>&lt;/table</td><td>&lt;NeatHtmlParserReset&nbsp;single=''&nbsp;double=&quot;&quot;&gt;&lt;/table&gt;&lt;table&gt;&lt;tr&gt;&lt;td</td></tr>
+	<tr><td>&lt;/table</td><td>&lt;NeatHtmlParserReset single='' double=&quot;&quot;&gt;&lt;/table&gt;&lt;table style='border-spacing: 0;'&gt;&lt;tr&gt;&lt;td style='padding: 0;'</td></tr>
 	<tr><td>&lt;!--([^-]*-)+-[^&gt;]*&gt;</td><td></td>
 		<td>Optional HTML comment stripping.  Does not affect security.  Only affects usability if benign content is expected to contain HTML comments.</td></tr>
 	<tr><td>&#45;&#45;</td><td>&amp;#45;&amp;#45;</td>
