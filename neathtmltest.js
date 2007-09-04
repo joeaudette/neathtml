@@ -62,7 +62,7 @@ NeatHtmlTest.GetMode = function()
 	return NeatHtmlTest._Mode;
 };
 
-NeatHtmlTest.HtmlEncode = NeatHtml.Filter.prototype.HtmlEncode;
+NeatHtmlTest.HtmlEncode = function(s) { return NeatHtml.Filter.prototype.HtmlEncode(s); };
 
 NeatHtmlTest.RunTests = function(topSuite) {
 	NeatHtmlTest.AppendOutput("<em>Please send bugs, comments, and questions to dean at brettle dot com</em><br/>");
@@ -221,15 +221,26 @@ NeatHtmlTest.QuoteString = function(s)
 	return "'" + s.replace(/'/g, "\\'").replace(/\n/g, "\\n'\n+'") + "'";    // " '
 }
 
+NeatHtmlTest.DefaultFilter = {};
 
-NeatHtml.DefaultFilter.BeginUntrusted = function() {
+NeatHtmlTest.Container = null;
+NeatHtmlTest.AfterContainer = null;
+
+NeatHtmlTest.DefaultFilter.BeginUntrusted = function() {
+	var scriptElems = document.getElementsByTagName("script");
+	var callingScriptElem = scriptElems[scriptElems.length - 1];
+	NeatHtmlTest.Container = callingScriptElem;
+	while (NeatHtmlTest.Container.tagName.toLowerCase() != "div")
+		NeatHtmlTest.Container = NeatHtmlTest.Container.parentNode;
 	if (NeatHtmlTest.GetMode() == "normal")
-		NeatHtml.Filter.prototype.BeginUntrusted.call(this);
+		NeatHtml.DefaultFilter.BeginUntrusted();
 };
 
-NeatHtml.DefaultFilter.ProcessUntrusted = function() {
+NeatHtmlTest.DefaultFilter.ProcessUntrusted = function() {
+	var scriptElems = document.getElementsByTagName("script");
+	NeatHtmlTest.AfterContainer = scriptElems[scriptElems.length - 1];
 	if (NeatHtmlTest.GetMode() == "normal")
-		NeatHtml.Filter.prototype.ProcessUntrusted.call(this);
+		NeatHtml.DefaultFilter.ProcessUntrusted();
 };
 
 window.alert = function(msg)
@@ -239,9 +250,7 @@ window.alert = function(msg)
 
 NeatHtmlTest.DefaultTests = [
 			["Markup invasion blocked", function () {
-				var container = document.getElementById("container");
-				var afterContainer = document.getElementById("afterContainer");
-				NeatHtmlTest.AssertEquals(afterContainer, container.nextSibling);
+				NeatHtmlTest.AssertEquals(NeatHtmlTest.AfterContainer, NeatHtmlTest.Container.nextSibling);
 			}],
 			["XSS blocked", function () {
 				if (NeatHtmlTest.GetMode() == "noscript")
