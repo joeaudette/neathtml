@@ -1,1 +1,1 @@
-../../neathtmltest.js
+../../js/NeatHtmlTest.js
