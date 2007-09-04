@@ -22,17 +22,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 Simplest usage (note that comments and absence of whitespace between tags can be significant):
 	
 <![if gte IE 7]>
-	<div style="overflow: hidden; position: relative; border: none; padding: 0; margin: 0;">
+	<div class="NeatHtml" style="overflow: hidden; position: relative; border: none; padding: 0; margin: 0;">
 <![endif]>
 <!--[if lt IE 7]>
-	<div style="width: NOSCRIPT_IE6_WIDTH; height: NOSCRIPT_IE6_HEIGHT; overflow: auto; position: relative; border: none; padding: 0; margin: 0;">	
+	<div class="NeatHtml" style="width: NOSCRIPT_IE6_WIDTH; height: NOSCRIPT_IE6_HEIGHT; overflow: auto; position: relative; border: none; padding: 0; margin: 0;">	
 <![endif]-->
-		<table><tr><td><!-- test comment --><script type="text/javascript">// <![CDATA[
-			NeatHtml.DefaultFilter.BeginUntrusted(); // ]]></script><div>
+		<table style='border-spacing: 0;'><tr><td style='padding: 0;'><!-- test comment --><script type="text/javascript">// <![CDATA[
+			try { NeatHtml.DefaultFilter.BeginUntrusted(); } catch (ex) { document.writeln('NeatHtml not found<!-' + '-'); } // ]]></script><div>
 				PREPROCESSED_UNTRUSTED_CONTENT
 		<xmp></xmp><!-- ' " > --></td></tr></table>
-	</div>
-	<script type="text/javascript">// <![CDATA[
+	</div><script type="text/javascript">// <![CDATA[
 		NeatHtml.DefaultFilter.ProcessUntrusted();
 	// ]]></script>
 	
@@ -46,7 +45,7 @@ where:
 		2. Replace all:
 				</table
 			with:
-				<NeatHtmlParserReset single='' double=""></table><table><tr><td
+				<NeatHtmlParserReset single='' double=""></table><table style='border-spacing: 0;'><tr><td style='padding: 0;'
 		3. Remove all comments (i.e. anything matching this regex: "<!--([^-]*-)+-[^>]*>")
 		4. Replace all remaining "--" with "&#45;&#45;"
 		5. Replace all "<xmp>" and "</xmp>" with "&lt;xmp&gt;" and "&lt;/xmp&gt;".  
@@ -404,7 +403,20 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 	{
 		var untrustedContent = GetUntrustedContent();
 		xmlStr = FilterTagSoupToXml(untrustedContent);
+
+		// Make the result available for use by tests 
+		this.FilteredContent = xmlStr;
+
+		// Add some branding 
+		var endTagPos = xmlStr.lastIndexOf("/") - 1;
+		xmlStr = xmlStr.substring(0, endTagPos)
+			+ "<div style='text-align: right;'><em><a href='http://www.brettle.com'>Powered by NeatHtml&trade;</a></em></div>" 
+			+ xmlStr.substring(endTagPos, xmlStr.length);
+
+		// Replace the original untrusted content (and surrounding table)
 		containingDiv.innerHTML = xmlStr;
+
+		// Resize the containingDiv to account for the new layout.
 		ResizeContainer(containingDiv);
 	}
 	catch (ex)
@@ -412,8 +424,6 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		containingDiv.innerHTML = "<pre>" + ex.toString().replace(/</g, "&lt;").replace(/&/g, "&amp;") + "</pre>";
 	}
 	
-	// Make the result available for use by tests 
-	this.FilteredContent = xmlStr; 
 	return this.FilteredContent;
 	
 	/***** Local Functions ******/
@@ -445,7 +455,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		
 		s = s.replace(/<NeatHtmlParserReset single='' double=""><\/NeatHtmlParserReset><\/td><\/tr><\/table><table/g,
 							"<table");
-		s = s.replace(/<NeatHtmlParserReset single='' double=""><\/table><table><tr><td/g,
+		s = s.replace(/<NeatHtmlParserReset single='' double=""><\/table><table style='border-spacing: 0;'><tr><td style='padding: 0;'/g,
 							"</table");
 		
 //		alert(s);
@@ -645,20 +655,24 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		{
 			// Firefox (at least 1.5) computes an incorrect scrollHeight there is no padding and no border.
 			// If there is no padding, temporarily add padding so FF will calculate scrollHeight properly.
-			var extraPadding = 0;
-			if (!parent.firstChild.style.padding)
-			{
-				parent.firstChild.style.padding = "1px";
-				extraPadding = 1;
-			}
-			// Don't count extraPadding in height and width because we will be removing it.
-			parent.style.height = (parent.firstChild.scrollHeight-2*extraPadding) + "px";
-			parent.style.width = (parent.firstChild.scrollWidth-2*extraPadding) + "px";
-			if (extraPadding)
-			{
-				parent.firstChild.style.padding = "0px";
-			}
-			parent.style.overflow = "hidden";
+			// We defer this so that the browser has a chance to layout the new content before we calculate
+			// the height.
+			window.setTimeout(function() {
+				var extraPadding = 0;
+				if (!parent.firstChild.style.padding)
+				{
+					parent.firstChild.style.padding = "1px";
+					extraPadding = 1;
+				}
+				// Don't count extraPadding in height and width because we will be removing it.
+				parent.style.height = (parent.firstChild.scrollHeight-2*extraPadding) + "px";
+				parent.style.width = (parent.firstChild.scrollWidth-2*extraPadding) + "px";
+				if (extraPadding)
+				{
+					parent.firstChild.style.padding = "0px";
+				}
+				parent.style.overflow = "hidden";
+			}, 1);
 		}
 	}
 };
