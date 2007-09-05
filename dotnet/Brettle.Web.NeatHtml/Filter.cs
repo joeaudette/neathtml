@@ -103,15 +103,7 @@ namespace Brettle.Web.NeatHtml
 						
 		private string DisableSuspiciousStyles(Match m)
 		{
-			// Insert 2 zero-width joiner entities (&zwj;) so that "style" becomes "sty&zwj;&zwj;le"
-			// The zero-width joiner is invisible in displayed text but significant to the browser's HTML parser.
-			// We use "&zwj;&zwj;" instead of just "&zwj;" because there is no reason for normal markup 
-			// to contain "&zwj;&zwj;" -- its redundant.  That means on the client side it should be safe to 
-			// replace "sty&zwj;&zwj;le" with "style" without affecting any of the author's "&zwj;".
-			// NOTE: This will unfortunately break URLs that contain "style=".  It might be possible
-			// to fix that using a negative look-behind assertion, but I'm concerned that such an assertion
-			// might open the Regex to a DoS attack from a string like "style=style=style=style=...".
-			return m.Value.Substring(0,3) + "&zwj;&zwj;" + m.Value.Substring(3, m.Value.Length - 3);
+			return m.Value.Substring(0,3) + "&#" + ((int)m.Value[3]) + ";" + m.Value.Substring(4, m.Value.Length - 4);
 		}
 
 		private static string Format = @"<![if gte IE 7]>

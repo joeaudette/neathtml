@@ -54,7 +54,7 @@ where:
 			To fight CSRF attacks, also encode <img>.  Filter.cs shows how to all these replacements in one pass and
 			use a whitelist of tags.
 			DO NOT replace <script> because it causes the browser to hide script source from the user.
-		6. To fight CSRF attacks, replace "style" with "sty&zwj;&zwj;le" wherever it looks suspicious.  See Filter.cs
+		6. To fight CSRF attacks, HTML encode the "l" in "style" wherever the style looks suspicious.  See Filter.cs
 			for an example Regex.
 				
 	NOSCRIPT_IE6_WIDTH and NOSCRIPT_IE6_HEIGHT are the desired dimensions of the div that will display the
@@ -466,7 +466,9 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 							"</table");
 		s = s.replace(/<([!\?/]?)NeatHtmlReplace_([a-z]?)/g, "$1$2");
 
-		s = s.replace(/sty&zwj;&zwj;le/g, "style");
+		s = s.replace(/(sty)&#(108|76);(e)/gi, function(match, sty, lCharCode, e) {
+					return sty + String.fromCharCode(lCharCode) + e;
+		});
 		
 //		alert(s);
 		return s;
