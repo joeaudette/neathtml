@@ -17,7 +17,7 @@
 	content: " #" counter(trusted-num);
 }
 
-#trustedLinkBeforeParent:after {
+#noCounterDisplay:after {
 	content: "";
 }
 </style>
@@ -34,12 +34,17 @@
 NeatHtmlTest.AppendTestStatusElement();	
 	// ]]></script>
 
-	<p class="Trusted" id="trustedLinkBeforeParent"><a id="trustedLinkBefore" href="#">This link</a>
-	is for the ID spoofing test.  Here is the untrusted content:</p>
-	<div style="border: solid red 1px;">
+	<p class="Trusted" id="noCounterDisplay">
+
+	<span id="trustedLinkBeforeParent" style="display: none;"><a id="trustedLinkBefore" href="#">This link</a> is for the ID spoofing test.  We don't normally display it because the tests automatically detect spoofing.</span>
+
+	<a href="http://www.brettle.com/neathtml">NeatHtml&trade;</a> is displaying untrusted content in the box below
+	</p>
+	
+	<div style="border: solid red 2px;">
 	<NeatHtml:UntrustedContent id="untrustedContent" runat="server" ClientSideFilterName="NeatHtmlTest.DefaultFilter">
 			<p>Here is a table with lots of XSS attacks and tag soup markup:</p>
-			<div id="tagSoup"><table border=1>
+			<table border=1>
 				<tr>
 					<th>Script attacks
 					<td>script element<br/>
@@ -74,40 +79,44 @@ NeatHtmlTest.AppendTestStatusElement();
 					<td>A B C with entities: &#65;&nbsp;&#x42;&nbsp;&#X43;
 					<td>Unencoded <, and &
 			</table>
-			
-			<p>Here is a nested table which will display as 3 tables when javascript is disabled (known limitation).
-			<table border=1>
-				<tr><td>0,0</td><td>0,1</td><td>0,2</td></tr>
-				<tr><td>1,0</td><td id="innerTableContainer"><table id="innerTable" border=1>
-				<tr><td>A,A</td><td>A,B</td><td>A,C</td></tr>
-				<tr><td>B,A</td><td>B,B</td><td>B,C</td></tr>
-				<tr><td>C,A</td><td>C,B</td><td>C,C</td></tr>
-			</table></td><td>1,2</td></tr>
-				<tr><td>2,0</td><td>2,1</td><td>2,2</td></tr>
+			<br/>
+			<table border=1 style="border-spacing: 0;">
+				<tr>
+					<td style="counter-increment: trusted-num;">Increment a CSS counter.  For result, see just under the
+						untrusted content box.
+						This table has a nested table.  It will be split in noscript mode (known limitation).
+					</td>
+					<td id="innerTableContainer">
+						<table id="innerTable" border=1>
+							<tr>
+								<td style="background-image: url(http://www.brettle.com/Data/Sites/1/logos/deanatwork_sidesmall.jpg)">style="background-image: url(...)"</td>
+								<td style="background-color: rgb(0,255,0);">style="background-color: rgb(...);"</td>
+							</tr>
+						</table>
+					</td>
+					<td>
+					Try to break out of the layout jail
+					<div style="position: absolute; top: 0; right: 0; color: red;">Let me out!</div>
+					<div style="position: absolute; top: -100px; right: 0; color: red;">Let me out with a negative top property!</div>					</td>
+				</tr>
 			</table>
-			
-			
 
-			<p style="counter-increment: trusted-num;">Increment a CSS counter.  For result, see just under the
-			untrusted content box.  
-			Check <span style="background-image: url(http://www.brettle.com/Data/Sites/1/logos/deanatwork_sidesmall.jpg)">style="url(...)"</span>
-			vs <span style="background-color: rgb(0,255,0);">style="background-color: rgb(...);"</span>.
-			Try to break out of the layout jail and markup jail...
-			<div style="position: absolute; top: 0; right: 0; color: red;">Let me out!</div>
-			<div style="position: absolute; top: -100px; right: 0; color: red;">Let me out with a negative top property!</div>
-				</table>
+			Try to break out of the markup jail...
+			</table>
             </div>
             </div>
             </div>
-			<p>Help! Let me out of this box!</p>
-			<p>Try to pull trusted content in to the box:</p>
+			"Help! Let me out of this box!"
+			Try to pull trusted content into the box...
 			<plaintext><iframe><object><script>
 	</NeatHtml:UntrustedContent>
 	</div>
-	<p id="trustedLinkAfterParent"><a id="trustedLinkAfter" href="#">Another link</a> for the ID spoofing test.
+	<p id="trustedLinkAfterParent" style="display: none;"><a id="trustedLinkAfter" href="#">Another link</a> for
+	the ID spoofing test that is not displayed because the test automatically detects spoofing.
 	</p>
 
-	<h3 class="Trusted">Known limitation: This should say "#2" (or nothing) --> </h3>
+	<p class="Trusted" style="font-color: #FF3333">Known limitation: This should not say "#3" but does in noscript mode if CSS counters
+	and :after elements are supported --> </p>
 
 	<p>
 	Think you can break it? Enter some untrusted content in the area below and click the submit button.  Please
