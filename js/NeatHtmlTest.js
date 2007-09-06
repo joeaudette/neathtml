@@ -237,10 +237,15 @@ NeatHtmlTest.DefaultFilter.BeginUntrusted = function() {
 };
 
 NeatHtmlTest.DefaultFilter.ProcessUntrusted = function() {
+	if (NeatHtmlTest.GetMode() == "normal")
+		NeatHtml.DefaultFilter.ProcessUntrusted();
+};
+
+NeatHtmlTest.DefaultFilter.ResizeContainer = function() {
 	var scriptElems = document.getElementsByTagName("script");
 	NeatHtmlTest.AfterContainer = scriptElems[scriptElems.length - 1];
 	if (NeatHtmlTest.GetMode() == "normal")
-		NeatHtml.DefaultFilter.ProcessUntrusted();
+		NeatHtml.DefaultFilter.ResizeContainer();
 };
 
 // Override the functions called by test XSS vectors so that we can detect that they

@@ -44,7 +44,7 @@ NeatHtmlTest.AppendTestStatusElement();
 	<div style="border: solid red 2px;">
 	<NeatHtml:UntrustedContent id="untrustedContent" runat="server" ClientSideFilterName="NeatHtmlTest.DefaultFilter">
 			<p>Here is a table with lots of XSS attacks and tag soup markup:</p>
-			<table border=1>
+			<table border="1">
 				<tr>
 					<th>Script attacks
 					<td>script element<br/>
@@ -80,14 +80,14 @@ NeatHtmlTest.AppendTestStatusElement();
 					<td>Unencoded <, and &
 			</table>
 			<br/>
-			<table border=1 style="border-spacing: 0;">
+			<table border="1" style="border-spacing: 0;">
 				<tr>
 					<td style="counter-increment: trusted-num;">Increment a CSS counter.  For result, see just under the
 						untrusted content box.
-						This table has a nested table.  It will be split in noscript mode (known limitation).
 					</td>
 					<td id="innerTableContainer">
-						<table id="innerTable" border=1>
+						Nested table:
+						<table id="innerTable" border="1">
 							<tr>
 								<td style="background-image: url(http://www.brettle.com/Data/Sites/1/logos/deanatwork_sidesmall.jpg)">style="background-image: url(...)"</td>
 								<td style="background-color: rgb(0,255,0);">style="background-color: rgb(...);"</td>
@@ -115,8 +115,7 @@ NeatHtmlTest.AppendTestStatusElement();
 	the ID spoofing test that is not displayed because the test automatically detects spoofing.
 	</p>
 
-	<p class="Trusted" style="font-color: #FF3333">Known limitation: This should not say "#3" but does in noscript mode if CSS counters
-	and :after elements are supported --> </p>
+	<p class="Trusted" style="font-color: #FF3333">If the browser supports the CSS :after pseudo-element and the counter() function, then "#2" should appear to the right --> </p>
 
 	<p>
 	Think you can break it? Enter some untrusted content in the area below and click the submit button.  Please

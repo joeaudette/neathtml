@@ -422,9 +422,6 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 
 		// Replace the original untrusted content (and surrounding table)
 		containingDiv.innerHTML = xmlStr;
-
-		// Resize the containingDiv to account for the new layout.
-		ResizeContainer(containingDiv);
 	}
 	catch (ex)
 	{
@@ -460,11 +457,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 			s = my.HtmlDecode(s);
 		}
 		
-		s = s.replace(/<NeatHtmlParserReset single='' double=""><\/NeatHtmlParserReset><\/td><\/tr><\/table><table/g,
-							"<table");
-		s = s.replace(/<NeatHtmlParserReset single='' double=""><\/table><table style='border-spacing: 0;'><tr><td style='padding: 0;'/g,
-							"</table");
-		s = s.replace(/<([!\?/]?)NeatHtmlReplace_([a-z]?)/g, "$1$2");
+		s = s.replace(/(<[!\?\/]?)NeatHtmlReplace_([a-z]?)/g, "$1$2");
 
 		s = s.replace(/(sty)&#(108|76);(e)/gi, function(match, sty, lCharCode, e) {
 					return sty + String.fromCharCode(lCharCode) + e;
@@ -658,34 +651,39 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 			return result;
 		}
 	}
-	
-	function ResizeContainer(parent)
+};
+
+
+NeatHtml.Filter.prototype.ResizeContainer = function()
+{
+	// Find the calling script element and remember it so we can use it to find the untrusted content.
+	var scriptElems = document.getElementsByTagName("script");
+	parent = scriptElems[scriptElems.length - 1].previousSibling;
+
+	// Set the dimensions of the div based on the new content.  This allows IE6 to hide overflow that was
+	// absolutely positioned.
+	if (parent.firstChild.scrollHeight)
 	{
-		// Set the dimensions of the div based on the new content.  This allows IE6 to hide overflow that was
-		// absolutely positioned.
-		if (parent.firstChild.scrollHeight)
-		{
-			// Firefox (at least 1.5) computes an incorrect scrollHeight there is no padding and no border.
-			// If there is no padding, temporarily add padding so FF will calculate scrollHeight properly.
-			// We defer this so that the browser has a chance to layout the new content before we calculate
-			// the height.
-			window.setTimeout(function() {
-				var extraPadding = 0;
-				if (!parent.firstChild.style.padding)
-				{
-					parent.firstChild.style.padding = "1px";
-					extraPadding = 1;
-				}
-				// Don't count extraPadding in height and width because we will be removing it.
-				parent.style.height = (parent.firstChild.scrollHeight-2*extraPadding) + "px";
-				parent.style.width = (parent.firstChild.scrollWidth-2*extraPadding) + "px";
-				if (extraPadding)
-				{
-					parent.firstChild.style.padding = "0px";
-				}
-				parent.style.overflow = "hidden";
-			}, 1);
-		}
+		// Firefox (at least 1.5) computes an incorrect scrollHeight there is no padding and no border.
+		// If there is no padding, temporarily add padding so FF will calculate scrollHeight properly.
+		// We defer this so that the browser has a chance to layout the new content before we calculate
+		// the height.
+		window.setTimeout(function() {
+			var extraPadding = 0;
+			if (!parent.firstChild.style.padding)
+			{
+				parent.firstChild.style.padding = "1px";
+				extraPadding = 1;
+			}
+			// Don't count extraPadding in height and width because we will be removing it.
+			parent.style.height = (parent.firstChild.scrollHeight-2*extraPadding) + "px";
+			parent.style.width = (parent.firstChild.scrollWidth-2*extraPadding) + "px";
+			if (extraPadding)
+			{
+				parent.firstChild.style.padding = "0px";
+			}
+			parent.style.overflow = "hidden";
+		}, 1);
 	}
 };
 
