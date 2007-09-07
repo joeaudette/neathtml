@@ -662,9 +662,13 @@ NeatHtml.Filter.prototype.ResizeContainer = function()
 {
 	// Find the calling script element and remember it so we can use it to find the untrusted content.
 	var scriptElems = document.getElementsByTagName("script");
-	parent = scriptElems[scriptElems.length - 1].previousSibling;
+	var parent = scriptElems[scriptElems.length - 1].previousSibling;
+	var my = this;
 
-	// Set the dimensions of the div based on the new content.  This allows IE6 to hide overflow that was
+	// Limit the width of the content based on the width of the containing div
+	parent.firstChild.style.width = parent.style.width;
+
+	// Set the height of the div based on the new content.  This allows IE6 to hide overflow that was
 	// absolutely positioned.
 	if (parent.firstChild.scrollHeight)
 	{
@@ -672,22 +676,19 @@ NeatHtml.Filter.prototype.ResizeContainer = function()
 		// If there is no padding, temporarily add padding so FF will calculate scrollHeight properly.
 		// We defer this so that the browser has a chance to layout the new content before we calculate
 		// the height.
-		window.setTimeout(function() {
-			var extraPadding = 0;
-			if (!parent.firstChild.style.padding)
-			{
-				parent.firstChild.style.padding = "1px";
-				extraPadding = 1;
-			}
-			// Don't count extraPadding in height and width because we will be removing it.
-			parent.style.height = (parent.firstChild.scrollHeight-2*extraPadding) + "px";
-			parent.style.width = (parent.firstChild.scrollWidth-2*extraPadding) + "px";
-			if (extraPadding)
-			{
-				parent.firstChild.style.padding = "0px";
-			}
-			parent.style.overflow = "hidden";
-		}, 1);
+		var extraPadding = 0;
+		if (!parent.firstChild.style.padding)
+		{
+			parent.firstChild.style.padding = "1px";
+			extraPadding = 1;
+		}
+		// Don't count extraPadding in height because we will be removing it.
+		parent.style.height = (parent.firstChild.scrollHeight-2*extraPadding) + "px";
+		if (extraPadding)
+		{
+			parent.firstChild.style.padding = "0px";
+		}
+		parent.style.overflow = "hidden";
 	}
 };
 
