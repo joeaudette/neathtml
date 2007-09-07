@@ -409,6 +409,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 	try
 	{
 		var untrustedContent = GetUntrustedContent();
+		
 		xmlStr = FilterTagSoupToXml(untrustedContent);
 
 		// Make the result available for use by tests 
@@ -448,7 +449,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		var s;
 		if (n.nodeType == 8 /* Node.COMMENT_NODE */)
 		{
-			s = n.data;
+			s = n.data.substring(0, n.data.length-2); // strips off the trailing "<!"
 		}
 		else if (n.tagName == "XMP")
 		{
@@ -456,6 +457,9 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 	 		// Unquote the HTML special characters.
 			s = my.HtmlDecode(s);
 		}
+
+		// Make the result available for use by tests 
+		my.UnfilteredContent = s;
 		
 		s = s.replace(/(<[!\?\/]?)NeatHtmlReplace_([a-z]?)/g, "$1$2");
 
