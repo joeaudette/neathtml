@@ -27,7 +27,7 @@ NeatHtmlTest.AppendTestStatusElement = function() {
 	callingScriptElem.parentNode.appendChild(NeatHtmlTest.DetailsLink);
 	NeatHtmlTest.StatusDiv = document.createElement("blockquote");
 	callingScriptElem.parentNode.appendChild(NeatHtmlTest.StatusDiv);
-	NeatHtmlTest.ShowDetails();
+	NeatHtmlTest.HideDetails();
 };
 
 NeatHtmlTest.ShowDetails = function()
@@ -44,24 +44,6 @@ NeatHtmlTest.HideDetails = function()
 	NeatHtmlTest.DetailsLink.onclick = NeatHtmlTest.ShowDetails;
 }
 
-NeatHtmlTest.GetMode = function()
-{
-	if (!NeatHtmlTest._Mode)
-	{
-		NeatHtmlTest._Mode = "normal";
-		var paramName = "NeatHtmlTestMode=";
-		var queryParams=window.location.search.substring(1).split("&");
-		for (var i = 0; i < queryParams.length; i++)
-		{
-			if (queryParams[i].substring(0, paramName.length) == paramName)
-			{
-				NeatHtmlTest._Mode = queryParams[i].substring(paramName.length, queryParams[i].length);
-			}
-		}
-	}
-	return NeatHtmlTest._Mode;
-};
-
 NeatHtmlTest.HtmlEncode = function(s) { return NeatHtml.Filter.prototype.HtmlEncode(s); };
 
 NeatHtmlTest.RunTests = function(topSuite) {
@@ -73,27 +55,6 @@ NeatHtmlTest.RunTests = function(topSuite) {
 	
 	RunTestSuite(topSuite);
 		
-	NeatHtmlTest.AppendOutput(""
-			+ "	<table border='1'>\n"
-			+ "		<thead>\n"
-			+ "			<tr><th>Environment</th><th>HTML Parsed By Browser</th></tr>\n"
-			+ "		</thead>\n"
-			+ "		<tbody>\n"
-			+ "			<tr>\n"
-			+ "				<th>Script Disabled</th>\n"
-			+ "				<td><textarea readonly='readonly' rows='20' cols='110'>" 
-			+ NeatHtmlTest.HtmlEncode(NeatHtml.DefaultFilter.UnfilteredContent)
-			+ "				</textarea></td>\n"
-			+ "			</tr>\n"
-			+ "			<tr>\n"
-			+ "				<th>Script Enabled</th>\n"
-			+ "				<td><textarea readonly='readonly' rows='20' cols='110'>" 
-			+ NeatHtmlTest.HtmlEncode(NeatHtml.DefaultFilter.FilteredContent)
-			+ "				</textarea></td>\n"
-			+ "			</tr>\n"
-			+ "		</tbody>\n"
-			+ "	</table>\n");
-
 	var summary = document.createElement("div");
 	summary.style.fontSize="18pt";
 	NeatHtmlTest.StatusDiv.parentNode.insertBefore(summary, NeatHtmlTest.DetailsLink);
@@ -189,7 +150,7 @@ NeatHtmlTest.Log = function(msg) {
 
 NeatHtmlTest.AlertCalls = 0;
 NeatHtmlTest.AlertFromScript = function(msg) {
-	if (NeatHtmlTest.GetMode() == "noscript") {
+	if (NeatHtmlTest.NoScript) {
 		return;
 	}
 	NeatHtmlTest.AlertCalls++;
@@ -253,25 +214,19 @@ NeatHtmlTest.DefaultFilter.BeginUntrusted = function() {
 	NeatHtmlTest.Container = callingScriptElem;
 	while (NeatHtmlTest.Container.tagName.toLowerCase() != "div")
 		NeatHtmlTest.Container = NeatHtmlTest.Container.parentNode;
-	if (NeatHtmlTest.GetMode() != "unsafe")
+	if (!NeatHtmlTest.NoScript && !NeatHtmlTest.NoNeatHtml)
 		NeatHtml.DefaultFilter.BeginUntrusted();
 };
 
 NeatHtmlTest.DefaultFilter.ProcessUntrusted = function() {
-	if (NeatHtmlTest.GetMode() != "unsafe")
+	if (!NeatHtmlTest.NoScript && !NeatHtmlTest.NoNeatHtml)
 		NeatHtml.DefaultFilter.ProcessUntrusted();
-		
-	// If we are in noscript mode, put the original unfiltered content back.
-	if (NeatHtmlTest.GetMode() == "noscript")
-	{
-		NeatHtmlTest.Container.innerHTML = NeatHtml.DefaultFilter.UnfilteredContent;
-	}
 };
 
 NeatHtmlTest.DefaultFilter.ResizeContainer = function() {
 	var scriptElems = document.getElementsByTagName("script");
 	NeatHtmlTest.AfterContainer = scriptElems[scriptElems.length - 1];
-	if (NeatHtmlTest.GetMode() != "unsafe")
+	if (!NeatHtmlTest.NoScript && !NeatHtmlTest.NoNeatHtml)
 		NeatHtml.DefaultFilter.ResizeContainer();
 };
 
@@ -293,7 +248,7 @@ NeatHtmlTest.DefaultTests = [
 				NeatHtmlTest.AssertEquals(NeatHtmlTest.AfterContainer, NeatHtmlTest.Container.nextSibling);
 			}],
 			["XSS blocked", function () {
-				if (NeatHtmlTest.GetMode() == "noscript")
+				if (NeatHtmlTest.NoScript)
 				{
 					NeatHtmlTest.Status = "disabled in noscript mode";
 					return;
@@ -301,7 +256,7 @@ NeatHtmlTest.DefaultTests = [
 				NeatHtmlTest.AssertEquals(NeatHtmlTest.AlertCalls, 0);
 			}],
 			["ID spoofing blocked", function () {
-				if (NeatHtmlTest.GetMode() == "noscript")
+				if (NeatHtmlTest.NoScript)
 				{
 					NeatHtmlTest.Status = "disabled in noscript mode";
 					return;

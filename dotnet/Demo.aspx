@@ -17,6 +17,8 @@
 	content: " #" counter(trusted-num);
 }
 
+label { font-weight: bold; }
+
 #noCounterDisplay:after {
 	content: "";
 }
@@ -24,13 +26,12 @@
 </head>
 <body>
 <form runat="server">
-	<a href="?NeatHtmlTestMode=normal">Test with javascript</a>
-	<a href="?NeatHtmlTestMode=noscript">Test without javascript (simulated)</a>
-	<a href="?NeatHtmlTestMode=unsafe">Test without client-side NeatHtml</a>
-	<br />
-
 	<script type="text/javascript">
 	// <![CDATA[
+<%= Request.Params["NoScript"] == "true" ? "NeatHtmlTest.NoScript = true;" 
+	: (Request.Params["NoScript"] == "false" ? "NeatHtmlTest.NoScript = false;" : "") %>
+<%= Request.Params["NoNeatHtml"] == "true" ? "NeatHtmlTest.NoNeatHtml = true;" 
+	: (Request.Params["NoNeatHtml"] == "false" ? "NeatHtmlTest.NoNeatHtml = false;" : "") %>
 NeatHtmlTest.AppendTestStatusElement();	
 	// ]]></script>
 
@@ -117,20 +118,77 @@ NeatHtmlTest.AppendTestStatusElement();
 
 	<p class="Trusted" style="font-color: #FF3333">If the browser supports the CSS :after pseudo-element and the counter() function, then "#2" should appear to the right --> </p>
 
+	<div id="showFilteredContentDiv"><a href="#" onclick="ShowActualFilteredContentTextarea();">View HTML source of filtered content displayed above</a></div>
+	<div id="filteredContentDiv" style="display:none;">
+	<p><a href="#" onclick="HideActualFilteredContentTextarea();">Hide HTML source of filtered content displayed above</a></p>
+	<label for="actualFilteredContentTextarea">Filtered Untrusted Content<br/></label>
+		<textarea id="actualFilteredContentTextarea" runat="server" rows="25" cols="120" readonly="readonly"></textarea>
+	</div>
+	<script type="text/javascript">
+	// <![CDATA[
+	function ShowActualFilteredContentTextarea()
+	{
+		document.getElementById('filteredContentDiv').style.display = "block";
+		document.getElementById('showFilteredContentDiv').style.display = "none";
+		return false;
+	}
+	function HideActualFilteredContentTextarea()
+	{
+		document.getElementById('showFilteredContentDiv').style.display = "block";
+		document.getElementById('filteredContentDiv').style.display = "none";
+		return false;
+	}
+	// ]]>
+	</script>	
+	
+	<h3>Try Your Own Test Content</h3>
 	<p>
 	Think you can break it? Enter some untrusted content in the area below and click the submit button.  Please
 	email me (dean at brettle dot com) if you can make a test fail.  A test will fail if you can get your content
 	to call window.alert(), spoof the trustedLinkBefore or trustedLinkAfter IDs, or	escape from the markup jail.
 	I'm also interested in any other failure mode you find.  Thanks!
 	</p>
-	<textarea id="textarea" runat="server" rows=25 cols=120></textarea>
-	<br/>
+	<label for="testContentTextarea">Test Untrusted Content<br/></label>
+	<textarea id="testContentTextarea" runat="server" rows="25" cols="120"></textarea>
+	
+	
+	<p><input id="checkFilteredContent" runat="server" type="checkbox" onchange="CheckFilteredContentChanged();"/> Compare filtered content against expected value
+	<div id="expectedFilteredContent">
+	<label for="expectedFilteredContentTextarea">Expected Filtered Untrusted Content<br/></label>
+	<textarea id="expectedFilteredContentTextarea" runat="server" rows="25" cols="120" readonly="readonly"></textarea>
+	</div>
+	
+	<script type="text/javascript">
+	// <![CDATA[
+	CheckFilteredContentChanged();
+	
+	function CheckFilteredContentChanged()
+	{
+		if (document.getElementById('checkFilteredContent').checked)
+			document.getElementById('expectedFilteredContent').style.display = "block";
+		else
+			document.getElementById('expectedFilteredContent').style.display = "none";
+		return false;
+	}
+	// ]]>
+	</script>	
+	
+	<p>
+		<input id="noScript" runat="server" type="checkbox" name="NoScript" value="true"/> Simulate browser with scripting disabled <br />
+		<input id="noNeatHtml" runat="server" type="checkbox" name="NoNeatHtml" value="true"/> Disable NeatHtml (to see tests fail) <br />
+	</p>
 	<asp:Button id="submitButton" runat="server" Text="Submit" />
 
   	<script type="text/javascript">
 	// <![CDATA[
 	window.onload = function() 
 	{
+		if (typeof(NeatHtml.DefaultFilter.FilteredContent) != "undefined")
+		{
+			document.getElementById("actualFilteredContentTextarea").innerHTML 
+				= NeatHtml.DefaultFilter.HtmlEncode(NeatHtml.DefaultFilter.FilteredContent);
+		}
+		
 		NeatHtmlTest.RunTests([
 			// The DefaultTests will detect:
 			//    any calls to window.alert()

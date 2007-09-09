@@ -29,7 +29,9 @@ namespace Brettle.Web.NeatHtml
 {
 	public class Demo : System.Web.UI.Page
 	{	
-		protected HtmlTextArea textarea;
+		protected HtmlTextArea actualFilteredContentTextarea;
+		protected HtmlTextArea expectedFilteredContentTextarea;
+		protected HtmlTextArea testContentTextarea;
 		protected Button submitButton;
 		protected UntrustedContent untrustedContent;
 		
@@ -46,7 +48,7 @@ namespace Brettle.Web.NeatHtml
 		
 		private void Page_Load(object sender, EventArgs e)
 		{
-			if (!IsPostBack || textarea.Value.Length == 0)
+			if (!IsPostBack || testContentTextarea.Value.Length == 0)
 			{
 				StringWriter sw = new StringWriter();
 				HtmlTextWriter htw = new HtmlTextWriter(sw);
@@ -55,17 +57,25 @@ namespace Brettle.Web.NeatHtml
 					untrustedContent.Controls[i].RenderControl(htw);
 				}
 				htw.Close();
-				textarea.Value = sw.ToString();
+				testContentTextarea.Value = sw.ToString();
 			}
 			submitButton.Click += new System.EventHandler(this.Button_Clicked);
 			// Works around a Mono bug (http://bugzilla.ximian.com/show_bug.cgi?id=78948) which causes
 			// the textarea content to render without being encoded.
-			textarea.InnerText = textarea.Value;
+			testContentTextarea.InnerText = testContentTextarea.Value;
+
+			{
+				StringWriter sw = new StringWriter();
+				HtmlTextWriter htw = new HtmlTextWriter(sw);
+				untrustedContent.RenderControl(htw);
+				htw.Close();
+				actualFilteredContentTextarea.InnerText = actualFilteredContentTextarea.Value = sw.ToString();
+			}
 		}
 
 		private void Button_Clicked(object sender, EventArgs e)
 		{
-			string html = textarea.Value;
+			string html = testContentTextarea.Value;
 			if (Environment.Version.Major < 2)
 			{
 				html = HttpUtility.HtmlDecode(html);
