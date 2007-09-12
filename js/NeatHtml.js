@@ -463,6 +463,8 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		
 		s = s.replace(/(<[!\?\/]?)NeatHtmlReplace_([a-z]?)/g, "$1$2");
 
+		s = s.replace(/&#45;&#45;/g, "--");
+
 		s = s.replace(/(sty)&#(108|76);(e)/gi, function(match, sty, lCharCode, e) {
 					return sty + String.fromCharCode(lCharCode) + e;
 		});
@@ -533,25 +535,40 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 
 		function HandleOpenAngle(match, isEndTag, tagName, attrs)
 		{
-			if (/^!--.*$/.test(tagName))
+			if (/^!.*$/.test(tagName))
 			{
-				tagSoupRe.lastIndex = s.indexOf("--", match.index + "<!--".length);
+				if (/^!\[CDATA\[.*$/.test(tagName))
+				{
+					tagSoupRe.lastIndex = s.indexOf("]]>", matches.index + "<![CDATA[".length);
+					if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match);
+					tagSoupRe.lastIndex += "]]>".length;
+					return "";
+				}
+				tagSoupRe.lastIndex = matches.index + "<!".length;
+				while (tagSoupRe.lastIndex != -1)
+				{
+					var dashDashIndex = s.indexOf("--", tagSoupRe.lastIndex);
+					var closeAngleIndex = s.indexOf(">", tagSoupRe.lastIndex);
+					if (closeAngleIndex == -1) break;
+					if (closeAngleIndex < dashDashIndex)
+					{
+						tagSoupRe.lastIndex = closeAngleIndex + 1;
+						break;
+					}
+					tagSoupRe.lastIndex = dashDashIndex;
+					if (tagSoupRe.lastIndex == -1) break;
+					tagSoupRe.lastIndex += 2;
+					tagSoupRe.lastIndex = s.indexOf("--", tagSoupRe.lastIndex);
+					if (tagSoupRe.lastIndex == -1) break;
+					tagSoupRe.lastIndex += 2;
+				}
+					
 				if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match);
-				tagSoupRe.lastIndex = s.indexOf(">", tagSoupRe.lastIndex);
-				if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match);
-				tagSoupRe.lastIndex += ">".length;
-				return "";
-			}
-			if (/^!\[CDATA\[.*$/.test(tagName))
-			{
-				tagSoupRe.lastIndex = s.indexOf("]]>", match.index + "<![CDATA[".length);
-				if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match);
-				tagSoupRe.lastIndex += "]]>".length;
 				return "";
 			}
 			if (/^\?.*$/.test(tagName))
 			{
-				tagSoupRe.lastIndex = s.indexOf("?>", match.index + "<?".length);
+				tagSoupRe.lastIndex = s.indexOf("?>", matches.index + "<?".length);
 				if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match);
 				tagSoupRe.lastIndex += "?>".length;
 				return "";
