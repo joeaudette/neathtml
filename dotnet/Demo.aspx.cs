@@ -76,10 +76,6 @@ namespace Brettle.Web.NeatHtml
 		private void Button_Clicked(object sender, EventArgs e)
 		{
 			string html = testContentTextarea.Value;
-			if (Environment.Version.Major < 2)
-			{
-				html = HttpUtility.HtmlDecode(html);
-			}
 			untrustedContent.Controls.Clear();
 			untrustedContent.Controls.Add(new LiteralControl(html));
 		}
