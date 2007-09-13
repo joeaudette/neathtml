@@ -52,7 +52,7 @@ NeatHtmlTest.AppendTestStatusElement();
 
 	<p class="Trusted" style="font-color: #FF3333">If the browser supports the CSS :after pseudo-element and the counter() function, then "#2" should appear to the right --> </p>
 
-	<div id="showFilteredContentDiv"><a href="javascript:void(0)" onclick="ShowActualFilteredContentTextarea();">View HTML source of filtered content displayed above</a></div>
+	<div id="showFilteredContentDiv" style="display:block;"><a href="javascript:void(0)" onclick="ShowActualFilteredContentTextarea();">View HTML source of filtered content displayed above</a></div>
 	<div id="filteredContentDiv" style="display:none;">
 	<p><a href="javascript:void(0)" onclick="HideActualFilteredContentTextarea();">Hide HTML source of filtered content displayed above</a></p>
 	<label for="actualFilteredContentTextarea">Filtered Untrusted Content<br/></label>
@@ -95,7 +95,7 @@ NeatHtmlTest.AppendTestStatusElement();
 	<p><input id="checkFilteredContent" runat="server" type="checkbox" onchange="CheckFilteredContentChanged();"/> Compare filtered content against expected value
 	<div id="expectedFilteredContent">
 	<label for="expectedFilteredContentTextarea">Expected Filtered Untrusted Content<br/></label>
-	<textarea id="expectedFilteredContentTextarea" runat="server" rows="25" cols="120"></textarea>
+	<textarea id="expectedFilteredContentTextarea" name="expectedFilteredContentTextarea" rows="25" cols="120"></textarea>
 	</div>
 	
 	<script type="text/javascript">
@@ -133,23 +133,26 @@ NeatHtmlTest.AppendTestStatusElement();
 	}
 	document.getElementById('selectedTest').onchange = SelectedTestChanged;
 	SelectedTestChanged();
+	
+	var expectedFilteredContent = <%= ToJsString(expectedFilteredContent) %>;
+	var actualFilteredContent = <%= ToJsString(actualFilteredContent) %>;
+	
 	window.onload = function() 
 	{
 		if (typeof(NeatHtml.DefaultFilter.FilteredContent) != "undefined")
 		{
-			document.getElementById("actualFilteredContentTextarea").innerHTML 
-				= NeatHtml.DefaultFilter.HtmlEncode(NeatHtml.DefaultFilter.FilteredContent);
+			actualFilteredContent = NeatHtml.DefaultFilter.FilteredContent;
 		}
 		
+		document.getElementById("expectedFilteredContentTextarea").value = expectedFilteredContent;
+		document.getElementById("actualFilteredContentTextarea").value = actualFilteredContent;
+
 		var tests = NeatHtmlTest.DefaultTests;
 		if (NeatHtmlTest.NoScript)
 		{
 			tests = NeatHtmlTest.DefaultNoScriptTests
 		}
-		var expectedFilteredContent 
-			= NeatHtml.DefaultFilter.HtmlDecode(document.getElementById("expectedFilteredContentTextarea").innerHTML);
-		var actualFilteredContent 
-			= NeatHtml.DefaultFilter.HtmlDecode(document.getElementById("actualFilteredContentTextarea").innerHTML);
+
 		if (expectedFilteredContent.length > 0 && document.getElementById('checkFilteredContent').checked)
 		{
 			tests.push(["Filtered content is correct", function() {

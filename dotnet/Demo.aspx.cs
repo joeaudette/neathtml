@@ -30,8 +30,8 @@ namespace Brettle.Web.NeatHtml
 {
 	public class Demo : System.Web.UI.Page
 	{	
-		protected HtmlTextArea actualFilteredContentTextarea;
-		protected HtmlTextArea expectedFilteredContentTextarea;
+		protected string actualFilteredContent;
+		protected string expectedFilteredContent;
 		protected HtmlTextArea testContentTextarea;
 		protected Button submitButton;
 		protected UntrustedContent untrustedContent;
@@ -68,6 +68,7 @@ namespace Brettle.Web.NeatHtml
 				selectedTest.SelectedIndex = 0;
 			}
 
+			expectedFilteredContent = Request.Params["expectedFilteredContentTextarea"];
 			string testName = Request.Params["selectedTest"];
 			if (testName == null && testContentTextarea.Value.Length == 0)
 			{
@@ -88,13 +89,11 @@ namespace Brettle.Web.NeatHtml
 				}
 				if (File.Exists(expectedPath))
 				{
-					expectedFilteredContentTextarea.InnerText = expectedFilteredContentTextarea.Value 
-						= ReadAllText(expectedPath);
+					expectedFilteredContent	= ReadAllText(expectedPath);
 					checkFilteredContent.Checked = true;
 				}
 				else
 				{
-					expectedFilteredContentTextarea.InnerText = expectedFilteredContentTextarea.Value = "";
 					checkFilteredContent.Checked = false;
 				}
 			}
@@ -107,14 +106,12 @@ namespace Brettle.Web.NeatHtml
 			HtmlTextWriter htw = new HtmlTextWriter(sw);
 			untrustedContent.RenderControl(htw);
 			htw.Close();
-			string actualFilteredContent = sw.ToString();
+			actualFilteredContent = sw.ToString();
 			
 			// For consistency with what NeatHtml.js will produce, we only want the <div> and it's contents.
 			int startOfDiv = actualFilteredContent.IndexOf("<div>");
 			int endOfDiv = actualFilteredContent.LastIndexOf("</div>", actualFilteredContent.LastIndexOf("</div>")) + 6;
 			actualFilteredContent = actualFilteredContent.Substring(startOfDiv, endOfDiv - startOfDiv);
-			
-			actualFilteredContentTextarea.InnerText = actualFilteredContentTextarea.Value = actualFilteredContent;			
 		}
 
 		private string ReadAllText(string path)
@@ -123,6 +120,12 @@ namespace Brettle.Web.NeatHtml
 			string s = r.ReadToEnd();
 			r.Close();
 			return s;
+		}
+		
+		protected string ToJsString(string s)
+		{
+			if (s == null) return "null";
+			return "('" + s.Replace("\\", "\\\\").Replace("'", "\\'").Replace("<", "\\x3c").Replace(">", "\\x3e").Replace("\r", "\\r").Replace("\n", "\\n'\n+ '") + "')";
 		}
 	}
 }
