@@ -1,0 +1,58 @@
+<div>			<p>Here is a table with lots of XSS attacks and tag soup markup:</p>
+			<table border="1">
+				<tr>
+					<th>Script attacks
+					<td>script element<br />
+						
+						script elem in CDATA<br />
+						
+						&lt;script&gt;
+						window.alert('XSS from script element in CDATA section');
+						&lt;/script&gt;
+												
+					</td><td>
+						<a href="http://www.google.com/">on* attr</a><br />
+						<a>javascript href</a><br />
+					</td><td id="NeatHtml_styleXss" style="background-color: rgb(192,255,192); ">
+						green despite script in style
+					</td><td>
+						<a id="NeatHtml_trustedLinkBefore" href="http://www.google.com/">spoof existing ID</a><br />
+						<a id="NeatHtml_trustedLinkAfter" href="http://www.google.com/">spoof future ID</a><br />
+				<tr>
+					<th>Tag soup
+					<td><ul><li>no &lt;/li> 1/2</li><li>no &lt;/li> 2/2</li></ul>
+					</td><td>unmatched &lt;/em> 
+					</td><td><B>varying</B> <i>case</i> <U>tags</U>
+					</td><td><p>line<br />break with &lt;br&gt;
+				<tr>
+					<th>Special characters and attributes
+					<td><a href="http://www.google.com/search?hl=en&amp;q=neathtml&amp;btnG=Search">unquoted and unencoded link</a>
+					</td><td><font face="&#9;&#0;">non-printable</font> and <font face="&#57005;">non-ascii</font> attr values
+					</td><td>A B C with entities: &#65;&#160;&#x42;&#160;&#x43;
+					</td><td>Unencoded &lt;, and &amp;
+			</td></th></tr></p></td></th></tr></td></th></tr></table>
+			<br />
+			<table border="1" style="border-spacing: 0; ">
+				<tr>
+					<td style="">Increment a CSS counter.  For result, see just under the
+						untrusted content box.
+					</td>
+					<td id="NeatHtml_innerTableContainer">
+						Nested table:
+						<table id="NeatHtml_innerTable" border="1">
+							<tr>
+								<td style="">style="background-image: url(...)"</td>
+								<td style="background-color: rgb(0,255,0); ">style="background-color: rgb(...);"</td>
+							</tr>
+						</table>
+					</td>
+					<td>
+					Try to break out of the layout jail
+					<div style="position: absolute; top: 0; right: 0; color: red; ">Let me out!</div>
+					<div style="position: absolute; top: -100px; right: 0; color: red; ">Let me out with a negative top property!</div>					</td>
+				</tr>
+			</table>
+
+			Try to break out of the markup jail...
+			
+            </div>
