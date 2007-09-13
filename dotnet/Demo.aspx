@@ -52,9 +52,9 @@ NeatHtmlTest.AppendTestStatusElement();
 
 	<p class="Trusted" style="font-color: #FF3333">If the browser supports the CSS :after pseudo-element and the counter() function, then "#2" should appear to the right --> </p>
 
-	<div id="showFilteredContentDiv"><a href="#" onclick="ShowActualFilteredContentTextarea();">View HTML source of filtered content displayed above</a></div>
+	<div id="showFilteredContentDiv"><a href="javascript:void(0)" onclick="ShowActualFilteredContentTextarea();">View HTML source of filtered content displayed above</a></div>
 	<div id="filteredContentDiv" style="display:none;">
-	<p><a href="#" onclick="HideActualFilteredContentTextarea();">Hide HTML source of filtered content displayed above</a></p>
+	<p><a href="javascript:void(0)" onclick="HideActualFilteredContentTextarea();">Hide HTML source of filtered content displayed above</a></p>
 	<label for="actualFilteredContentTextarea">Filtered Untrusted Content<br/></label>
 		<textarea id="actualFilteredContentTextarea" runat="server" rows="25" cols="120" readonly="readonly"></textarea>
 	</div>
@@ -142,13 +142,17 @@ NeatHtmlTest.AppendTestStatusElement();
 		}
 		
 		var tests = NeatHtmlTest.DefaultTests;
+		if (NeatHtmlTest.NoScript)
+		{
+			tests = NeatHtmlTest.DefaultNoScriptTests
+		}
 		var expectedFilteredContent 
 			= NeatHtml.DefaultFilter.HtmlDecode(document.getElementById("expectedFilteredContentTextarea").innerHTML);
 		var actualFilteredContent 
 			= NeatHtml.DefaultFilter.HtmlDecode(document.getElementById("actualFilteredContentTextarea").innerHTML);
 		if (expectedFilteredContent.length > 0 && document.getElementById('checkFilteredContent').checked)
 		{
-			tests.push(["Filtered as expected", function() {
+			tests.push(["Filtered content is correct", function() {
 				NeatHtmlTest.AssertEqualsCompressWhitespace(expectedFilteredContent, actualFilteredContent + "\n");
 			}]);
 		}

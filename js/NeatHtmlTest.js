@@ -243,24 +243,19 @@ window.resizeTo = function(w, h)
 	alert("resizeTo(" + w + "," + h + ") called");
 };
 
-NeatHtmlTest.DefaultTests = [
+NeatHtmlTest.DefaultNoScriptTests = [
 			["Markup invasion blocked", function () {
 				NeatHtmlTest.AssertEquals(NeatHtmlTest.AfterContainer, NeatHtmlTest.Container.nextSibling);
 			}],
+			null
+];
+
+NeatHtmlTest.DefaultTests = [
+			["Tests that don't require script", NeatHtmlTest.DefaultNoScriptTests],
 			["XSS blocked", function () {
-				if (NeatHtmlTest.NoScript)
-				{
-					NeatHtmlTest.Status = "disabled in noscript mode";
-					return;
-				}
 				NeatHtmlTest.AssertEquals(NeatHtmlTest.AlertCalls, 0);
 			}],
 			["ID spoofing blocked", function () {
-				if (NeatHtmlTest.NoScript)
-				{
-					NeatHtmlTest.Status = "disabled in noscript mode";
-					return;
-				}
 				function BeforeClicked()
 				{
 					NeatHtmlTest.Log("Trusted link before untrusted content clicked."); 
