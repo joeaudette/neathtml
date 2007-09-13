@@ -75,6 +75,11 @@ namespace Brettle.Web.NeatHtml
 						= ReadAllText(expectedPath);
 					checkFilteredContent.Checked = true;
 				}
+				else
+				{
+					expectedFilteredContentTextarea.InnerText = expectedFilteredContentTextarea.Value = "";
+					checkFilteredContent.Checked = false;
+				}
 			}
 
 			string html = testContentTextarea.Value;
@@ -102,7 +107,7 @@ namespace Brettle.Web.NeatHtml
 				{
 					if (testFilePaths[i].EndsWith(".expected"))
 					{
-						return;
+						continue;
 					}
 					selectedTest.Items.Insert(selectedTest.Items.Count - 1, 
 											new ListItem(Path.GetFileName(testFilePaths[i])));
