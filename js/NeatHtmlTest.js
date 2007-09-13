@@ -181,7 +181,7 @@ NeatHtmlTest.AssertEqualsCompressWhitespace = function (expected, actual, msg)
 {
 	if (typeof(expected) != "string" || typeof(actual) != "string")
 		throw msg + "AssertEqualsCompressWhitespace() Failed: typeof(expected) or typeof(actual) != 'string'";
-	NeatHtmlTest.AssertEquals(expected.replace(/[\r\n\t ]+/gm, " "), actual.replace(/[\r\n\t ]+/gm, " "));
+	NeatHtmlTest.AssertEquals(expected.replace(/[\r\n\t ]+/gm, " "), actual.replace(/[\r\n\t ]+/gm, " "), msg);
 };
 
 NeatHtmlTest.AssertMatches = function (re, actual, msg)
