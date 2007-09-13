@@ -116,11 +116,13 @@ namespace Brettle.Web.NeatHtml
 			};
 		
 		private static Regex JailRE 
-			= new Regex("(<table"                  // 1: Matches any potential table start tag
-							                       // 2: The following line will only match if this is a valid table start tag
+			= new Regex(							// 1: Matches any potential table-related start tag
+						"(<(?:table|caption|thead|tfoot|tbody|colgroup|col|tr|td|th)"
+													// 2: Matches if this is a valid table-related start tag
 							+ "((?:[ \\t\\n\\r]+[A-Z:_a-z][A-Z:_a-z0-9._]*[ \\t\\n\\r]*(?:=(?:\"[^<\"]*\"|'[^<']*'))?)*[ \\t\\n\\r]*>)?"
 						+ ")"
-						+ "|(</table"               // 3: Matches any potential table end tag
+													// 3: Matches any potential table-related end tag
+						+ "|(</(?:table|caption|thead|tfoot|tbody|colgroup|col|tr|td|th)"
 							+ "([ \\t\\n\\r]*>)?"   // 4: Matches if valid table end tag
 						+ ")"
 						+ "|(<!--[^-]*(?:-[^-]+)*-->)" // 5: HTML Comment (without embedded "--")
@@ -138,35 +140,57 @@ namespace Brettle.Web.NeatHtml
 		{
 			if (m.Groups[1].Success)
 			{
-				if (m.Groups[2].Success) // valid table start tag
-				{
-					UntrustedTables++;
-					// Close any open attribute values and tags and then start the table as requested
-					return ParserResetString + m.Groups[1].Value;
-				}
-				else // suspicious table start tag
+				string tagName 
+					= m.Groups[1].Value.Substring(1, m.Groups[1].Value.Length - 1
+													- (m.Groups[2].Success ? m.Groups[2].Value.Length : 0));
+				string lcTagName = tagName.ToLower();
+				// Hide suspicious table-related start tags
+				if (!m.Groups[2].Success || (lcTagName == "table" && !IsTableAllowed)) 
 				{
 					// Hide it from the browser's parser so our markup jail is not affected.
 					// It will be recovered by NeatHtml.js.
 					return "<NeatHtmlReplace_" 
-						+ m.Groups[1].Value.Substring(1, "table".Length); // Preserve case
+						+ m.Groups[1].Value.Substring(1, m.Groups[1].Value.Length-1); // Preserve case
 				}
+				
+				if (lcTagName == "table")
+				{
+					IsTableAllowed = false;
+					UntrustedTables++;
+					// Close any open attribute values and tags and then start the table as requested
+					return ParserResetString + m.Groups[1].Value;
+				}
+				if ((lcTagName == "td" || lcTagName == "th") && !IsTableAllowed)
+				{
+					IsTableAllowed = true;
+					// Close any open attribute values and tags and then start the cell as requested
+					return ParserResetString + m.Groups[1].Value;
+				}					
+				return m.Groups[1].Value;
 			}
 			else if (m.Groups[3].Success)
 			{
-				if (m.Groups[4].Success && UntrustedTables > 0) // valid table end tag and some tables to close
+				string tagName 
+					= m.Groups[3].Value.Substring(2, m.Groups[3].Value.Length - 2
+													- (m.Groups[4].Success ? m.Groups[4].Value.Length : 0));
+				if (!m.Groups[4].Success || UntrustedTables <= 0) // suspicious table-related end tag
 				{
+					// Hide it from the browser's parser so our markup jail is not affected.
+					// It will be recovered by NeatHtml.js.
+					return "</NeatHtmlReplace_" + tagName + (m.Groups[4].Success ? ">" : "");
+				}
+				string lcTagName = tagName.ToLower();
+				if (lcTagName == "table")
+				{
+					IsTableAllowed = true;
 					UntrustedTables--;
 					// Close any open attribute values and tags and then end the table as requested
 					return ParserResetString + m.Groups[3].Value;
 				}
-				else // suspicious table end tag
+				else
 				{
-					// Hide it from the browser's parser so our markup jail is not affected.
-					// It will be recovered by NeatHtml.js.
-					return "</NeatHtmlReplace_" 
-						+ m.Groups[3].Value.Substring(2, "table".Length) // Preserve case
-						+ (m.Groups[4].Success? ">" : "");
+					IsTableAllowed = false;
+					return m.Groups[3].Value;
 				}
 			}
 			else if (m.Groups[5].Success) // HTML comment (not containing "--", so it isn't ambiguous)
@@ -200,5 +224,6 @@ namespace Brettle.Web.NeatHtml
 		}
 
 		private int UntrustedTables = 0;
+		private bool IsTableAllowed = true;
 	}
 }

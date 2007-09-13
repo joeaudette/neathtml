@@ -1,7 +1,7 @@
 <div>			<p>Here is a table with lots of XSS attacks and tag soup markup:</p>
 			<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><table border="1">
 				<tr>
-					<th>Script attacks
+					<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><th>Script attacks
 					<td>script element<br/>
 						<script>
 						window.alert('XSS from script element');
@@ -36,19 +36,19 @@
 			<br/>
 			<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><table border="1" style="border-spacing: 0;">
 				<tr>
-					<td sty&#108;e="counter-increment: trusted-num;">Increment a CSS counter.  For result, see just under the
+					<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><td sty&#108;e="counter-increment: trusted-num;">Increment a CSS counter.  For result, see just under the
 						untrusted content box.
 					</td>
-					<td id="innerTableContainer">
+					<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><td id="innerTableContainer">
 						Nested table:
 						<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><table id="innerTable" border="1">
 							<tr>
-								<td sty&#108;e="background-image: url(http://www.brettle.com/Data/Sites/1/logos/deanatwork_sidesmall.jpg)">sty&#108;e="background-image: url(...)"</td>
-								<td style="background-color: rgb(0,255,0);">sty&#108;e="background-color: rgb(...);"</td>
+								<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><td sty&#108;e="background-image: url(http://www.brettle.com/Data/Sites/1/logos/deanatwork_sidesmall.jpg)">sty&#108;e="background-image: url(...)"</td>
+								<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><td style="background-color: rgb(0,255,0);">sty&#108;e="background-color: rgb(...);"</td>
 							</tr>
 						<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script></table>
 					</td>
-					<td>
+					<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><td>
 					Try to break out of the layout jail
 					<div style="position: absolute; top: 0; right: 0; color: red;">Let me out!</div>
 					<div style="position: absolute; top: -100px; right: 0; color: red;">Let me out with a negative top property!</div>					</td>
