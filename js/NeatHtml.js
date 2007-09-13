@@ -450,7 +450,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		var s;
 		if (n.nodeType == 8 /* Node.COMMENT_NODE */)
 		{
-			s = n.data.substring(0, n.data.length-2); // strips off the trailing "<!"
+			s = n.data;
 		}
 		else if (n.tagName == "XMP")
 		{
@@ -459,6 +459,8 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 			s = my.HtmlDecode(s);
 		}
 
+		s = s.substring(0, s.indexOf("<NeatHtmlEndUntrusted"));
+		
 		// Make the result available for use by tests 
 		my.UnfilteredContent = s;
 		
