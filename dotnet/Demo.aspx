@@ -153,7 +153,7 @@ NeatHtmlTest.AppendTestStatusElement();
 		if (expectedFilteredContent.length > 0 && document.getElementById('checkFilteredContent').checked)
 		{
 			tests.push(["Filtered content is correct", function() {
-				NeatHtmlTest.AssertEqualsCompressWhitespace(expectedFilteredContent, actualFilteredContent + "\n");
+				NeatHtmlTest.AssertEqualsCompressWhitespace(expectedFilteredContent + "\n", actualFilteredContent + "\n");
 			}]);
 		}
 		
