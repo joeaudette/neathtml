@@ -1,4 +1,0 @@
-<pre>
-	tab indent
-      6 space indent
-</pre>

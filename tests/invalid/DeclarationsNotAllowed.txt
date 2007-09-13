@@ -1,2 +1,0 @@
-<!ENTITY % HTMLlat1 PUBLIC
- "-//W3C//ENTITIES Latin 1 for XHTML//EN" "http://www.w3.org/MarkUp/DTD/xhtml-lat1.ent">

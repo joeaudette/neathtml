@@ -1,1 +1,0 @@
-<span xmlns:xs="http://www.w3.org/2001/XMLSchema"><xs:element name="rt" type="rt.type"/></span>

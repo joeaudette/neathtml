@@ -89,11 +89,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "AttributeValueValidator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Filter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -105,11 +100,6 @@
                 />
                 <File
                     RelPath = "XssFilter.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "XssFilterInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

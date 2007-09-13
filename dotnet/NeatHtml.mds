@@ -2,20 +2,16 @@
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="NeatHtml" configuration="Debug" />
-      <Entry build="True" name="NeatHtmlUnitTestRunner" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="NeatHtml" configuration="Release" />
-      <Entry build="True" name="NeatHtmlUnitTestRunner" configuration="Debug" />
     </Configuration>
   </Configurations>
   <DeployTargets />
   <StartMode startupentry="NeatHtmlUnitTestRunner" single="True">
     <Execute type="None" entry="NeatHtml" />
-    <Execute type="None" entry="NeatHtmlUnitTestRunner" />
   </StartMode>
   <Entries>
     <Entry filename="./Brettle.Web.NeatHtml/NeatHtml.mdp" />
-    <Entry filename="./NeatHtmlUnitTestRunner/NeatHtmlUnitTestRunner.mdp" />
   </Entries>
 </Combine>

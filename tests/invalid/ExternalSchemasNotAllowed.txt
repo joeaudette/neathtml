@@ -1,1 +1,0 @@
-<test:elem xmlns:test="urn:test" xsi:schemaLocation="urn:test http://www.brettle.com/Data/Sites/1/test.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Test</test:elem>

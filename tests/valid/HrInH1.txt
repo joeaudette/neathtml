@@ -1,1 +1,0 @@
-<h1>Header followed by horizontal rule<hr/></h1>
