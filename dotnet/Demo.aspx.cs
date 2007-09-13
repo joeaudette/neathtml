@@ -52,12 +52,28 @@ namespace Brettle.Web.NeatHtml
 		private void Page_Load(object sender, EventArgs e)
 		{
 			string testsPath = Path.Combine(Path.GetDirectoryName(Request.PhysicalPath), "tests");
+			if (!IsPostBack)
+			{
+				string[] testFilePaths = Directory.GetFiles(testsPath);
+				Array.Sort(testFilePaths);
+				for (int i = 0; i < testFilePaths.Length; i++)
+				{
+					if (testFilePaths[i].EndsWith(".expected"))
+					{
+						continue;
+					}
+					selectedTest.Items.Insert(selectedTest.Items.Count - 1, 
+											new ListItem(Path.GetFileName(testFilePaths[i])));
+				}
+				selectedTest.SelectedIndex = 0;
+			}
+
 			string testName = Request.Params["selectedTest"];
 			if (testName == null && testContentTextarea.Value.Length == 0)
 			{
 				testName = "Default Test";
 			}
-			if (testName != null)
+			if (testName != null && selectedTest.SelectedIndex != selectedTest.Items.Count - 1)
 			{
 				testName = Regex.Replace(testName, "[^A-Za-z0-9 ]", "_");
 				string testPath = Path.Combine(testsPath, testName);
@@ -99,22 +115,6 @@ namespace Brettle.Web.NeatHtml
 			actualFilteredContent = actualFilteredContent.Substring(startOfDiv, endOfDiv - startOfDiv);
 			
 			actualFilteredContentTextarea.InnerText = actualFilteredContentTextarea.Value = actualFilteredContent;			
-
-			if (!IsPostBack)
-			{
-				string[] testFilePaths = Directory.GetFiles(testsPath);
-				Array.Sort(testFilePaths);
-				for (int i = 0; i < testFilePaths.Length; i++)
-				{
-					if (testFilePaths[i].EndsWith(".expected"))
-					{
-						continue;
-					}
-					selectedTest.Items.Insert(selectedTest.Items.Count - 1, 
-											new ListItem(Path.GetFileName(testFilePaths[i])));
-				}
-				selectedTest.SelectedIndex = 0;
-			}
 		}
 
 		private string ReadAllText(string path)

@@ -168,22 +168,20 @@ NeatHtmlTest.AssertEquals = function (expected, actual, msg)
 		throw msg + "AssertEquals() Failed: types unequal: " + typeof(expected) + "!=" + typeof(actual);
 	}
 	if (expected != actual) {
-		throw msg + "AssertEquals() Failed: " + NeatHtmlTest.QuoteString(expected) + "!=" + NeatHtmlTest.QuoteString(actual);
+		var chunkSize = 40;
+		for (var i = 0; i < expected.length || i < actual.length; i += chunkSize)	{
+			if (expected.substring(i, i + chunkSize) != actual.substring(i, i + chunkSize)) {
+				throw msg + "AssertEquals() Failed: ..." + expected.substring(i, i + chunkSize) + "... != ..." + actual.substring(i, i + chunkSize) + "...";
+			}
+		}
 	}
 };
 
 NeatHtmlTest.AssertEqualsCompressWhitespace = function (expected, actual, msg)
 {
-	if (typeof(msg) == "undefined")
-		msg = "";
-	else
-		msg += ": ";
-	if (typeof(expected) != typeof(actual)) {
-		throw msg + "AssertEquals() Failed: types unequal: " + typeof(expected) + "!=" + typeof(actual);
-	}
-	if (expected.replace(/[\r\n\t ]+/gm, " ") != actual.replace(/[\r\n\t ]+/gm, " ")) {
-		throw msg + "AssertEquals() Failed: " + NeatHtmlTest.QuoteString(expected) + "!=" + NeatHtmlTest.QuoteString(actual);
-	}
+	if (typeof(expected) != "string" || typeof(actual) != "string")
+		throw msg + "AssertEqualsCompressWhitespace() Failed: typeof(expected) or typeof(actual) != 'string'";
+	NeatHtmlTest.AssertEquals(expected.replace(/[\r\n\t ]+/gm, " "), actual.replace(/[\r\n\t ]+/gm, " "));
 };
 
 NeatHtmlTest.AssertMatches = function (re, actual, msg)
