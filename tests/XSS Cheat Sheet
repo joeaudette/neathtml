@@ -1,3 +1,8 @@
+The following was created by copying RSnake's 
+<a href="http://ha.ckers.org/xss.html">XSS Cheat Sheet</a> as displayed by
+the browser, pasting it into a text file, wrapping it at 80 columns and 
+putting the result inside a &lt;pre&gt; element.  This technique preserves
+the raw attack vectors and the descriptions.
 <pre>
 XSS (Cross Site Scripting) Cheat Sheet
 Esp: for filter evasion
