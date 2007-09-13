@@ -172,7 +172,7 @@ NeatHtmlTest.AssertEquals = function (expected, actual, msg)
 	}
 };
 
-NeatHtmlTest.AssertEqualsIgnoreWhitespace = function (expected, actual, msg)
+NeatHtmlTest.AssertEqualsCompressWhitespace = function (expected, actual, msg)
 {
 	if (typeof(msg) == "undefined")
 		msg = "";

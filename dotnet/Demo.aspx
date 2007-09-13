@@ -39,77 +39,11 @@ NeatHtmlTest.AppendTestStatusElement();
 
 	<span id="trustedLinkBeforeParent" style="display: none;"><a id="trustedLinkBefore" href="#">This link</a> is for the ID spoofing test.  We don't normally display it because the tests automatically detect spoofing.</span>
 
-	<a href="http://www.brettle.com/neathtml">NeatHtml&trade;</a> is displaying untrusted content in the box below
+	<a href="http://www.brettle.com/neathtml">NeatHtml&trade;</a> is displaying untrusted content in the box below.
 	</p>
 	
 	<div style="border: solid red 2px;">
 	<NeatHtml:UntrustedContent id="untrustedContent" runat="server" ClientSideFilterName="NeatHtmlTest.DefaultFilter">
-			<p>Here is a table with lots of XSS attacks and tag soup markup:</p>
-			<table border="1">
-				<tr>
-					<th>Script attacks
-					<td>script element<br/>
-						<script>
-						window.alert('XSS from script element');
-						</script>
-						script elem in CDATA<br/>
-						<![CDATA[
-						<script>
-						window.alert('XSS from script element in CDATA section');
-						</script>
-						]]>						
-					<td>
-						<a onclick=window.alert('XSS_on_click') href='http://www.google.com/'>on* attr</a><br />
-						<a href=javascript:alert('XSS_on_link')>javascript href</a><br />
-					<td id='styleXss' style='nonstandard-attribute1: expression(alert(&quot;XSS from style&quot;)); nonstandard-attribute2: expr/**/ession(alert(&quot;XSS from style with comment&quot;)); nonstandard-attribute3: expres\000073ion(alert(&quot;XSS from style with escape&quot;)); background-color: rgb(192,255,192);'>
-						green despite script in style
-					<td>
-						<a id='trustedLinkBefore' href='http://www.google.com/'>spoof existing ID</a><br />
-						<a id='trustedLinkAfter' href='http://www.google.com/'>spoof future ID</a><br />
-				<tr>
-					<th>Tag soup
-					<td><ul><li>no &lt;/li> 1/2<li>no &lt;/li> 2/2</ul>
-					<td>unmatched &lt;/em> </em>
-					<td><B>varying</B> <i>case</I> <U>tags</u>
-					<td><p>line<br>break with &lt;br&gt;
-				<tr>
-					<th>Special characters and attributes
-					<td><a implicit_attr href=http://www.google.com/search?hl=en&q=neathtml&btnG=Search>unquoted and unencoded link</a>
-					<td><font face='&#9;&#0;
-'>non-printable</font> and <font face='&#xdead;'>non-ascii</font> attr values
-					<td>A B C with entities: &#65;&nbsp;&#x42;&nbsp;&#X43;
-					<td>Unencoded <, and &
-			</table>
-			<br/>
-			<table border="1" style="border-spacing: 0;">
-				<tr>
-					<td style="counter-increment: trusted-num;">Increment a CSS counter.  For result, see just under the
-						untrusted content box.
-					</td>
-					<td id="innerTableContainer">
-						Nested table:
-						<table id="innerTable" border="1">
-							<tr>
-								<td style="background-image: url(http://www.brettle.com/Data/Sites/1/logos/deanatwork_sidesmall.jpg)">style="background-image: url(...)"</td>
-								<td style="background-color: rgb(0,255,0);">style="background-color: rgb(...);"</td>
-							</tr>
-						</table>
-					</td>
-					<td>
-					Try to break out of the layout jail
-					<div style="position: absolute; top: 0; right: 0; color: red;">Let me out!</div>
-					<div style="position: absolute; top: -100px; right: 0; color: red;">Let me out with a negative top property!</div>					</td>
-				</tr>
-			</table>
-
-			Try to break out of the markup jail...
-			</table>
-            </div>
-            </div>
-            </div>
-			"Help! Let me out of this box!"
-			Try to pull trusted content into the box...
-			<plaintext><iframe><object><script>
 	</NeatHtml:UntrustedContent>
 	</div>
 	<p id="trustedLinkAfterParent" style="display: none;"><a id="trustedLinkAfter" href="#">Another link</a> for
@@ -141,7 +75,13 @@ NeatHtmlTest.AppendTestStatusElement();
 	// ]]>
 	</script>	
 	
-	<h3>Try Your Own Test Content</h3>
+	<h3>Try Different Test Content</h3>
+	<p>
+	<select id="selectedTest" runat="server">
+		<option>Create Your Own Test...</option>
+	</select>
+	</p>
+	<div id="customTestContentDiv">
 	<p>
 	Think you can break it? Enter some untrusted content in the area below and click the submit button.  Please
 	email me (dean at brettle dot com) if you can make a test fail.  A test will fail if you can get your content
@@ -155,7 +95,7 @@ NeatHtmlTest.AppendTestStatusElement();
 	<p><input id="checkFilteredContent" runat="server" type="checkbox" onchange="CheckFilteredContentChanged();"/> Compare filtered content against expected value
 	<div id="expectedFilteredContent">
 	<label for="expectedFilteredContentTextarea">Expected Filtered Untrusted Content<br/></label>
-	<textarea id="expectedFilteredContentTextarea" runat="server" rows="25" cols="120" readonly="readonly"></textarea>
+	<textarea id="expectedFilteredContentTextarea" runat="server" rows="25" cols="120"></textarea>
 	</div>
 	
 	<script type="text/javascript">
@@ -172,6 +112,7 @@ NeatHtmlTest.AppendTestStatusElement();
 	}
 	// ]]>
 	</script>	
+	</div>
 	
 	<p>
 		<input id="noScript" runat="server" type="checkbox" name="NoScript" value="true"/> Simulate browser with scripting disabled <br />
@@ -181,6 +122,17 @@ NeatHtmlTest.AppendTestStatusElement();
 
   	<script type="text/javascript">
 	// <![CDATA[
+	function SelectedTestChanged() {
+		var selectedTest = document.getElementById('selectedTest');
+		var customTestContentDiv = document.getElementById('customTestContentDiv');
+		if (selectedTest.selectedIndex == selectedTest.options.length - 1)
+			customTestContentDiv.style.display = "block";
+		else
+			customTestContentDiv.style.display = "none";
+		return true;
+	}
+	document.getElementById('selectedTest').onchange = SelectedTestChanged;
+	SelectedTestChanged();
 	window.onload = function() 
 	{
 		if (typeof(NeatHtml.DefaultFilter.FilteredContent) != "undefined")
@@ -189,22 +141,19 @@ NeatHtmlTest.AppendTestStatusElement();
 				= NeatHtml.DefaultFilter.HtmlEncode(NeatHtml.DefaultFilter.FilteredContent);
 		}
 		
-		NeatHtmlTest.RunTests([
-			// The DefaultTests will detect:
-			//    any calls to window.alert()
-			//    any spoofing of the trustedLinkBefore or trustedLinkAfter IDs
-			//    any escape from the markup jail
-			["Default test suite", NeatHtmlTest.DefaultTests],  
-			
-			// Add more tests like the example below (see NeatHtmlTest.DefaultTests for examples):
-/*
-			["Test name", function () {
-				AssertEquals(expected, actual);
-				AssertMatches(regex, actual);
-			}],
-*/
-			null
-		]);
+		var tests = NeatHtmlTest.DefaultTests;
+		var expectedFilteredContent 
+			= NeatHtml.DefaultFilter.HtmlDecode(document.getElementById("expectedFilteredContentTextarea").innerHTML);
+		var actualFilteredContent 
+			= NeatHtml.DefaultFilter.HtmlDecode(document.getElementById("actualFilteredContentTextarea").innerHTML);
+		if (expectedFilteredContent.length > 0 && document.getElementById('checkFilteredContent').checked)
+		{
+			tests.push(["Filtered as expected", function() {
+				NeatHtmlTest.AssertEqualsCompressWhitespace(expectedFilteredContent, actualFilteredContent + "\n");
+			}]);
+		}
+		
+		NeatHtmlTest.RunTests(tests);
 	}
 	// ]]>
 	</script>

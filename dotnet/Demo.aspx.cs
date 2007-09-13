@@ -24,6 +24,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Brettle.Web.NeatHtml
 {
@@ -34,6 +35,8 @@ namespace Brettle.Web.NeatHtml
 		protected HtmlTextArea testContentTextarea;
 		protected Button submitButton;
 		protected UntrustedContent untrustedContent;
+		protected HtmlSelect selectedTest;
+		protected HtmlInputCheckBox checkFilteredContent;
 		
 		protected override void OnInit(EventArgs e)
 		{
@@ -48,36 +51,72 @@ namespace Brettle.Web.NeatHtml
 		
 		private void Page_Load(object sender, EventArgs e)
 		{
-			if (!IsPostBack || testContentTextarea.Value.Length == 0)
+			string testName = Request.Params["selectedTest"];
+			if (testName == null && testContentTextarea.Value.Length == 0)
 			{
-				StringWriter sw = new StringWriter();
-				HtmlTextWriter htw = new HtmlTextWriter(sw);
-				for (int i = 0; i < untrustedContent.Controls.Count; i++)
+				testName = "Default Test";
+			}
+			if (testName != null)
+			{
+				testName = Regex.Replace(testName, "[^A-Za-z0-9 ]", "_");
+				string testPath = Path.Combine("tests", testName);
+				if (File.Exists(testPath))
+					testContentTextarea.InnerText = testContentTextarea.Value = ReadAllText(testPath);
+				string expectedPath = Path.Combine("tests", testName + ".expected");
+				if (Request.Params["NoScript"] == "true")
 				{
-					untrustedContent.Controls[i].RenderControl(htw);
+					string noscriptExpectedPath = Path.Combine("tests", testName + ".noscript.expected");
+					if (File.Exists(noscriptExpectedPath))
+						expectedPath = noscriptExpectedPath;
 				}
-				htw.Close();
-				testContentTextarea.Value = sw.ToString();
+				if (File.Exists(expectedPath))
+				{
+					expectedFilteredContentTextarea.InnerText = expectedFilteredContentTextarea.Value 
+						= ReadAllText(expectedPath);
+					checkFilteredContent.Checked = true;
+				}
 			}
-			submitButton.Click += new System.EventHandler(this.Button_Clicked);
-			// Works around a Mono bug (http://bugzilla.ximian.com/show_bug.cgi?id=78948) which causes
-			// the textarea content to render without being encoded.
-			testContentTextarea.InnerText = testContentTextarea.Value;
 
-			{
-				StringWriter sw = new StringWriter();
-				HtmlTextWriter htw = new HtmlTextWriter(sw);
-				untrustedContent.RenderControl(htw);
-				htw.Close();
-				actualFilteredContentTextarea.InnerText = actualFilteredContentTextarea.Value = sw.ToString();
-			}
-		}
-
-		private void Button_Clicked(object sender, EventArgs e)
-		{
 			string html = testContentTextarea.Value;
 			untrustedContent.Controls.Clear();
 			untrustedContent.Controls.Add(new LiteralControl(html));
+
+			StringWriter sw = new StringWriter();
+			HtmlTextWriter htw = new HtmlTextWriter(sw);
+			untrustedContent.RenderControl(htw);
+			htw.Close();
+			string actualFilteredContent = sw.ToString();
+			
+			// For consistency with what NeatHtml.js will produce, we only want the <div> and it's contents.
+			int startOfDiv = actualFilteredContent.IndexOf("<div>");
+			int endOfDiv = actualFilteredContent.LastIndexOf("</div>", actualFilteredContent.LastIndexOf("</div>")) + 6;
+			actualFilteredContent = actualFilteredContent.Substring(startOfDiv, endOfDiv - startOfDiv);
+			
+			actualFilteredContentTextarea.InnerText = actualFilteredContentTextarea.Value = actualFilteredContent;			
+
+			if (!IsPostBack)
+			{
+				string[] testFilePaths = Directory.GetFiles("tests");
+				Array.Sort(testFilePaths);
+				for (int i = 0; i < testFilePaths.Length; i++)
+				{
+					if (testFilePaths[i].EndsWith(".expected"))
+					{
+						return;
+					}
+					selectedTest.Items.Insert(selectedTest.Items.Count - 1, 
+											new ListItem(Path.GetFileName(testFilePaths[i])));
+				}
+				selectedTest.SelectedIndex = 0;
+			}
+		}
+
+		private string ReadAllText(string path)
+		{
+			StreamReader r = File.OpenText(path);
+			string s = r.ReadToEnd();
+			r.Close();
+			return s;
 		}
 	}
 }
