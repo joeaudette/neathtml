@@ -51,6 +51,7 @@ namespace Brettle.Web.NeatHtml
 		
 		private void Page_Load(object sender, EventArgs e)
 		{
+			string testsPath = Path.Combine(Path.GetDirectoryName(Request.PhysicalPath), "tests");
 			string testName = Request.Params["selectedTest"];
 			if (testName == null && testContentTextarea.Value.Length == 0)
 			{
@@ -59,13 +60,13 @@ namespace Brettle.Web.NeatHtml
 			if (testName != null)
 			{
 				testName = Regex.Replace(testName, "[^A-Za-z0-9 ]", "_");
-				string testPath = Path.Combine("tests", testName);
+				string testPath = Path.Combine(testsPath, testName);
 				if (File.Exists(testPath))
 					testContentTextarea.InnerText = testContentTextarea.Value = ReadAllText(testPath);
-				string expectedPath = Path.Combine("tests", testName + ".expected");
+				string expectedPath = Path.Combine(testsPath, testName + ".expected");
 				if (Request.Params["NoScript"] == "true")
 				{
-					string noscriptExpectedPath = Path.Combine("tests", testName + ".noscript.expected");
+					string noscriptExpectedPath = Path.Combine(testsPath, testName + ".noscript.expected");
 					if (File.Exists(noscriptExpectedPath))
 						expectedPath = noscriptExpectedPath;
 				}
@@ -82,7 +83,7 @@ namespace Brettle.Web.NeatHtml
 				}
 			}
 
-			string html = testContentTextarea.Value;
+			string html = testContentTextarea.InnerText;
 			untrustedContent.Controls.Clear();
 			untrustedContent.Controls.Add(new LiteralControl(html));
 
@@ -101,7 +102,7 @@ namespace Brettle.Web.NeatHtml
 
 			if (!IsPostBack)
 			{
-				string[] testFilePaths = Directory.GetFiles("tests");
+				string[] testFilePaths = Directory.GetFiles(testsPath);
 				Array.Sort(testFilePaths);
 				for (int i = 0; i < testFilePaths.Length; i++)
 				{
