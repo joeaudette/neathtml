@@ -181,7 +181,9 @@ NeatHtmlTest.AssertEqualsCompressWhitespace = function (expected, actual, msg)
 {
 	if (typeof(expected) != "string" || typeof(actual) != "string")
 		throw msg + "AssertEqualsCompressWhitespace() Failed: typeof(expected) or typeof(actual) != 'string'";
-	NeatHtmlTest.AssertEquals(expected.replace(/[\r\n\t ]+/gm, " "), actual.replace(/[\r\n\t ]+/gm, " "), msg);
+	// The regexs used below are designed to avoid replacing " " with " " (ie. a noop), because some script engines
+	// (eg. Konqueror 3.4.6) are too slow when replacing all spaces in a large string.
+	NeatHtmlTest.AssertEquals(expected.replace(/[\r\n\t ]{2,}|[\r\n\t]+/gm, " "), actual.replace(/[\r\n\t ]{2,}|[\r\n\t]+/gm, " "), msg);
 };
 
 NeatHtmlTest.AssertMatches = function (re, actual, msg)
