@@ -685,31 +685,19 @@ NeatHtml.Filter.prototype.ResizeContainer = function()
 	var parent = scriptElems[scriptElems.length - 1].previousSibling;
 	var my = this;
 
-	// Limit the width of the content based on the width of the containing div
-	parent.firstChild.style.width = parent.style.width;
-
-	// Set the height of the div based on the new content.  This allows IE6 to hide overflow that was
+	// For IE6 and earlier, we used conditional comments to set the overflow to "auto".  For all other browsers,
+	// the overflow was set to "hidden".  We only need to resize the container in IE6 and earlier.  The 
+	// resizing code below does not always work properly in at least Firefox 1.5, 2.0, and Netscape 7.2,
+	// so skip it for all browsers exception IE6 and earlier.
+	if (parent.style.overflow == "hidden") 
+		return;
+	
+	// Limit the width of the content based on the width of the containing div, and
+	// set the height of the div based on the new content.  This allows IE6 to hide overflow that was
 	// absolutely positioned.
-	if (parent.firstChild.scrollHeight)
-	{
-		// Firefox (at least 1.5) computes an incorrect scrollHeight there is no padding and no border.
-		// If there is no padding, temporarily add padding so FF will calculate scrollHeight properly.
-		// We defer this so that the browser has a chance to layout the new content before we calculate
-		// the height.
-		var extraPadding = 0;
-		if (!parent.firstChild.style.padding)
-		{
-			parent.firstChild.style.padding = "1px";
-			extraPadding = 1;
-		}
-		// Don't count extraPadding in height because we will be removing it.
-		parent.style.height = (parent.firstChild.scrollHeight-2*extraPadding) + "px";
-		if (extraPadding)
-		{
-			parent.firstChild.style.padding = "0px";
-		}
-		parent.style.overflow = "hidden";
-	}
+	parent.firstChild.style.width = parent.style.width;
+	parent.style.height = parent.firstChild.scrollHeight + "px";
+	parent.style.overflow = "hidden";
 };
 
 NeatHtml.Filter.prototype.HtmlEncode = function(s)
