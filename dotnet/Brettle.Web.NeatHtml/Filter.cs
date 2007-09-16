@@ -54,7 +54,7 @@ namespace Brettle.Web.NeatHtml
 		{
 			ScriptJail jail = new ScriptJail();
 			string jailed = JailRE.Replace(untrusted, new MatchEvaluator(jail.GuardJail));
-			
+
 			// If any untrusted tables are still open, close any open attributes and tags
 			// and then close all the tables.
 			if (jail.UntrustedTables > 0)
@@ -63,25 +63,75 @@ namespace Brettle.Web.NeatHtml
 				while (jail.UntrustedTables-- > 0)
 					jailed += "</table>";
 			}
-			jailed = StyleRE.Replace(jailed, new MatchEvaluator(GuardStyleJail));
+
+			jailed = AttributeRE.Replace(jailed, new MatchEvaluator(GuardAttributeJail));
+
 			return String.Format(Format, clientSideName, jailed, noScriptDownlevelIEWidth, noScriptDownlevelIEHeight);
 		}
 
-		private static string GuardStyleJail(Match m)
+		private static string GuardAttributeJail(Match m)
 		{
-			return m.Value.Substring(0,3) + "&#" + ((int)m.Value[3]) + ";" + m.Value.Substring(4, m.Value.Length - 4);
+			if (m.Groups[1].Success		// safe style attribute 
+				|| m.Groups[3].Success	// or other allowed attribute name
+				)
+			{
+				// So leave it unchanged
+				return m.Value;
+			}
+			
+			// Otherwise, it is suspicious, so encode the "=" as "&#61;" to disable it.
+			return m.Value.Substring(0,m.Value.Length - 1) + "&#61;";
 		}
 
-		// Style value whitelist.  Note: '&' '\' and '(' [except 'rgb('] are not on it.[\\r\\n\\t !#$%)-~]]
+		private static string[] propsAllowedWhenNoScript
+			= {"azimuth","background-attachment","background-color","background-image","background-position",
+				"background-repeat","background","border-collapse","border-color","border-spacing","border-style",
+				"border-top","border-right","border-bottom","border-left","border-top-color","border-right-color",
+				"border-bottom-color","border-left-color","border-top-style","border-right-style","border-bottom-style",
+				"border-left-style","border-top-width","border-right-width","border-bottom-width","border-left-width",
+				"border-width","border","bottom","caption-side","clear","clip","color","content",
+				/* "counter-increment","counter-reset", */ // Don"t allow messing with the counters 
+				"cue-after","cue-before","cue","cursor","direction","display","elevation","empty-cells",
+				"float","font-family","font-size","font-style","font-variant","font-weight","font","height","left",
+				"letter-spacing","line-height","list-style-image","list-style-position","list-style-type","list-style",
+				"margin-right","margin-left","margin-top","margin-bottom","margin","max-height","max-width","min-height",
+				"min-width","orphans","outline-color","outline-style","outline-width","outline","overflow","padding-top",
+				"padding-right","padding-bottom","padding-left","padding","page-break-after","page-break-before",
+				"page-break-inside","pause-after","pause-before","pause","pitch-range","pitch","play-during","position",
+				"quotes","richness","right","speak-header","speak-numeral","speak-punctuation","speak","speech-rate",
+				"stress","table-layout","text-align","text-decoration","text-indent","text-transform","top",
+				"unicode-bidi","vertical-align","visibility","voice-family","volume","white-space","widows","width",
+				"word-spacing","z-index"
+			};
+		
+		private static string[] attrsAllowedWhenNoScript
+			= { "abbr", "accept", "accesskey", "align", "alt", "axis", "bgcolor", "border", "cellpadding",
+				"cellspacing", "cite", "class", "classid", "clear", "code", "color", "cols", "colspan", "compact", 
+				"datetime", "dir", "disabled", "face", "frame", "frameborder", "headers", "height", "href", "hreflang", "id", 
+				"label", "lang", "language", "longdesc", "marginheight", "marginwidth", "name", "noshade", "nowrap", 
+				"readonly", "rel", "rev", "rows", "rowspan", "rules", "scope", "size", "span", "start", "summary", 
+				"tabindex", "title", "type", "value", "width", "xml:lang", "xml:space",
+				"s", "d" // Used by <NeatHtmlParserReset> and <NeatHtmlEndUntrusted> 
+				};
+		
+		// Style value whitelist.  Note: '&' '\' and '(' [except 'rgb('] are not on it.
 		// We blacklist "counter-increment:" and "counter-reset:" instead of trying to whitelist all
 		// propnames and values.
-		private static string StyleValueREString = ":(?<!counter-(?:increment|reset)[\\r\\n\\t ]*:)|\\((?<=rgb\\()|[\\r\\n\\t !#$%)-9;-[\\]-~]"; 
-		private static Regex StyleRE
-			= new Regex("style[^=a-z0-9]*=(?!([ \\r\\n\\t]*(" // "style=" (roughly) followed by something other than
-								+ "\"('|" + StyleValueREString + ")*\"" // "value"
-								+ "|'(\"|" + StyleValueREString + ")*'" // or 'value'
-							+ ")([ \\r\\n\\t]|/?>)))", // value must be followed by whitespace or end of tag  
+		private static string StyleValueREString 
+			= "(?:"
+				+ " *(?:" + String.Join("|", propsAllowedWhenNoScript) + ") *"
+				+ ":"
+				+ "(?:\\((?<=rgb\\()|[ !#$%)-9<-[\\]-~])*;?"
+			+ ")*";
+		private static Regex AttributeRE
+			= new Regex("([ \\r\\n\\t]+style *=(?=(?:[ \\r\\n\\t]*(?:" // "style=" followed by
+								+ "\"(?:'|" + StyleValueREString + ")*\"" // "safe value"
+								+ "|'(?:\"|" + StyleValueREString + ")*'" // or 'safe value'
+							+ ")(?:[ \\r\\n\\t]|/?>))))" // followed by whitespace or end of tag  
+							// or an "=" optionally preceded by an allowed attribute name
+						+ "|(([ \\r\\n\\t]+(?:" + String.Join("|", attrsAllowedWhenNoScript) + ") *)?=)",
 						RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+			
 						
 		private static string ParserResetString = "<NeatHtmlParserReset s='' d=\"\"></NeatHtmlParserReset><script></script>";
 
@@ -119,7 +169,7 @@ namespace Brettle.Web.NeatHtml
 			= new Regex(							// 1: Matches any potential table-related start tag
 						"(<(?:table|caption|thead|tfoot|tbody|colgroup|col|tr|td|th)"
 													// 2: Matches if this is a valid table-related start tag
-							+ "((?:[ \\t\\n\\r]+[A-Z:_a-z][A-Z:_a-z0-9._]*[ \\t\\n\\r]*(?:=(?:\"[^<\"]*\"|'[^<']*'))?)*[ \\t\\n\\r]*>)?"
+							+ "((?:[ \\t\\n\\r]+[_:a-z][_:a-z0-9.]*[ \\t\\n\\r]*(?:=(?:\"[^<\"]*\"|'[^<']*'))?)*[ \\t\\n\\r]*>)?"
 						+ ")"
 													// 3: Matches any potential table-related end tag
 						+ "|(</(?:table|caption|thead|tfoot|tbody|colgroup|col|tr|td|th)"

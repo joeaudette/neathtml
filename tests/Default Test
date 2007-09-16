@@ -35,7 +35,7 @@
 					<td>Unencoded <, and &
 			</table>
 			<br/>
-			<table border="1" style="border-spacing: 0;">
+			<table background="http://www.brettle.com/Data/Sites/1/logos/deanatwork_sidesmall.jpg" border="1" style="border-spacing: 0;">
 				<tr>
 					<td style="counter-increment: trusted-num;">Increment a CSS counter.  For result, see just under the
 						untrusted content box.

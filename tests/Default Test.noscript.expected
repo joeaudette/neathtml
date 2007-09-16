@@ -14,9 +14,9 @@
 						&lt;/script&gt;
 												
 					<td>
-						<a onclick=window.alert('XSS_on_click') href='http://www.google.com/'>on* attr</a><br />
+						<a onclick&#61;window.alert('XSS_on_click') href='http://www.google.com/'>on* attr</a><br />
 						<a href=javascript:alert('XSS_on_link')>javascript href</a><br />
-					<td id='styleXss' sty&#108;e='nonstandard-attribute1: expression(alert(&quot;XSS from style&quot;)); nonstandard-attribute2: expr/**/ession(alert(&quot;XSS from style with comment&quot;)); nonstandard-attribute3: expres\000073ion(alert(&quot;XSS from style with escape&quot;)); background-color: rgb(192,255,192);'>
+					<td id='styleXss' style&#61;'nonstandard-attribute1: expression(alert(&quot;XSS from style&quot;)); nonstandard-attribute2: expr/**/ession(alert(&quot;XSS from style with comment&quot;)); nonstandard-attribute3: expres\000073ion(alert(&quot;XSS from style with escape&quot;)); background-color: rgb(192,255,192);'>
 						green despite script in style
 					<td>
 						<a id='trustedLinkBefore' href='http://www.google.com/'>spoof existing ID</a><br />
@@ -29,23 +29,23 @@
 					<td><p>line<br>break with &lt;br&gt;
 				<tr>
 					<th>Special characters and attributes
-					<td><a implicit_attr href=http://www.google.com/search?hl=en&q=neathtml&btnG=Search>unquoted and unencoded link</a>
+					<td><a implicit_attr href=http://www.google.com/search?hl&#61;en&q&#61;neathtml&btnG&#61;Search>unquoted and unencoded link</a>
 					<td><font face='&#9;&#0;'>non-printable</font> and <font face='&#xdead;'>non-ascii</font> attr values
 					<td>A B C with entities: &#65;&nbsp;&#x42;&nbsp;&#X43;
 					<td>Unencoded &lt;, and &
 			<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script></table>
 			<br/>
-			<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><table border="1" style="border-spacing: 0;">
+			<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><table background&#61;"http://www.brettle.com/Data/Sites/1/logos/deanatwork_sidesmall.jpg" border="1" style="border-spacing: 0;">
 				<tr>
-					<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><td sty&#108;e="counter-increment: trusted-num;">Increment a CSS counter.  For result, see just under the
+					<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><td style&#61;"counter-increment: trusted-num;">Increment a CSS counter.  For result, see just under the
 						untrusted content box.
 					</td>
 					<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><td id="innerTableContainer">
 						Nested table:
 						<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><table id="innerTable" border="1">
 							<tr>
-								<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><td sty&#108;e="background-image: url(http://www.brettle.com/Data/Sites/1/logos/deanatwork_sidesmall.jpg)">sty&#108;e="background-image: url(...)"</td>
-								<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><td style="background-color: rgb(0,255,0);">sty&#108;e="background-color: rgb(...);"</td>
+								<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><td style&#61;"background-image: url(http://www.brettle.com/Data/Sites/1/logos/deanatwork_sidesmall.jpg)">style&#61;"background-image: url(...)"</td>
+								<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script><td style="background-color: rgb(0,255,0);">style&#61;"background-color: rgb(...);"</td>
 							</tr>
 						<NeatHtmlParserReset s='' d=""></NeatHtmlParserReset><script></script></table>
 					</td>

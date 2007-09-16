@@ -27,35 +27,17 @@ Simplest usage (note that comments and absence of whitespace between tags can be
 <!--[if lt IE 7]>
 	<div class="NeatHtml" style="width: NOSCRIPT_IE6_WIDTH; height: NOSCRIPT_IE6_HEIGHT; overflow: auto; position: relative; border: none; padding: 0; margin: 0;">	
 <![endif]-->
-		<table style='border-spacing: 0;'><tr><td style='padding: 0;'><!-- test comment --><script type="text/javascript">// <![CDATA[
-			try { NeatHtml.DefaultFilter.BeginUntrusted(); } catch (ex) { document.writeln('NeatHtml not found<!-' + '-'); } // ]]></script><div>
+		<table style='border-spacing: 0;'><tr><td style='padding: 0;'><!-- test comment --><script type="text/javascript">
+			try { NeatHtml.DefaultFilter.BeginUntrusted(); } catch (ex) { document.writeln('NeatHtml not found\074!-' + '-'); }</script><div>
 				PREPROCESSED_UNTRUSTED_CONTENT
-		<xmp></xmp><!-- ' " > ]]> --><script></script></td></tr></table>
-	</div><script type="text/javascript">// <![CDATA[
-		NeatHtml.DefaultFilter.ProcessUntrusted();
-	// ]]></script>
+		<NeatHtmlEndUntrusted s='' d=""></NeatHtmlEndUntrusted><xmp></xmp><!-- > --><script></script></td></tr></table>
+	<script type="text/javascript">NeatHtml.DefaultFilter.ProcessUntrusted();</script>
+	</div><script type='text/javascript'>NeatHtml.DefaultFilter.ResizeContainer();</script>
 	
 where:
 
-	PREPROCESSED_UNTRUSTED_CONTENT has had the following preprocessing done on the server 
-	(see ../dotnet/Brettle.Web.NeatHtml/Filter.cs for an example):
-		1. Replace all:
-				<table
-			with:
-				<NeatHtmlParserReset single='' double=""></NeatHtmlParserReset></td></tr></table><table
-		2. Replace all:
-				</table
-			with:
-				<NeatHtmlParserReset single='' double=""></table><table style='border-spacing: 0;'><tr><td style='padding: 0;'
-		3. Remove all comments (i.e. anything matching this regex: "<!--([^-]*-)+-[^>]*>")
-		4. Replace all remaining "--" with "&#45;&#45;"
-		5. Replace the "<xmp", with "<NeatHtmlReplace_xmp" and "</xmp" with "</NeatHtmlReplace_xmp" and do the same
-			with iframe, object and any other tags you want to hide from nonscript users (e.g. img tags to fight CSRF).
-			To fight CSRF attacks, also encode <img>.  Filter.cs shows how to all these replacements in one pass and
-			use a whitelist of tags.
-			DO NOT replace <script> because it causes the browser to hide script source from the user.
-		6. To fight CSRF attacks, HTML encode the "l" in "style" wherever the style looks suspicious.  See Filter.cs
-			for an example Regex.
+	PREPROCESSED_UNTRUSTED_CONTENT has been preprocessed on the server.  See ../dotnet/Brettle.Web.NeatHtml/Filter.cs for a
+	sample implementation.
 				
 	NOSCRIPT_IE6_WIDTH and NOSCRIPT_IE6_HEIGHT are the desired dimensions of the div that will display the
 		untrusted content in IE6 and earlier when script is disabled.  If the untrusted content is larger, 
@@ -468,9 +450,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 
 		s = s.replace(/&#45;&#45;/g, "--");
 
-		s = s.replace(/(sty)&#(108|76);(e)/gi, function(match, sty, lCharCode, e) {
-					return sty + String.fromCharCode(lCharCode) + e;
-		});
+		s = s.replace(/&#61;/g, "=");
 		
 //		alert(s);
 		return s;
