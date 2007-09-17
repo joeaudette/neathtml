@@ -117,20 +117,20 @@ namespace Brettle.Web.NeatHtml
 		// Style property value whitelist.  Note: '&' '\' and '(' [except 'rgb('] are not on it.
 		private static string StylePropValueREString = "\\((?<=rgb\\()|[ !#$%)-9<-[\\]-~]";
 		private static Regex AttributeRE
-			= new Regex("([ \\r\\n\\t]+style *=(?=(?:[ \\r\\n\\t]*(?:" // "style=" followed by
+			= new Regex("([ \\r\\n\\t]style *=(?=(?:[ \\r\\n\\t]*(?:" // "style=" followed by
 								// "safe value"
 								+ "\"(?:"
 									+ " *(?:" + String.Join("|", propsAllowedWhenNoScript) + ") *"
 									+ ":"
-									+ "(?:'|" + StylePropValueREString + ")*;?)*\"" 
+									+ "(?:'|" + StylePropValueREString + ")*(?:;|(?=\")))*\"" 
 								// 'safe value'
 								+ "|'(?:"
 									+ " *(?:" + String.Join("|", propsAllowedWhenNoScript) + ") *"
 									+ ":"
-									+ "(?:\"" + StylePropValueREString + ")*;?)*\"" 
+									+ "(?:\"" + StylePropValueREString + ")*(?:;|(?=')))*'" 
 							+ ")(?:[ \\r\\n\\t]|/?>))))" // followed by whitespace or end of tag  
 							// or an "=" optionally preceded by an allowed attribute name
-						+ "|(([ \\r\\n\\t]+(?:" + String.Join("|", attrsAllowedWhenNoScript) + ") *)?=)",
+						+ "|(([ \\r\\n\\t](?:" + String.Join("|", attrsAllowedWhenNoScript) + ") *)?=)",
 						RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 			
 						
