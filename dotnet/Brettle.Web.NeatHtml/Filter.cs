@@ -114,19 +114,20 @@ namespace Brettle.Web.NeatHtml
 				"s", "d" // Used by <NeatHtmlParserReset> and <NeatHtmlEndUntrusted> 
 				};
 		
-		// Style value whitelist.  Note: '&' '\' and '(' [except 'rgb('] are not on it.
-		// We blacklist "counter-increment:" and "counter-reset:" instead of trying to whitelist all
-		// propnames and values.
-		private static string StyleValueREString 
-			= "(?:"
-				+ " *(?:" + String.Join("|", propsAllowedWhenNoScript) + ") *"
-				+ ":"
-				+ "(?:\\((?<=rgb\\()|[ !#$%)-9<-[\\]-~])*;?"
-			+ ")*";
+		// Style property value whitelist.  Note: '&' '\' and '(' [except 'rgb('] are not on it.
+		private static string StylePropValueREString = "\\((?<=rgb\\()|[ !#$%)-9<-[\\]-~]";
 		private static Regex AttributeRE
 			= new Regex("([ \\r\\n\\t]+style *=(?=(?:[ \\r\\n\\t]*(?:" // "style=" followed by
-								+ "\"(?:'|" + StyleValueREString + ")*\"" // "safe value"
-								+ "|'(?:\"|" + StyleValueREString + ")*'" // or 'safe value'
+								// "safe value"
+								+ "\"(?:"
+									+ " *(?:" + String.Join("|", propsAllowedWhenNoScript) + ") *"
+									+ ":"
+									+ "(?:'|" + StylePropValueREString + ")*;?)*\"" 
+								// 'safe value'
+								+ "|'(?:"
+									+ " *(?:" + String.Join("|", propsAllowedWhenNoScript) + ") *"
+									+ ":"
+									+ "(?:\"" + StylePropValueREString + ")*;?)*\"" 
 							+ ")(?:[ \\r\\n\\t]|/?>))))" // followed by whitespace or end of tag  
 							// or an "=" optionally preceded by an allowed attribute name
 						+ "|(([ \\r\\n\\t]+(?:" + String.Join("|", attrsAllowedWhenNoScript) + ") *)?=)",
@@ -179,7 +180,7 @@ namespace Brettle.Web.NeatHtml
 						+ "|(?:<!\\[CDATA\\[([^\\]]*(?:\\][^\\]]+)*)\\]\\]>)" // 6: Complete CDATA section
 						+ "|(<"                     // 7: Matches tags "<" when followed by:
 													// 8: a tag name that is not allowed
-							+ "(?!/?(" + String.Join("|", tagsAllowedWhenNoScript) + ")[ \t\r\n/>])"
+							+ "(?!/?(" + String.Join("|", tagsAllowedWhenNoScript) + ")[ \\t\\n\\r/>])"
 							+ "([!\\?/])?"			// 9: starting with ! ? or / (ie. <!, <?, or </)
 							+ "([a-z])?"			// 10: and/or a letter (eg. <X, </X)
 						+ ")"
