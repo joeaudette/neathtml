@@ -253,7 +253,7 @@ NeatHtml.Filter.prototype.RemoveStyle = function(tagName, prop)
 
 NeatHtml.Filter.prototype.HandleUrl = function(tagName, attr)
 {
-	if (! /^(http:|https:|ftp:|mailto:|#)/i.test(attr.value))
+	if (! /^(http:|https:|ftp:|mailto:|[#\.\/])/i.test(attr.value))
 	{
 		return false;
 	}
