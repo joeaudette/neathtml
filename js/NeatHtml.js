@@ -333,6 +333,8 @@ NeatHtml.Filter.prototype.AllowElem = function(tagInfo)
 		{
 			attrValue = attrName;
 		}
+		attrName = attrName.replace(/_NeatHtmlReplace$/g, "");
+
 		var firstChar = attrValue.charAt(0)
 		if (firstChar == '"' || firstChar == "'")
 			attrValue = attrValue.substring(1, attrValue.length-1);
@@ -448,10 +450,10 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		
 		s = s.replace(/(<[!\?\/]?)NeatHtmlReplace_([a-z]?)/g, "$1$2");
 
+		s = s.replace(/<NeatHtmlLt \/>&lt;/g, "<");
+
 		s = s.replace(/&#45;&#45;/g, "--");
 
-		s = s.replace(/&#61;/g, "=");
-		
 //		alert(s);
 		return s;
 	}

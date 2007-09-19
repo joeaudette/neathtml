@@ -19,8 +19,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Collections;
+using System.Collections.Specialized;
 
 namespace Brettle.Web.NeatHtml
 {
@@ -64,23 +67,7 @@ namespace Brettle.Web.NeatHtml
 					jailed += "</table>";
 			}
 
-			jailed = AttributeRE.Replace(jailed, new MatchEvaluator(GuardAttributeJail));
-
 			return String.Format(Format, clientSideName, jailed, noScriptDownlevelIEWidth, noScriptDownlevelIEHeight);
-		}
-
-		private static string GuardAttributeJail(Match m)
-		{
-			if (m.Groups[1].Success		// safe style attribute 
-				|| m.Groups[3].Success	// or other allowed attribute name
-				)
-			{
-				// So leave it unchanged
-				return m.Value;
-			}
-			
-			// Otherwise, it is suspicious, so encode the "=" as "&#61;" to disable it.
-			return m.Value.Substring(0,m.Value.Length - 1) + "&#61;";
 		}
 
 		private static string[] propsAllowedWhenNoScript
@@ -113,28 +100,36 @@ namespace Brettle.Web.NeatHtml
 				"tabindex", "title", "type", "value", "width", "xml:lang", "xml:space",
 				"s", "d" // Used by <NeatHtmlParserReset> and <NeatHtmlEndUntrusted> 
 				};
+				
+		private static StringDictionary AllowedAttributeNames = GetDict(attrsAllowedWhenNoScript); 
+		
+		private static StringDictionary GetDict(string[] keys)
+		{
+			StringDictionary dict = new StringDictionary();
+			for (int i = 0; i < keys.Length; i++)
+			{
+				dict.Add(keys[i], "true");
+			}
+			return dict;
+		}
 		
 		// Style property value whitelist.  Note: '&' '\' and '(' [except 'rgb('] are not on it.
 		private static string StylePropValueREString = "\\((?<=rgb\\()|[ !#$%)-9<-[\\]-~]";
-		private static Regex AttributeRE
-			= new Regex("([ \\r\\n\\t]style *=(?=(?:[ \\r\\n\\t]*(?:" // "style=" followed by
-								// "safe value"
-								+ "\"(?:"
-									+ " *(?:" + String.Join("|", propsAllowedWhenNoScript) + ") *"
-									+ ":"
-									+ "(?:'|" + StylePropValueREString + ")*(?:;|(?=\")))*\"" 
-								// 'safe value'
-								+ "|'(?:"
-									+ " *(?:" + String.Join("|", propsAllowedWhenNoScript) + ") *"
-									+ ":"
-									+ "(?:\"" + StylePropValueREString + ")*(?:;|(?=')))*'" 
-							+ ")(?:[ \\r\\n\\t]|/?>))))" // followed by whitespace or end of tag  
-							// or an "=" optionally preceded by an allowed attribute name
-						+ "|(([ \\r\\n\\t](?:" + String.Join("|", attrsAllowedWhenNoScript) + ") *)?=)",
+
+		private static Regex StyleAttributeValueRE
+			= new Regex(// "safe value"
+						"\"(?:"
+							+ " *(?:" + String.Join("|", propsAllowedWhenNoScript) + ") *"
+							+ ":"
+							+ "(?:'|" + StylePropValueREString + ")*(?:;|(?=\")))*\"" 
+						// 'safe value'
+						+ "|'(?:"
+							+ " *(?:" + String.Join("|", propsAllowedWhenNoScript) + ") *"
+							+ ":"
+							+ "(?:\"" + StylePropValueREString + ")*(?:;|(?=')))*'",
 						RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
-			
 						
-		private static string ParserResetString = "<NeatHtmlParserReset s='' d=\"\"></NeatHtmlParserReset><script></script>";
+		private static string ParserResetString = "<NeatHtmlParserReset s='' d=\"\" /><script></script>";
 
 		private static string Format 
 			= "\n"
@@ -147,7 +142,7 @@ namespace Brettle.Web.NeatHtml
 			+ "<table style='border-spacing: 0;'><tr><td style='padding: 0;'><!-- test comment --><script type='text/javascript'>\n"
 			+ "try {{ {0}.BeginUntrusted(); }} catch (ex) {{ document.writeln('NeatHtml not found\\074!-' + '-'); }}</script>"
 			+ "<div>{1}</div>"
-			+ "<NeatHtmlEndUntrusted s='' d=\"\"></NeatHtmlEndUntrusted><script></script><!-- > --><xmp></xmp></td></tr></table><script type='text/javascript'>\n"
+			+ "<NeatHtmlEndUntrusted s='' d=\"\" /><script></script><!-- > --><xmp></xmp></td></tr></table><script type='text/javascript'>\n"
 			+ "{0}.ProcessUntrusted();\n"
 			+ "</script>\n"
 			+ "</div><script type='text/javascript'>\n"
@@ -165,116 +160,173 @@ namespace Brettle.Web.NeatHtml
 		 		// Do NOT allow "xmp" -- it is used to hold the untrusted content on some browsers 
 		 		// (eg. Safari/Konqueror).
 			};
-		
-		private static Regex JailRE 
-			= new Regex(							// 1: Matches any potential table-related start tag
-						"(<(?:table|caption|thead|tfoot|tbody|colgroup|col|tr|td|th)"
-													// 2: Matches if this is a valid table-related start tag
-							+ "((?:[ \\t\\n\\r]+[_:a-z][_:a-z0-9.]*[ \\t\\n\\r]*(?:=(?:\"[^<\"]*\"|'[^<']*'))?)*[ \\t\\n\\r]*>)?"
-						+ ")"
-													// 3: Matches any potential table-related end tag
-						+ "|(</(?:table|caption|thead|tfoot|tbody|colgroup|col|tr|td|th)"
-							+ "([ \\t\\n\\r]*>)?"   // 4: Matches if valid table end tag
-						+ ")"
-						+ "|(<!--[^-]*(?:-[^-]+)*-->)" // 5: HTML Comment (without embedded "--")
-						+ "|(?:<!\\[CDATA\\[([^\\]]*(?:\\][^\\]]+)*)\\]\\]>)" // 6: Complete CDATA section
-						+ "|(<"                     // 7: Matches tags "<" when followed by:
-													// 8: a tag name that is not allowed
-							+ "(?!/?(" + String.Join("|", tagsAllowedWhenNoScript) + ")[ \\t\\n\\r/>])"
-							+ "([!\\?/])?"			// 9: starting with ! ? or / (ie. <!, <?, or </)
-							+ "([a-z])?"			// 10: and/or a letter (eg. <X, </X)
-						+ ")"
-						+ "|(--)",                  // 12: "--" we need to encode to prevent ending a comment prematurely						,
-						RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
+		private static Hashtable InfoForTag = GetInfoForTags();
+		
+		private static Hashtable GetInfoForTags()
+		{
+			Hashtable dict = new Hashtable();
+			for (int i = 0; i < tagsAllowedWhenNoScript.Length; i++)
+			{
+				dict[tagsAllowedWhenNoScript[i]] = TagInfo.NOT_TABLE_RELATED;
+			}
+			dict["table"] = TagInfo.TABLE;
+			dict["td"] = dict["th"] = TagInfo.TABLE_CELL;
+			dict["caption"] = dict["colgroup"] = dict["col"] = dict["tbody"] 
+				= dict["tfoot"] = dict["thead"] = dict["tr"]
+					= TagInfo.TABLE_OTHER;
+			return dict;
+		}
+		
+		private static Regex JailRE
+			= new Regex("(?=[<-])(?:" 	// Optimization - all of the alternatives start with '<' or '-'
+																	// 1: Matches any open angle
+									+ "(<"
+										+ "(?:"
+											+ "!(?:"
+																	// 2: HTML Comment (without embedded "--")
+												+ "(--[^-]*(?:-[^-]+)*-->)"
+																	// 3: Contents of CDATA section
+												+ "|(?:\\[CDATA\\[([^\\]]*(?:\\][^\\]]+)*)\\]\\]>)" 
+											+ ")"
+											+ "|(/)?"				// 4: Matches when an end tag
+											+ "("					// 5: Matches the rest of the tag
+																	// 6: Matches the tag name
+												+ "([a-z][a-z0-9_:]*)?" 
+																		
+												+ "(?:[ \\t\\n\\r]+"
+																	// 7: Matches an attr name
+													+ "([_:a-z][_:a-z0-9.]*)" 
+													+ "((?:"		// 8: Not empty if attr has a value
+														+ "[ \\t\\n\\r]*=[ \\t\\n\\r]*"
+																	// 9: Matches the quoted attr value
+														+ "(\"[^<\"]*\"|'[^<']*'|[^\"'][^ \\t\\n\\r<>]*)"
+													+ ")?))*"
+																	// 10: Matches if the tag is well-formed
+												+ "([ \\t\\n\\r]*/?>)?"				
+											+ ")"
+										+ ")"
+									+ ")"
+									+ "|(--)"						// 11: "--" we need to encode to prevent ending a comment prematurely
+								+ ")",
+								RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+		
 		private string GuardJail(Match m)
 		{
-			if (m.Groups[1].Success)
+			if (m.Groups[11].Success) // "--"
+				return "&#45;&#45;";
+			if (m.Groups[2].Success) // HTML comment (not containing "--", so it isn't ambiguous)
+				return "";
+			if (m.Groups[3].Success) // CDATA Section.
+				return HttpUtility.HtmlEncode(m.Groups[3].Value);
+			if (!m.Groups[10].Success	// No ending '>'
+				|| !m.Groups[6].Success // or no tag name
+				|| (m.Groups[4].Success // or an end tag with...
+					&& (m.Groups[7].Success // an attribute
+						|| m.Groups[10].Value.EndsWith("/>")))) // or something like "</foo />"
 			{
-				string tagName 
-					= m.Groups[1].Value.Substring(1, m.Groups[1].Value.Length - 1
-													- (m.Groups[2].Success ? m.Groups[2].Value.Length : 0));
-				string lcTagName = tagName.ToLower();
-				// Hide suspicious table-related start tags
-				if (!m.Groups[2].Success || (lcTagName == "table" && !IsTableAllowed)) 
+				// Not a tag or a potentially ill-formed tag so HTML encode it to be sure it doesn't confuse
+				// the browser's parser.
+				return "<NeatHtmlLt />&lt;" + m.Value.Substring(1);
+			}
+
+			// If we get here we have a well-formed tag.
+
+			// Handle attributes
+			StringBuilder attrsBuilder = new StringBuilder();
+			int v = 0; // The next quoted value capture index
+			for (int a = 0; a < m.Groups[7].Captures.Count; a++)
+			{
+				string attrName = m.Groups[7].Captures[a].Value;
+				string equalsQuotedValue = m.Groups[8].Captures[a].Value;
+				string quotedValue = "\"" + attrName + "\""; // Default for implicit attrs
+				if (equalsQuotedValue.Length > 0)
 				{
-					// Hide it from the browser's parser so our markup jail is not affected.
-					// It will be recovered by NeatHtml.js.
-					return "<NeatHtmlReplace_" 
-						+ m.Groups[1].Value.Substring(1, m.Groups[1].Value.Length-1); // Preserve case
+					quotedValue = m.Groups[9].Captures[v].Value;
+					if (quotedValue[0] != '"' && quotedValue[0] != '\'')
+						quotedValue = "\"" + quotedValue.Replace("\"", "&quot;") + "\"";
+					v++;
 				}
-				
-				if (lcTagName == "table")
+				string lcAttrName = attrName.ToLower();
+				if (AllowedAttributeNames.ContainsKey(lcAttrName))
 				{
-					IsTableAllowed = false;
-					UntrustedTables++;
-					// Close any open attribute values and tags and then start the table as requested
-					return ParserResetString + m.Groups[1].Value;
+					attrsBuilder.Append(" " + attrName + "=" + quotedValue);
+					continue;
 				}
-				if ((lcTagName == "td" || lcTagName == "th") && !IsTableAllowed)
+				if (lcAttrName == "style" && equalsQuotedValue.Length > 0 
+					&& StyleAttributeValueRE.IsMatch(quotedValue))
+				{
+					attrsBuilder.Append(" " + attrName + "=" + quotedValue);
+					continue;
+				}
+				attrsBuilder.Append(" " + attrName + "_NeatHtmlReplace=" + quotedValue);
+			}
+			string attrs = attrsBuilder.ToString();
+			
+			// Look up the appropriate action based on the tag name
+			string lcTagName = m.Groups[6].Value.ToLower();
+			TagInfo tagInfo = InfoForTag[lcTagName] as TagInfo;
+
+			if (tagInfo == null) // Unknown tag
+				return "<" + m.Groups[4].Value + "NeatHtmlReplace_" + m.Groups[6].Value + attrs + m.Groups[10];
+
+			if (!tagInfo.IsTableRelated) // Not a table-related tag
+				return "<" + m.Groups[4].Value + m.Groups[6].Value + attrs + m.Groups[10];
+			
+			// Handle Table related tag
+			if (!m.Groups[4].Success) // Table-related start tag
+			{
+				if (tagInfo.IsTable)
+				{
+					if (!IsTableAllowed) // table start tag not allowed here.
+						return "<" + m.Groups[4].Value + "NeatHtmlReplace_" + m.Groups[6].Value + attrs + m.Groups[10];
+					else
+					{
+						IsTableAllowed = false;
+						UntrustedTables++;
+						return ParserResetString + "<" + m.Groups[4].Value + m.Groups[6].Value + attrs + m.Groups[10];
+					}
+				}
+				else if (tagInfo.IsTableCell)
 				{
 					IsTableAllowed = true;
-					// Close any open attribute values and tags and then start the cell as requested
-					return ParserResetString + m.Groups[1].Value;
-				}					
-				return m.Groups[1].Value;
-			}
-			else if (m.Groups[3].Success)
-			{
-				string tagName 
-					= m.Groups[3].Value.Substring(2, m.Groups[3].Value.Length - 2
-													- (m.Groups[4].Success ? m.Groups[4].Value.Length : 0));
-				if (!m.Groups[4].Success || UntrustedTables <= 0) // suspicious table-related end tag
-				{
-					// Hide it from the browser's parser so our markup jail is not affected.
-					// It will be recovered by NeatHtml.js.
-					return "</NeatHtmlReplace_" + tagName + (m.Groups[4].Success ? ">" : "");
+					return ParserResetString + "<" + m.Groups[4].Value + m.Groups[6].Value + attrs + m.Groups[10];
 				}
-				string lcTagName = tagName.ToLower();
-				if (lcTagName == "table")
+			}
+			else // Table-related end tag
+			{
+				if (UntrustedTables <= 0) // suspicious table-related end tag
+					return "<" + m.Groups[4].Value + "NeatHtmlReplace_" + m.Groups[6].Value + attrs + m.Groups[10];
+				if (tagInfo.IsTable)
 				{
 					IsTableAllowed = true;
 					UntrustedTables--;
-					// Close any open attribute values and tags and then end the table as requested
-					return ParserResetString + m.Groups[3].Value;
+					return ParserResetString + "<" + m.Groups[4].Value + m.Groups[6].Value + attrs + m.Groups[10];
 				}
 				else
-				{
 					IsTableAllowed = false;
-					return m.Groups[3].Value;
-				}
-			}
-			else if (m.Groups[5].Success) // HTML comment (not containing "--", so it isn't ambiguous)
-			{
-				return "";
-			}
-			else if (m.Groups[6].Success) // CDATA Section.
-			{
-				return HttpUtility.HtmlEncode(m.Groups[6].Value);
-			}
-			else if (m.Groups[7].Success)
-			{
-				if (m.Groups[10].Success)
-				{
-					// Looks like the start of a tag.  It might be safe when javascript
-					// is enabled.  Prepend NeatHtmlReplace_ to the tag name so that NeatHtml.js can still see it.
-					return "<" + m.Groups[9].Value + "NeatHtmlReplace_" + m.Groups[10].Value;
-				}
-				else
-				{
-					// Not a tag, HTML encode it to be sure it doesn't confuse the browser's parser.
-					return HttpUtility.HtmlEncode(m.Groups[7].Value);
-				}
-			}
-			else if (m.Groups[11].Success)
-				return "&#45;&#45;";
-			else
-			{
-				return ""; // Should never get here			
-			}
+			}					
+			return "<" + m.Groups[4].Value + m.Groups[6].Value + attrs + m.Groups[10];
 		}
 
 		private int UntrustedTables = 0;
 		private bool IsTableAllowed = true;
+	}
+	
+	internal class TagInfo
+	{
+		internal bool IsTableRelated = false;
+		internal bool IsTable = false;
+		internal bool IsTableCell = false;
+		internal TagInfo(bool isTableRelated, bool isTable, bool isTableCell)
+		{
+			IsTableRelated = isTableRelated;
+			IsTable = isTable;
+			IsTableCell = isTableCell;
+		}
+		internal static TagInfo NOT_TABLE_RELATED = new TagInfo(false, false, false);
+		internal static TagInfo TABLE = new TagInfo(true, true, false);
+		internal static TagInfo TABLE_CELL = new TagInfo(true, false, true);
+		internal static TagInfo TABLE_OTHER = new TagInfo(true, false, false);
 	}
 }

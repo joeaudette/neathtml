@@ -1,6 +1,6 @@
-<div>The following was created by copying RSnake's
+<div>The following was created by copying RSnake's 
 <a href="http://ha.ckers.org/xss.html">XSS Cheat Sheet</a> as displayed by
-the browser, pasting it into a text file, wrapping it at 80 columns and
+the browser, pasting it into a text file, wrapping it at 80 columns and 
 putting the result inside a &lt;pre&gt; element.  This technique preserves
 the raw attack vectors and the descriptions.
 <pre>
@@ -226,7 +226,7 @@ inside, instead of a more efficient algorythm like Boyer-Moore that looks for
 entire string matches of the open angle bracket and associated tag (post 
 de-obfuscation, of course). The double slash comments out the ending extraneous 
 bracket to supress a JavaScript error:
-      &lt;&lt;
+      &lt;&lt;SCRIPT>alert("XSS");//&lt;&lt;/SCRIPT>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -242,7 +242,7 @@ injected:
 this is especially useful where space is an issue, and of course, the shorter 
 your domain, the better. The ".j" is valid, regardless of the encoding type 
 because the browser knows it in context of a SCRIPT tag.
-      &lt;&lt;SCRIPT...&quot; to accomplish the XSS attack). Dan 
+      &lt;)&lt;SCRIPT...&quot; to accomplish the XSS attack). Dan 
 Crowley additionally noted that you can put a space before the equals sign 
 (&quot;onload=&quot; != &quot;onload =&quot;):
-      &lt;BODY ONLOAD=alert(&#39;XSS&#39;)&gt;&amp;&amp;&lt;script((\s+\w+(\s*=\s*(?:&quot;(.)*?&quot;|&#39;(.)*?&#39;|[^&#39;&quot;&gt;&lt;script((\s+\w+(\s*=\s*(?:&quot;(.)*?&quot;|&#39;(.)*?&#39;|[^&#39;&quot;&gt;&lt;script((\s+\w+(\s*=\s*(?:&quot;(.)*?&quot;|&#39;(.)*?&#39;|[^&#39;&quot;&gt;&lt;SCRI&quot;);&lt;/SCRIPT&gt;&#x26;&#x09;&lt;&lt;&amp;&lt;&amp;&amp;LT;&amp;&amp;&amp;&amp;&amp;&amp;&#60;&#060;&#0060;&#00060;&#000060;&#0000060;&amp;&amp;&amp;&amp;&amp;&amp;&#x3c;&#x03c;&#x003c;&#x0003c;&#x00003c;&#x000003c;&amp;&amp;&amp;&amp;&amp;&amp;&#x3c;&#x03c;&#x003c;&#x0003c;&#x00003c;&#x000003c;&amp;&amp;&amp;&amp;&amp;&amp;&#x3C;&#x03C;&#x003C;&#x0003C;&#x00003C;&#x000003C;&amp;&amp;&amp;&amp;&amp;&amp;&#x3c;&#x03c;&#x003c;&#x0003c;&#x00003c;&#x000003c;</pre></div>
+      &lt;BODY ONLOAD_NeatHtmlReplace=&quot;alert(&#39;XSS&#39;)&quot;&gt;&amp;&amp;&lt;script((\s+\w+(\s*=\s*(?:&quot;(.)*?&quot;|&#39;(.)*?&#39;|[^&#39;&quot;&gt;&lt;script((\s+\w+(\s*=\s*(?:&quot;(.)*?&quot;|&#39;(.)*?&#39;|[^&#39;&quot;&gt;&lt;script((\s+\w+(\s*=\s*(?:&quot;(.)*?&quot;|&#39;(.)*?&#39;|[^&#39;&quot;&gt;&lt;SCRI&quot;);&lt;/SCRIPT&gt;&#x26;&#x09;&lt;&quot;&lt; &amp;&lt;&amp;&amp;LT;&amp;&amp;&amp;&amp;&amp;&amp;&#60;&#060;&#0060;&#00060;&#000060;&#0000060;&amp;&amp;&amp;&amp;&amp;&amp;&#x3c;&#x03c;&#x003c;&#x0003c;&#x00003c;&#x000003c;&amp;&amp;&amp;&amp;&amp;&amp;&#x3c;&#x03c;&#x003c;&#x0003c;&#x00003c;&#x000003c;&amp;&amp;&amp;&amp;&amp;&amp;&#x3C;&#x03C;&#x003C;&#x0003C;&#x00003C;&#x000003C;&amp;&amp;&amp;&amp;&amp;&amp;&#x3c;&#x03c;&#x003c;&#x0003c;&#x00003c;&#x000003c;</pre></div>
