@@ -103,6 +103,8 @@ namespace Brettle.Web.NeatHtml
 				
 		private static StringDictionary AllowedAttributeNames = GetDict(attrsAllowedWhenNoScript); 
 		
+		private static StringDictionary AllowedPropertyNames = GetDict(propsAllowedWhenNoScript); 
+		
 		private static StringDictionary GetDict(string[] keys)
 		{
 			StringDictionary dict = new StringDictionary();
@@ -114,20 +116,11 @@ namespace Brettle.Web.NeatHtml
 		}
 		
 		// Style property value whitelist.  Note: '&' '\' and '(' [except 'rgb('] are not on it.
-		private static string StylePropValueREString = "\\((?<=rgb\\()|[ !#$%)-9<-[\\]-~]";
+		private static string StylePropValueREString = "\\((?<=rgb\\()|[ -%')-9<-[\\]-~]";
 
 		private static Regex StyleAttributeValueRE
-			= new Regex(// "safe value"
-						"\"(?:"
-							+ " *(?:" + String.Join("|", propsAllowedWhenNoScript) + ") *"
-							+ ":"
-							+ "(?:'|" + StylePropValueREString + ")*(?:;|(?=\")))*\"" 
-						// 'safe value'
-						+ "|'(?:"
-							+ " *(?:" + String.Join("|", propsAllowedWhenNoScript) + ") *"
-							+ ":"
-							+ "(?:\"" + StylePropValueREString + ")*(?:;|(?=')))*'",
-						RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+			= new Regex("^(?: *(-?[_a-z][_a-z0-9-]*) *:(?:" + StylePropValueREString + ")*(?:;|$))*$",
+						RegexOptions.Compiled | RegexOptions.IgnoreCase);
 						
 		private static string ParserResetString = "<NeatHtmlParserReset s='' d=\"\" /><script></script>";
 
@@ -253,11 +246,24 @@ namespace Brettle.Web.NeatHtml
 					attrsBuilder.Append(" " + attrName + "=" + quotedValue);
 					continue;
 				}
-				if (lcAttrName == "style" && equalsQuotedValue.Length > 0 
-					&& StyleAttributeValueRE.IsMatch(quotedValue))
+				if (lcAttrName == "style" && equalsQuotedValue.Length > 0)
 				{
-					attrsBuilder.Append(" " + attrName + "=" + quotedValue);
-					continue;
+					Match savMatch = StyleAttributeValueRE.Match(quotedValue.Substring(1, quotedValue.Length-2));
+					if (savMatch.Success)
+					{
+						int p = 0;
+						for (;p < savMatch.Groups[1].Captures.Count; p++)
+						{
+							string lcPropName =  savMatch.Groups[1].Captures[p].Value.ToLower();
+							if (!AllowedPropertyNames.ContainsKey(lcPropName))
+								break;
+						}
+						if (p == savMatch.Groups[1].Captures.Count) // All prop names allowed
+						{
+							attrsBuilder.Append(" " + attrName + "=" + quotedValue);
+							continue;
+						}
+					}
 				}
 				attrsBuilder.Append(" " + attrName + "_NeatHtmlReplace=" + quotedValue);
 			}
