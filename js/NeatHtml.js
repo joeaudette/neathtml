@@ -30,7 +30,7 @@ Simplest usage (note that comments and absence of whitespace between tags can be
 		<table style='border-spacing: 0;'><tr><td style='padding: 0;'><!-- test comment --><script type="text/javascript">
 			try { NeatHtml.DefaultFilter.BeginUntrusted(); } catch (ex) { document.writeln('NeatHtml not found\074!-' + '-'); }</script><div>
 				PREPROCESSED_UNTRUSTED_CONTENT
-		<NeatHtmlEndUntrusted s='' d=""></NeatHtmlEndUntrusted><xmp></xmp><!-- > --><script></script></td></tr></table>
+		<NeatHtmlEndUntrusted s='' d="" /><xmp></xmp><!-- > --><script></script></td></tr></table>
 	<script type="text/javascript">NeatHtml.DefaultFilter.ProcessUntrusted();</script>
 	</div><script type='text/javascript'>NeatHtml.DefaultFilter.ResizeContainer();</script>
 	
