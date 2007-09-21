@@ -5,19 +5,19 @@
 <dc:title>Fighting Cross Site Scripting (XSS) with Some Javascript Judo</dc:title>
 <meta:creation-date>2007-09-14T11:03:22</meta:creation-date>
 <dc:creator>Dean Brettle</dc:creator>
-<dc:date>2007-09-18T23:53:09</dc:date>
+<dc:date>2007-09-21T14:02:29</dc:date>
 <dc:language>en-US</dc:language>
-<meta:editing-cycles>38</meta:editing-cycles>
-<meta:editing-duration>P3DT22H30M27S</meta:editing-duration>
+<meta:editing-cycles>43</meta:editing-cycles>
+<meta:editing-duration>P6DT12H39M47S</meta:editing-duration>
 <meta:user-defined meta:name="Info 1"/>
 <meta:user-defined meta:name="Info 2"/>
 <meta:user-defined meta:name="Info 3"/>
 <meta:user-defined meta:name="Info 4"/>
-<meta:document-statistic meta:table-count="1" meta:image-count="0" meta:object-count="0" meta:page-count="1" meta:paragraph-count="151" meta:word-count="4362" meta:character-count="29414"/>
+<meta:document-statistic meta:table-count="1" meta:image-count="0" meta:object-count="0" meta:page-count="1" meta:paragraph-count="167" meta:word-count="4762" meta:character-count="32144"/>
 </office:meta>
 <office:settings>
 <config:config-item-set config:name="ooo:view-settings">
-<config:config-item config:name="ViewAreaTop" config:type="int">198937</config:config-item>
+<config:config-item config:name="ViewAreaTop" config:type="int">163588</config:config-item>
 <config:config-item config:name="ViewAreaLeft" config:type="int">1002</config:config-item>
 <config:config-item config:name="ViewAreaWidth" config:type="int">32651</config:config-item>
 <config:config-item config:name="ViewAreaHeight" config:type="int">21327</config:config-item>
@@ -26,12 +26,12 @@
 <config:config-item-map-indexed config:name="Views">
 <config:config-item-map-entry>
 <config:config-item config:name="ViewId" config:type="string">view2</config:config-item>
-<config:config-item config:name="ViewLeft" config:type="int">18916</config:config-item>
-<config:config-item config:name="ViewTop" config:type="int">207564</config:config-item>
+<config:config-item config:name="ViewLeft" config:type="int">8834</config:config-item>
+<config:config-item config:name="ViewTop" config:type="int">181218</config:config-item>
 <config:config-item config:name="VisibleLeft" config:type="int">1002</config:config-item>
-<config:config-item config:name="VisibleTop" config:type="int">198937</config:config-item>
+<config:config-item config:name="VisibleTop" config:type="int">163588</config:config-item>
 <config:config-item config:name="VisibleRight" config:type="int">33651</config:config-item>
-<config:config-item config:name="VisibleBottom" config:type="int">220262</config:config-item>
+<config:config-item config:name="VisibleBottom" config:type="int">184914</config:config-item>
 <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
 <config:config-item config:name="ZoomFactor" config:type="short">100</config:config-item>
 <config:config-item config:name="IsSelectedFrame" config:type="boolean">false</config:config-item>
@@ -529,6 +529,9 @@
 <style:style style:name="P8" style:family="paragraph" style:parent-style-name="CodeExample">
 <style:text-properties fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
 </style:style>
+<style:style style:name="P9" style:family="paragraph" style:parent-style-name="Text_20_body">
+<style:text-properties fo:font-style="normal" fo:font-weight="normal" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-style-complex="normal" style:font-weight-complex="normal"/>
+</style:style>
 <style:style style:name="T1" style:family="text" style:parent-style-name="Emphasis">
 <style:text-properties fo:font-style="normal" style:font-style-asian="normal" style:font-style-complex="normal"/>
 </style:style>
@@ -557,6 +560,15 @@
 <style:text-properties fo:font-style="normal" fo:font-weight="bold" style:font-style-asian="normal" style:font-weight-asian="bold" style:font-style-complex="normal" style:font-weight-complex="bold"/>
 </style:style>
 <style:style style:name="T10" style:family="text" style:parent-style-name="Variable">
+<style:text-properties fo:font-style="normal" fo:font-weight="normal" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-style-complex="normal" style:font-weight-complex="normal"/>
+</style:style>
+<style:style style:name="T11" style:family="text">
+<style:text-properties fo:font-style="italic" fo:font-weight="bold" style:font-style-asian="italic" style:font-weight-asian="bold" style:font-style-complex="italic" style:font-weight-complex="bold"/>
+</style:style>
+<style:style style:name="T12" style:family="text">
+<style:text-properties fo:font-style="italic" fo:font-weight="normal" style:font-style-asian="italic" style:font-weight-asian="normal" style:font-style-complex="italic" style:font-weight-complex="normal"/>
+</style:style>
+<style:style style:name="T13" style:family="text">
 <style:text-properties fo:font-style="normal" fo:font-weight="normal" style:font-style-asian="normal" style:font-weight-asian="normal" style:font-style-complex="normal" style:font-weight-complex="normal"/>
 </style:style>
 <style:style style:name="Sect1" style:family="section">
@@ -677,11 +689,11 @@
 </text:a>
 <text:span text:style-name="T1">Last updated </text:span>
 <text:span text:style-name="T1">
-<text:date style:data-style-name="N37" text:date-value="2007-09-18T23:53:09.99">09/18/07</text:date>
+<text:date style:data-style-name="N37" text:date-value="2007-09-21T14:02:33">09/21/07</text:date>
 </text:span>
 <text:span text:style-name="T1"/>
 <text:span text:style-name="T1">
-<text:time style:data-style-name="N106" text:time-value="2007-09-18T23:53:09.99">11:53:10PM</text:time>
+<text:time style:data-style-name="N106" text:time-value="2007-09-21T14:02:33">02:02:33PM</text:time>
 </text:span>
 </text:p>
 <text:table-of-content text:style-name="Sect1" text:protected="true" text:name="Table of Contents1">
@@ -1084,12 +1096,12 @@
 <text:p text:style-name="Text_20_body">The class attribute makes it easy for designers to style all untrusted content similarly (e.g. give it all the same background color). <text:s/>The “position: relative” allows for untrusted content to be positioned absolutely <text:span text:style-name="T6">within</text:span> the DIV. <text:s/>The “border: none; padding: 0; margin: 0”, simply make it easier for designers to style untrusted content by enclosing it a separate div where then control all the style properties.</text:p>
 <text:p text:style-name="Text_20_body">There is one other small way that the untrusted content could change something outside of the containing box. <text:s/>On browsers that support <text:a xlink:type="simple" xlink:href="http://www.w3.org/TR/CSS21/generate.html#counters">CSS counters</text:a> the untrusted content can use a style of “counter-increment: <text:span text:style-name="T6">counterName</text:span>” or “counter-reset: <text:span text:style-name="T6">counterName</text:span>” to change the values of counters. <text:s/>This could be used to change the numbering of paragraphs, chapters, etc. <text:s/>To avoid this, NeatHtml's client-side filter does not include “counter-increment” and “counter-reset” on the whitelist of property names.</text:p>
 <text:h text:style-name="Heading_20_3" text:outline-level="3">Defending No-Script Users with Regex Replacements, a Table Trap, and Layout Lockdown</text:h>
-<text:p text:style-name="Text_20_body">The techniques described above are designed to protect the overwhelming majority of users – those with JavaScript enabled. <text:s/>Protecting no-script users requires doing additional server-side preprocessing. <text:s/>NeatHtml tries to do the minimize the amount of server-side preprocessing while maximizing end-user security and usability. <text:s/>This section describes NeatHtml preprocessing techniques in general terms. <text:s/>See the <text:a xlink:type="simple" xlink:href="https://forgesvn1.novell.com/viewsvn/neathtml/trunk/dotnet/Brettle.Web.NeatHtml/Filter.cs?view=markup">Filter.cs</text:a> source code for exact details.</text:p>
+<text:p text:style-name="Text_20_body">The techniques described above are designed to protect the overwhelming majority of users – those with JavaScript enabled. <text:s/>Protecting no-script users requires doing additional server-side preprocessing. <text:s/>NeatHtml tries to minimize the amount of server-side preprocessing while maximizing end-user security and usability. <text:s/>This section describes NeatHtml preprocessing techniques in general terms. <text:s/>See the <text:a xlink:type="simple" xlink:href="https://forgesvn1.novell.com/viewsvn/neathtml/trunk/dotnet/Brettle.Web.NeatHtml/Filter.cs?view=markup">Filter.cs</text:a> source code for full details.</text:p>
 <text:h text:style-name="Heading_20_4" text:outline-level="4">Sacrificing Well-Formedness</text:h>
-<text:p text:style-name="Text_20_body">To maximize speed, NeatHtml's server-side component uses regular expressions (regexs) to manipulate the untrusted content directly as a string. <text:s/>This technique should be faster than the true parsing done by the client-side filter, especially for benign content. <text:s/>Unfortunately, the regex manipulations described below will not ensure that the preprocessed untrusted content parsed by the browser is well-formed XML. <text:s/>In particular, no attempt is made to ensure that every start tag has a matching end tag, and named entities are not converted to numeric entities. <text:s/>That said, the regex manipulations should ensure that the preprocessed untrusted content has well-formed tags – attributes without a value are given a value, and unquoted attribute values are quoted. <text:s/>The well-formed tags should be sufficient to ensure that modern browsers can easily parse the preprocessed untrusted content. <text:s/>For applications which require not just well-formed tags but well-formed pages, the techniques described in this section are not appropriate. <text:s/>For those applications, options include:</text:p>
+<text:p text:style-name="Text_20_body">To maximize speed, NeatHtml's server-side component uses regular expressions (regexs) to manipulate the untrusted content directly as a string. <text:s/>This technique should be faster than the true parsing done by the client-side filter, especially for benign content. <text:s/>Unfortunately, the regex manipulations described below will not ensure that the preprocessed untrusted content parsed by the browser is well-formed XML. <text:s/>For example, no attempt is made to ensure that every start tag has a matching end tag, and named entities are not converted to numeric entities. <text:s/>For applications which require well-formed pages, the techniques described in this section are not appropriate. <text:s/>For those applications, options include:</text:p>
 <text:list text:style-name="List_20_1">
 <text:list-item>
-<text:p text:style-name="List_20_Contents">Sacrifice no-script users and Safari/Konqueror users by always hiding the preprocessed untrusted content in an HTML comment.</text:p>
+<text:p text:style-name="List_20_Contents">Sacrifice support for no-script users and Safari/Konqueror users by always hiding the preprocessed untrusted content in an HTML comment.</text:p>
 </text:list-item>
 <text:list-item>
 <text:p text:style-name="List_20_Contents">Require that untrusted content is well-formed and secure when it is created.</text:p>
@@ -1098,13 +1110,58 @@
 <text:p text:style-name="List_20_Contents">Use a server-side filter similar to NeatHtml's client-side filter. <text:s/>Porting NeatHtml's client-side filter to a server-side environment probably wouldn't be particularly difficult.</text:p>
 </text:list-item>
 </text:list>
+<text:h text:style-name="Heading_20_4" text:outline-level="4">Sacrificing Some Benign Markup and CSS Counters to Prevent Phishing and Contain All Vandalism with Layout Lockdown and a Table Trap</text:h>
+<text:p text:style-name="Text_20_body">Recall that the Layout Lockdown technique used for script users required calling the client-side function ResizeContainer() to ensure that overflow content was hidden from users of IE6 and earlier. <text:s/>Without script, NeatHtml needs to ensure that a fixed size scrollable containing div is used for these users. <text:s/>To avoid affecting users of other browsers, the server uses a conditional comment, like this:</text:p>
+<text:p text:style-name="CodeExample">
+<text:span text:style-name="T7">&lt;![if gte IE 7]&gt;</text:span>
+<text:span text:style-name="T8">
+<text:line-break/>&lt;div class='NeatHtml' style='overflow: hidden; position: relative; border: none; padding: 0; margin: 0;'&gt;<text:line-break/>
+</text:span>
+<text:span text:style-name="T7">&lt;![endif]&gt;<text:line-break/>&lt;!--[if lt IE 7]&gt;<text:line-break/>&lt;div class='NeatHtml' style='width: </text:span>
+<text:span text:style-name="T11">NoScriptDownlevelIEWidth</text:span>
+<text:span text:style-name="T7">; height: </text:span>
+<text:span text:style-name="T11">NoScriptDownlevelIEHeight</text:span>
+<text:span text:style-name="T7">; overflow: auto; position: relative; border: none; padding: 0; margin: 0;'&gt;<text:line-break/>&lt;![endif]--&gt;</text:span>
+<text:line-break/>&lt;!-- test comment --&gt;<text:line-break/>
+<text:span text:style-name="T8">&lt;script type='text/javascript'&gt;</text:span>
+</text:p>
+<text:p text:style-name="P8">try { NeatHtml.DefaultFilter.BeginUntrusted(); } catch (ex) { document.writeln('NeatHtml not found\074!-' + '-'); }</text:p>
+<text:p text:style-name="CodeExample">
+<text:span text:style-name="T8">&lt;/script&gt; </text:span>
+<text:line-break/>
+<text:span text:style-name="T8">&lt;div&gt;</text:span>
+<text:line-break/>
+<text:span text:style-name="Variable">preprocessed untrusted content<text:line-break/>
+</text:span>
+<text:span text:style-name="T10">&lt;/div&gt;</text:span>
+<text:span text:style-name="Variable">
+<text:line-break/>
+</text:span>
+<text:span text:style-name="T10">&lt;NeatHtmlEndUntrusted s='' d=""</text:span>
+<text:span text:style-name="Variable">
+<text:span text:style-name="T10"> /&gt;</text:span>
+</text:span>
+<text:line-break/>&lt;!-- &gt; --&gt;&lt;xmp&gt;&lt;/xmp&gt;<text:line-break/>&lt;script type='text/javascript'&gt;NeatHtml.DefaultFilter.ProcessUntrusted();&lt;/script&gt;<text:line-break/>
+<text:span text:style-name="T8">&lt;/div&gt;<text:line-break/>&lt;script type='text/javascript'&gt;NeatHtml.DefaultFilter.ResizeContainer();&lt;/script&gt;</text:span>
+</text:p>
+<text:p text:style-name="Text_20_body">The values <text:span text:style-name="T12">NoScriptDownlevelIEWidth</text:span>
+<text:span text:style-name="T13"> and <text:s/>
+</text:span>
+<text:span text:style-name="T12">NoScriptDownlevelIEHeight</text:span>
+<text:span text:style-name="T13"> are configurable, and default to “100%” and “400px” by default.</text:span>
+</text:p>
+<text:p text:style-name="P9">If the untrusted content is known to be well-formed and the containing page does not use CSS counters, the above technique is all that is needed to prevent phishing and contain all vandalism. <text:s/>Preventing CSS counter manipulation requires more complex server-side processing and is described in a later section. <text:s/>To support ill-formed untrusted content, NeatHtml uses a Table Trap.</text:p>
+<text:p text:style-name="P9">A Table Trap relies on the fact that browsers seem to require TABLE elements to be explicitly closed. <text:s/>If a TABLE is enclose in other elements, end tags for the enclosing elements are ignored as long as the TABLE element remains open.</text:p>
+<text:p text:style-name="Text_20_body">Disable &lt; followed by anything not on the tag whitelist (including comments and CDATA sections.</text:p>
 <text:h text:style-name="Heading_20_4" text:outline-level="4">Dealing with HTML Comments and CDATA Sections</text:h>
 <text:p text:style-name="Text_20_body">Recall that the JavaScript Judo technique requires that the server replace all “--” with “&amp;#34;&amp;#34;”. <text:s/>Unfortunately, that replacement will cause any HTML comments in the untrusted content to be visible to no-script users. <text:s/>To reduce this problem, the server removes all strings matching:</text:p>
 <text:p text:style-name="CodeExample">&lt;!--[^-]*(?:-[^-]+)*--&gt;</text:p>
 <text:p text:style-name="Text_20_body">before replacing “--” with “&amp;34;&amp;34;”. <text:s/>That matches any HTML comment that does not contain “--”. <text:s/>Comments containing “--” are not removed by the server because matching them requires a considerably more complex regex. <text:s/>Since displaying such comments is not a security issue and the HTML standards discourage use of “--” in comments, this additional complexity was avoided.</text:p>
-<text:p text:style-name="Text_20_body">Since many browsers don't understand CDATA sections, the server replaces complete CDATA section with the HTML-encoded content of the CDATA section. <text:s/>A complete CDATA section is anything matching the following regex:</text:p>
+<text:p text:style-name="Text_20_body">Since many browsers don't understand CDATA sections, the server replaces complete CDATA sections with the HTML-encoded content of the CDATA section. <text:s/>A complete CDATA section is anything matching the following regex:</text:p>
 <text:p text:style-name="CodeExample">&lt;!\[CDATA\[([^\]]*(?:\][^\]]+)*)\]\]&gt;</text:p>
 <text:p text:style-name="Text_20_body">The content of the CDATA section (i.e. the part that the server HTML-encodes) is the part matching the first grouping construct.</text:p>
+<text:h text:style-name="Heading_20_4" text:outline-level="4">Allowing Tables in Untrusted Content</text:h>
+<text:h text:style-name="Heading_20_4" text:outline-level="4"/>
 <text:h text:style-name="Heading_20_4" text:outline-level="4">Preventing Zero-Click XSRF by Disabling Suspicious Tags and Attributes</text:h>
 <text:p text:style-name="Text_20_body">To prevent zero-click XSRF, the server uses the following regex to find tags and unencoded “&lt;” characters:</text:p>
 <text:p text:style-name="CodeExample">
@@ -1190,8 +1247,14 @@
 </text:list-item>
 </text:list>
 <text:p text:style-name="Text_20_body">The allowed style value regex is designed to match the overwhelming majority of benign styles seen in typical HTML markup, while not matching any styles that could contain zero-click XSRF attacks. <text:s/>In those cases where a benign styles does not match the regex, no-script users simply see the associated content with no style applied.</text:p>
-<text:h text:style-name="Heading_20_4" text:outline-level="4">Preventing Phishing and Containing Vandalism with Layout Lockdown and a Table Trap</text:h>
-<text:h text:style-name="Heading_20_3" text:outline-level="3">Future Research</text:h>
+<text:p text:style-name="Text_20_body">In addition to preventing zero-click XSRF, the regex manipulations described in this section also make all tags well-formed. <text:s/>Specifically, all attributes have valid names and a quoted value. <text:s/>Making all tags well-formed does not make the page well-formed, but it should minimize or eliminate the possibility of parsing errors in modern browsers.</text:p>
+<text:h text:style-name="Heading_20_4" text:outline-level="4">Future Research</text:h>
+<text:h text:style-name="Heading_20_4" text:outline-level="4">Avoiding No-Script Processing When JavaScript Is Enabled</text:h>
+<text:p text:style-name="Text_20_body">If JavaScript is enabled, set a cookie. <text:s/>If the cookie is detected, render the untrusted content directly into a JavaScript string, and provide a &lt;noscript&gt; IMG or link that removes the cookie and tells the user to reload the page to see the untrusted content.</text:p>
+<text:h text:style-name="Heading_20_4" text:outline-level="4">Preventing Denial of Service Attacks on the Server and Browser</text:h>
+<text:p text:style-name="Text_20_body">Limit the time or number of tags/attributes/properties that are allowed.</text:p>
+<text:h text:style-name="Heading_20_4" text:outline-level="4">Using IFRAME with data: URL to Defend No-Script Users from Phishing</text:h>
+<text:p text:style-name="Text_20_body">Does it work on enough browsers? <text:s/>If so, and if we don't care about XSRF attacks, using &lt;iframe src=”data:...”&gt; would mean the server wouldn't have to do any regex matching. <text:s/>Attribute value length restrictions might be a problem.</text:p>
 <text:h text:style-name="Heading_20_4" text:outline-level="4">Porting the JavaScript Filter to the Server</text:h>
 <text:h text:style-name="Heading_20_4" text:outline-level="4">Allowing Restricted Scripts</text:h>
 <text:h text:style-name="Heading_20_4" text:outline-level="4">Inline Untrusted Content</text:h>
