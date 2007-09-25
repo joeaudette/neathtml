@@ -5,21 +5,21 @@
 <dc:title>Fighting Cross Site Scripting (XSS) with Some Javascript Judo</dc:title>
 <meta:creation-date>2007-09-14T11:03:22</meta:creation-date>
 <dc:creator>Dean Brettle</dc:creator>
-<dc:date>2007-09-24T00:33:07</dc:date>
+<dc:date>2007-09-25T16:19:40</dc:date>
 <meta:printed-by>Dean Brettle</meta:printed-by>
-<meta:print-date>2007-09-22T13:58:50</meta:print-date>
+<meta:print-date>2007-09-24T08:51:38</meta:print-date>
 <dc:language>en-US</dc:language>
-<meta:editing-cycles>86</meta:editing-cycles>
-<meta:editing-duration>P8DT16H22M16S</meta:editing-duration>
+<meta:editing-cycles>92</meta:editing-cycles>
+<meta:editing-duration>P9DT23H51M3S</meta:editing-duration>
 <meta:user-defined meta:name="Info 1"/>
 <meta:user-defined meta:name="Info 2"/>
 <meta:user-defined meta:name="Info 3"/>
 <meta:user-defined meta:name="Info 4"/>
-<meta:document-statistic meta:table-count="1" meta:image-count="0" meta:object-count="0" meta:page-count="22" meta:paragraph-count="237" meta:word-count="7810" meta:character-count="53080"/>
+<meta:document-statistic meta:table-count="1" meta:image-count="0" meta:object-count="0" meta:page-count="22" meta:paragraph-count="239" meta:word-count="7805" meta:character-count="53126"/>
 </office:meta>
 <office:settings>
 <config:config-item-set config:name="ooo:view-settings">
-<config:config-item config:name="ViewAreaTop" config:type="int">0</config:config-item>
+<config:config-item config:name="ViewAreaTop" config:type="int">589703</config:config-item>
 <config:config-item config:name="ViewAreaLeft" config:type="int">0</config:config-item>
 <config:config-item config:name="ViewAreaWidth" config:type="int">32651</config:config-item>
 <config:config-item config:name="ViewAreaHeight" config:type="int">20930</config:config-item>
@@ -29,11 +29,11 @@
 <config:config-item-map-entry>
 <config:config-item config:name="ViewId" config:type="string">view2</config:config-item>
 <config:config-item config:name="ViewLeft" config:type="int">3002</config:config-item>
-<config:config-item config:name="ViewTop" config:type="int">9107</config:config-item>
+<config:config-item config:name="ViewTop" config:type="int">607944</config:config-item>
 <config:config-item config:name="VisibleLeft" config:type="int">0</config:config-item>
-<config:config-item config:name="VisibleTop" config:type="int">0</config:config-item>
+<config:config-item config:name="VisibleTop" config:type="int">589703</config:config-item>
 <config:config-item config:name="VisibleRight" config:type="int">32650</config:config-item>
-<config:config-item config:name="VisibleBottom" config:type="int">20929</config:config-item>
+<config:config-item config:name="VisibleBottom" config:type="int">610632</config:config-item>
 <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
 <config:config-item config:name="ZoomFactor" config:type="short">100</config:config-item>
 <config:config-item config:name="IsSelectedFrame" config:type="boolean">false</config:config-item>
@@ -57,7 +57,7 @@
 <config:config-item config:name="PrintTables" config:type="boolean">true</config:config-item>
 <config:config-item config:name="ChartAutoUpdate" config:type="boolean">true</config:config-item>
 <config:config-item config:name="PrintControls" config:type="boolean">true</config:config-item>
-<config:config-item config:name="PrinterSetup" config:type="base64Binary">nAH+/09mZmljZWpldF81NjEwX2dyYXlzY2FsZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ1VQUzpPZmZpY2VqZXRfNTYxMF9ncmF5c2NhbGUAAAAWAAMA4gAAAAAA//8FAFZUAAAkbQAASm9iRGF0YSAxCnByaW50ZXI9T2ZmaWNlamV0XzU2MTBfZ3JheXNjYWxlCm9yaWVudGF0aW9uPVBvcnRyYWl0CmNvcGllcz0xCnNjYWxlPTEwMAptYXJnaW5kYWp1c3RtZW50PTAsMCwwLDAKY29sb3JkZXB0aD0yNApwc2xldmVsPTAKY29sb3JkZXZpY2U9MApQUERDb250ZXhEYXRhClBhZ2VTaXplOkxldHRlcgBRdWFsaXR5OkZyb21QcmludG91dE1vZGUAUHJpbnRvdXRNb2RlOkRyYWZ0LkdyYXkAAA==</config:config-item>
+<config:config-item config:name="PrinterSetup" config:type="base64Binary">zQH+/09mZmljZWpldF81NjEwX2dyYXlzY2FsZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ1VQUzpPZmZpY2VqZXRfNTYxMF9ncmF5c2NhbGUAAAAWAAMAEwEAAAAA//8FAFZUAAAkbQAASm9iRGF0YSAxCnByaW50ZXI9T2ZmaWNlamV0XzU2MTBfZ3JheXNjYWxlCm9yaWVudGF0aW9uPVBvcnRyYWl0CmNvcGllcz0xCnNjYWxlPTEwMAptYXJnaW5kYWp1c3RtZW50PTAsMCwwLDAKY29sb3JkZXB0aD0yNApwc2xldmVsPTAKY29sb3JkZXZpY2U9MApQUERDb250ZXhEYXRhCmpvYi1zaGVldHM6bm9uZSxub25lAFBhZ2VTaXplOkxldHRlcgBqb2ItcHJpb3JpdHk6NTAAUXVhbGl0eTpGcm9tUHJpbnRvdXRNb2RlAG51bWJlci11cDoxAFByaW50b3V0TW9kZTpEcmFmdC5HcmF5AAA=</config:config-item>
 <config:config-item config:name="IgnoreTabsAndBlanksForLineCalculation" config:type="boolean">false</config:config-item>
 <config:config-item config:name="PrintAnnotationMode" config:type="short">0</config:config-item>
 <config:config-item config:name="LoadReadonly" config:type="boolean">false</config:config-item>
@@ -790,6 +790,7 @@
 </office:master-styles>
 <office:body>
 <office:text>
+<office:forms form:automatic-focus="false" form:apply-design-mode="false"/>
 <text:sequence-decls>
 <text:sequence-decl text:display-outline-level="0" text:name="Illustration"/>
 <text:sequence-decl text:display-outline-level="0" text:name="Table"/>
@@ -811,11 +812,11 @@
 </text:a>
 <text:span text:style-name="T1">Last updated </text:span>
 <text:span text:style-name="T1">
-<text:date style:data-style-name="N37" text:date-value="2007-09-24T00:33:08">09/24/07</text:date>
+<text:date style:data-style-name="N37" text:date-value="2007-09-25T16:19:40">09/25/07</text:date>
 </text:span>
 <text:span text:style-name="T1"/>
 <text:span text:style-name="T1">
-<text:time style:data-style-name="N106" text:time-value="2007-09-24T00:33:08">12:33:08AM</text:time>
+<text:time style:data-style-name="N106" text:time-value="2007-09-25T16:19:40">04:19:40PM</text:time>
 </text:span>
 <text:span text:style-name="T1"/>
 </text:p>
@@ -939,7 +940,7 @@
 <text:a xlink:type="simple" xlink:href="#3.1.Improving Security|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Improving Security</text:a>
 </text:p>
 <text:p text:style-name="P5">3.1.1 <text:s/>
-<text:a xlink:type="simple" xlink:href="#3.1.1.Making Support for TABLEs Optional|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Making Support for TABLEs Optional</text:a>
+<text:a xlink:type="simple" xlink:href="#3.1.1.Making Support for Tables Optional|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Making Support for Tables Optional</text:a>
 </text:p>
 <text:p text:style-name="P5">3.1.2 <text:s/>
 <text:a xlink:type="simple" xlink:href="#3.1.2.Preventing NeatHtml from Being Used for Denial of Service Attacks|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Preventing NeatHtml from Being Used for Denial of Service Attacks</text:a>
@@ -948,7 +949,7 @@
 <text:a xlink:type="simple" xlink:href="#3.1.3.Discouraging Link Spam|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Discouraging Link Spam</text:a>
 </text:p>
 <text:p text:style-name="P5">3.1.4 <text:s/>
-<text:a xlink:type="simple" xlink:href="#3.1.4.Improving CSRF Prevention|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Improving CSRF Prevention</text:a>
+<text:a xlink:type="simple" xlink:href="#3.1.4.Improving CSRF Removal|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Improving CSRF Removal</text:a>
 </text:p>
 <text:p text:style-name="P4">3.2 <text:s/>
 <text:a xlink:type="simple" xlink:href="#3.2.Improving Server-Side Performance|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Improving Server-Side Performance</text:a>
@@ -960,7 +961,7 @@
 <text:a xlink:type="simple" xlink:href="#3.2.2.Avoiding No-Script Processing When JavaScript Is Enabled|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Avoiding No-Script Processing When JavaScript Is Enabled</text:a>
 </text:p>
 <text:p text:style-name="P4">3.3 <text:s/>
-<text:a xlink:type="simple" xlink:href="#3.3.Additional Functionality|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Additional Functionality</text:a>
+<text:a xlink:type="simple" xlink:href="#3.3.Adding New Features and Ports|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Adding New Features and Ports</text:a>
 </text:p>
 <text:p text:style-name="P5">3.3.1 <text:s/>
 <text:a xlink:type="simple" xlink:href="#3.3.1.Supporting Inline Untrusted Content|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Supporting Inline Untrusted Content</text:a>
@@ -975,13 +976,8 @@
 </text:table-of-content>
 <text:h text:style-name="Heading_20_1" text:outline-level="1">Overview</text:h>
 <text:p text:style-name="Text_20_body">
-<text:a xlink:type="simple" xlink:href="http://www.brettle.com/neathtml">NeatHtml™</text:a> is a highly-portable <text:a xlink:type="simple" xlink:href="http://www.opensource.org/">open source</text:a> website component that displays untrusted content securely, efficiently, and accessibly. <text:s/>Untrusted content is any content that is not trusted by the website owner. <text:s/>Typical examples include blog comments, forum posts, or user pages on social networking sites. <text:s/>NeatHtml focuses on preventing <text:a xlink:type="simple" xlink:href="http://en.wikipedia.org/wiki/Xss">Cross-Site Scripting</text:a> (XSS) attacks but is also able to prevent untrusted content from launching automated<text:note text:id="ftn1" text:note-class="footnote">
-<text:note-citation>1</text:note-citation>
-<text:note-body>
-<text:p text:style-name="Footnote">An automated CSRF attack only requires that the user view the untrusted content. <text:s/>For example, an automated CSRF attack might use an IMG tag where the URL of the image is designed to attack a target site. <text:s/>The other kind of CSRF attack is a user-initiated CSRF attack where the user is required to take some action, typically clicking a link, for the attack to occur.</text:p>
-</text:note-body>
-</text:note>
-<text:a xlink:type="simple" xlink:href="http://en.wikipedia.org/wiki/Cross_site_request_forgery">Cross-Site Request Forgery</text:a> (CSRF) attacks and <text:a xlink:type="simple" xlink:href="http://en.wikipedia.org/wiki/Phishing">phishing</text:a> attacks. <text:s/>NeatHtml uses an “accept only known good” (whitelist) approach to security to help prevent attacks which are not yet known. <text:s text:c="2"/>To minimize server load, the server only needs to do a few regular expression replacements. The bulk of the work is done using JavaScript on the client. This "JavaScript Judo" technique uses the source of an attacker's power (i.e. JavaScript) against him. The technique was inspired by <text:a xlink:type="simple" xlink:href="http://www.mindedsecurity.com/">Stefano Di Paola's</text:a> work on <text:a xlink:type="simple" xlink:href="http://www.wisec.it/sectou.php?id=46c5843ea4900">Preventing XSS with Data Binding</text:a>. <text:s/>The primary disadvantage to the data binding approach is that the untrusted content is removed from the normal document flow. <text:s/>This causes accessibility problems for users who disable script and for search engine spiders. <text:s/>NeatHtml avoids this problem by leaving the untrusted content in the document flow but using JavaScript to hide it from the browser until it has been filtered. <text:s/>As a result, search engine spiders and users who disable script see untrusted content normally. NeatHtml uses server-side style and markup techniques to defend no-script users against untrusted content containing CSRF and phishing attacks.</text:p>
+<text:a xlink:type="simple" xlink:href="http://www.brettle.com/neathtml">NeatHtml™</text:a> is a highly-portable <text:a xlink:type="simple" xlink:href="http://www.opensource.org/">open source</text:a> website component that displays untrusted content securely, efficiently, and accessibly. <text:s/>Untrusted content is any content that is not trusted by the website owner. <text:s/>Typical examples include blog comments, forum posts, or user pages on <text:a xlink:type="simple" xlink:href="http://en.wikipedia.org/wiki/Social_networking">social networking</text:a> sites. <text:s/>NeatHtml uses an “accept only known good” (whitelist) approach to security to help prevent attacks which are not yet known. <text:s text:c="2"/>It focuses on preventing <text:a xlink:type="simple" xlink:href="http://en.wikipedia.org/wiki/Xss">Cross-Site Scripting</text:a> (XSS) attacks but can also prevent <text:a xlink:type="simple" xlink:href="http://en.wikipedia.org/wiki/Phishing">phishing</text:a> attacks and remove automated <text:a xlink:type="simple" xlink:href="http://en.wikipedia.org/wiki/Cross_site_request_forgery">Cross-Site Request Forgery</text:a> (CSRF) attacks. <text:s/>In this context, phishing attacks are attacks which try to display untrusted content where the user would expect trusted content, and automated CSRF attacks cause the victim's browser to issue a secondary request to some server when the user views the untrusted content. <text:s/>An automated CSRF attack might use an invisible image element to accomplish this, and is different from a user-initiated CSRF attack which might entice a user to follow a malicious link.</text:p>
+<text:p text:style-name="Text_20_body">To minimize server load, the server only needs to do a few regular expression replacements. The bulk of the work is done using JavaScript on the client. This "JavaScript Judo" technique uses the source of an attacker's power (i.e. JavaScript) against him. The technique was inspired by <text:a xlink:type="simple" xlink:href="http://www.mindedsecurity.com/">Stefano Di Paola's</text:a> work on <text:a xlink:type="simple" xlink:href="http://www.wisec.it/sectou.php?id=46c5843ea4900">Preventing XSS with Data Binding</text:a>. <text:s/>The primary disadvantage to the data binding approach is that the untrusted content is removed from the normal document flow. <text:s/>This causes accessibility problems for users who disable script and for search engine spiders. <text:s/>NeatHtml avoids this problem by leaving the untrusted content in the document flow but using JavaScript to hide it from the browser until it has been filtered. <text:s/>As a result, search engine spiders and users who disable script see untrusted content normally. NeatHtml uses server-side style and markup techniques to defend no-script users against untrusted content containing CSRF and phishing attacks.</text:p>
 <text:p text:style-name="Text_20_body">NeatHtml consists of the NeatHtml.js JavaScript library and a small server-side component for ASP.NET. <text:s/>The server-side component is only approximately 400 lines of code and should be easy to port to other web development platforms. <text:s/>To facilitate porting and testing, NeatHtml includes a JavaScript test framework and a <text:a xlink:type="simple" xlink:href="http://www.brettle.com/NeatHtml/dotnet/Demo.aspx">demo page</text:a> which uses the test framework and demonstrates the capabilities of NeatHtml. <text:s/>NeatHtml is licensed under the <text:a xlink:type="simple" xlink:href="http://www.gnu.org/copyleft/lesser.html#TOC1">
 <text:span text:style-name="T4">Lesser</text:span>
 </text:a>
@@ -1671,25 +1667,26 @@
 <text:h text:style-name="Heading_20_3" text:outline-level="3">Preventing CSS Counter Manipulation</text:h>
 <text:p text:style-name="Text_20_body">Recall that untrusted content can use “counter-reset” or “counter-increment” to manipulate CSS counters that are used by trusted content. <text:s/>To ensure that trusted content can use CSS counters securely, the property name whitelist used by the server to remove CSRF attacks, does not contain those properties.</text:p>
 <text:h text:style-name="Heading_20_1" text:outline-level="1">Future Work</text:h>
-<text:p text:style-name="Text_20_body">This section describes ways that NeatHtml and the techniques it uses might be extended or improved. <text:s/>Potential security and performance improvements are discussed as well as additional functionality.</text:p>
+<text:p text:style-name="Text_20_body">This section describes ways that NeatHtml could be extended or improved. <text:s/>Potential security and performance improvements are discussed as well as additional functionality.</text:p>
 <text:h text:style-name="Heading_20_2" text:outline-level="2">Improving Security</text:h>
-<text:p text:style-name="Text_20_body">NeatHtml's security still has room for improvement. <text:s/>The two most critical issues are that the algorithm used for allowing TABLE elements has not been extensively tested, and the browser and server can be subjected to <text:a xlink:type="simple" xlink:href="http://en.wikipedia.org/wiki/Denial-of-service_attack">Denial of Service (DoS) attacks</text:a> using pathological untrusted content. <text:s/>In addition, it should be possible for <text:s/>NeatHtml to discourage link spam and possibly prevent some one-click CSRF attacks.</text:p>
-<text:h text:style-name="Heading_20_3" text:outline-level="3">Making Support for TABLEs Optional</text:h>
+<text:p text:style-name="Text_20_body">NeatHtml's security still has room for improvement. <text:s/>The two most critical issues are that the algorithm used for allowing TABLE elements has not been extensively tested, and the browser and server can be subjected to <text:a xlink:type="simple" xlink:href="http://en.wikipedia.org/wiki/Denial-of-service_attack">Denial of Service (DoS) attacks</text:a> using pathological untrusted content. <text:s/>In addition, it should be possible for <text:s/>NeatHtml to discourage link spam and possibly prevent some user-initiated CSRF attacks.</text:p>
+<text:h text:style-name="Heading_20_3" text:outline-level="3">Making Support for Tables Optional</text:h>
 <text:p text:style-name="Text_20_body">The current server-side implementation always tries to allow TABLE elements in untrusted content. <text:s/>The algorithm used to allow TABLE elements has not been extensively tested and using it involves taking an unnecessary risk if benign content is not expected to contain TABLE elements. <text:s/>For that reason, support for TABLE elements should be optional, and the default should be to not allow them.</text:p>
 <text:h text:style-name="Heading_20_3" text:outline-level="3">Preventing NeatHtml from Being Used for Denial of Service Attacks</text:h>
-<text:p text:style-name="Text_20_body">Currently, an attacker can use pathological untrusted content to mount a DoS attack against either the server or the user's browser. <text:s/>Specifically, content which contains a very large number of “&lt;” characters, or a very large number of attributes can take the server or ProcessUntrusted() a long time to process. <text:s/>Additionally, content with a large number of “&amp;” characters or style properties can take ProcessUntrusted() a long time to process. <text:s/>NeatHtml was designed to take time proportional to the size of the untrusted content, but the constant factor can be high for the cases just mentioned, because they result in a large number of regex matches subsequent function calls. <text:s/>To address this, NeatHtml should track the number of regex matches that have occurred, and stop processing when a configurable limit is exceeded.</text:p>
+<text:p text:style-name="Text_20_body">Currently, an attacker can use pathological untrusted content to mount a DoS attack against either the server or the user's browser. <text:s/>Specifically, content which contains a very large number of “&lt;” characters, or a very large number of attributes can take the server or ProcessUntrusted() a long time to process. <text:s/>Additionally, content with a large number of “&amp;” characters or style properties can take ProcessUntrusted() a long time to process. <text:s/>NeatHtml was designed to take time proportional to the size of the untrusted content, but the constant of proportionality can be high for the cases just mentioned. <text:s/>Processing is slow in these cases because they cause a large number of regex matches and subsequent function calls. <text:s/>To address this, NeatHtml should track the number of regex matches that have occurred, and stop processing when a configurable limit is exceeded.</text:p>
 <text:h text:style-name="Heading_20_3" text:outline-level="3">Discouraging Link Spam</text:h>
 <text:p text:style-name="Text_20_body">
 <text:a xlink:type="simple" xlink:href="http://en.wikipedia.org/wiki/Spamdexing#Link_spam">Link spam</text:a> is more of an annoyance than a security threat, but NeatHtml is in a position to discourage it. <text:s/>Since NeatHtml parses attribute names and values, it could ensure that any tag with an HREF attribute had a REL attribute with a value of “nofollow”. <text:s/>Since the major search engines don't consider <text:a xlink:type="simple" xlink:href="http://en.wikipedia.org/wiki/Nofollow">nofollow</text:a> links when computing rankings, this would remove one of the largest incentives for link spam. <text:s/>It would not prevent link spam entirely though. <text:s/>Some spammers do not check whether links are marked as “nofollow” and some hope that normal users will follow the links even if search engine spiders don't.</text:p>
-<text:h text:style-name="Heading_20_3" text:outline-level="3">Improving CSRF Prevention</text:h>
-<text:p text:style-name="Text_20_body">NeatHtml currently prevents automated CSRF attacks by removing images and anything else that could result in an secondary request when the untrusted content is displayed. <text:s/>This technique removes benign images from untrusted content and does not address user-initiated CSRF attacks where a user is tricked into clicking a link designed to launch a CSRF attack.</text:p>
+<text:h text:style-name="Heading_20_3" text:outline-level="3">Improving CSRF Removal</text:h>
+<text:p text:style-name="Text_20_body">NeatHtml currently removes automated CSRF attacks by removing anything that could cause the browser to make a secondary request, including images. <text:s/>Unfortunately, that approach removes benign images from untrusted content and does not address user-initiated CSRF attacks where a user is tricked into clicking a link designed to launch a CSRF attack.</text:p>
 <text:p text:style-name="Text_20_body">Most CSRF attacks rely on the fact that the user's cookies are sent to the target site. <text:s/>
 <text:a xlink:type="simple" xlink:href="http://tools.ietf.org/html/rfc2965">RFC 2965</text:a> states that cookies must not be sent on cross-domain redirects. <text:s/>If browsers actually follow that rule, it should be possible to prevent all CSRF attacks that rely on cookies by changing URLs in untrusted content so that they go through a cross-domain redirector.</text:p>
 <text:h text:style-name="Heading_20_2" text:outline-level="2">Improving Server-Side Performance</text:h>
 <text:h text:style-name="Heading_20_3" text:outline-level="3">Making Style Checking Optional</text:h>
 <text:p text:style-name="Text_20_body">Removing CSRF attacks and preventing CSS counter manipulation requires that the server check all style property names and values. <text:s/>To improve performance for applications where preventing those attacks is not a requirement, that processing should be made optional.</text:p>
 <text:h text:style-name="Heading_20_3" text:outline-level="3">Avoiding No-Script Processing When JavaScript Is Enabled</text:h>
-<text:p text:style-name="Text_20_body">Almost all of NeatHtml's server-side processing is dedicated to protecting no-script users. <text:s/>If the server knows that the user has JavaScript enabled, the all of that work can be skipped. <text:s/>There are several techniques that can be used to determine that a user has JavaScript enabled. <text:s/>For example, JavaScript can be used to set a cookie or to retrieve a page/image where the server sets that cookie. <text:s/>To detect if these users later disable JavaScript, a NOSCRIPT element can be used. <text:s/>It would contain an image and/or a link to a page which would allow the server to delete the cookie when the image/page is retrieved. <text:s/>When the server detected the cookie, it would place the untrusted content in a JavaScript string (escaping quotes and newlines appropriately) and send like the following to the browser:</text:p>
+<text:p text:style-name="Text_20_body">Almost all of NeatHtml's server-side processing is dedicated to protecting no-script users. <text:s/>If the server knows that the user has JavaScript enabled, the all of that work can be skipped. <text:s/>To determine that a user has JavaScript enabled, NeatHtml could use JavaScript on a page to set a cookie. <text:s/>To detect if these users later disable JavaScript, a NOSCRIPT element can be used. <text:s/>The NOSCRIPT element would contain an image and/or a link to a page. <text:s/>The server would delete the cookie when the image or page was retrieved. </text:p>
+<text:p text:style-name="Text_20_body">When the server detected the cookie indicating JavaScript was enabled, it would place the untrusted content in a JavaScript string - escaping quotes and newlines appropriately - and send something like this to the browser:</text:p>
 <text:p text:style-name="CodeExample">
 <text:span text:style-name="T8">&lt;div class='NeatHtml' style='overflow: hidden; position: relative;<text:line-break/>
 <text:s text:c="28"/>border: none; padding: 0; margin: 0; '&gt; </text:span>
@@ -1720,23 +1717,25 @@
 <text:line-break/>
 <text:span text:style-name="T8">&lt;/div&gt;<text:line-break/>&lt;script type='text/javascript'&gt;<text:line-break/> NeatHtml.DefaultFilter.ResizeContainer();<text:line-break/>&lt;/script&gt;</text:span>
 </text:p>
-<text:p text:style-name="Text_20_body">If JavaScript was in fact enabled, ProcessUntrusted() would replace the contents of the containing DIV element with the filtered untrusted content. <text:s/>Otherwise, if the user's browser automatically downloaded images, it would retrieve a 1x1 transparent GIF from <text:span text:style-name="T18">RemoveScriptEnabledCookieImageURL</text:span>
-<text:span text:style-name="T8">(which would allow the server to delete the cookie) and the user would be asked to reload the page. <text:s/>If the</text:span> user's browser did not automatically retrieve images, the user would be asked to click a link before reloading the page. <text:s text:c="5"/>The link would display <text:span text:style-name="T18">RemoveScriptEnabledCookiePageURL</text:span> in a new window which would allow the server to delete the cookie.</text:p>
-<text:h text:style-name="Heading_20_2" text:outline-level="2">Additional Functionality</text:h>
+<text:p text:style-name="Text_20_body">If JavaScript was still enabled, ProcessUntrusted() would replace the contents of the containing DIV element with the filtered untrusted content.</text:p>
+<text:p text:style-name="Text_20_body">If the user had disabled JavaScript, the exact behavior would depend on how the browser handled images. <text:s/>If the user's browser automatically downloaded images, it would retrieve a 1x1 transparent GIF from <text:span text:style-name="T18">RemoveScriptEnabledCookieImageURL – </text:span>
+<text:span text:style-name="T10">allowing the server to delete the cookie –</text:span>
+<text:span text:style-name="T8"> and the user would be asked to reload the page. <text:s/>If the</text:span> user's browser did not automatically retrieve images, the user would be asked to click a link before reloading the page. <text:s/>The link would display <text:span text:style-name="T18">RemoveScriptEnabledCookiePageURL</text:span> in a new window which would allow the server to delete the cookie.</text:p>
+<text:h text:style-name="Heading_20_2" text:outline-level="2">Adding New Features and Ports</text:h>
 <text:h text:style-name="Heading_20_3" text:outline-level="3">Supporting Inline Untrusted Content</text:h>
-<text:p text:style-name="Text_20_body">NeatHtml currently displays untrusted content in a DIV element which is displayed as a block element by default. <text:s/>As a result, the only way to handle untrusted content that should be displayed inline is to treat the entire block element that contains the untrusted content as untrusted, even though much of it may be trusted. <text:s/>In addition to being inconvenient, this also allows the untrusted content to mount phishing and vandalism attacks on the trusted content in the same block.</text:p>
+<text:p text:style-name="Text_20_body">NeatHtml currently displays untrusted content in a DIV element. <text:s/>Browsers display DIV elements as CSS blocks by default. <text:s/>As a result, the only way to use NeatHtml to handle untrusted HTML that should be displayed inline is to treat the entire block element that contains the untrusted content as untrusted, even though much of it may be trusted. <text:s/>In addition to being inconvenient, this also allows the untrusted content to mount phishing and vandalism attacks on the trusted content in the block.</text:p>
 <text:p text:style-name="Text_20_body">It is worth investigating whether untrusted content could be displayed inline by styling the DIV element to use “display: inline” instead. <text:s/>It's not clear whether overflow would be hidden by the browser, particularly if the browser is IE6 or earlier.</text:p>
 <text:h text:style-name="Heading_20_3" text:outline-level="3">Running Untrusted Scripts in a Restricted Environment</text:h>
-<text:p text:style-name="Text_20_body">For some applications, it would be desirable to allow untrusted scripts to run if their capabilities could be restricted. <text:s/>This functionality would be particularly valuable for mashup applications and social networking sites. <text:s/>Since NeatHtml can modify untrusted script before it runs, it is in a position to create a restricted environment for these scripts. <text:s/>Specifically, NeatHtml could do the following:</text:p>
+<text:p text:style-name="Text_20_body">For some applications, it would be desirable to allow untrusted scripts to run if their capabilities could be restricted. <text:s/>This would be particularly valuable for <text:a xlink:type="simple" xlink:href="http://en.wikipedia.org/wiki/Mashup_(web_application_hybrid)">mashup</text:a> applications and social networking sites. <text:s/>Since NeatHtml can modify an untrusted script before it runs, it might be able to create a restricted environment for these scripts. <text:s/>For example, NeatHtml could do the following:</text:p>
 <text:list text:style-name="Numbered_20_List">
 <text:list-item>
 <text:p text:style-name="Numbered_20_List">Use a regex to find all potential global identifiers in the script. <text:s/>False positives would not impact functionality or security (as long as the matches are syntactically valid identifiers), so this regex could be fairly liberal.</text:p>
 </text:list-item>
 <text:list-item>
-<text:p text:style-name="Numbered_20_List">Enclose the script in a function declaration, and before the function declaration add local (i.e. “var”) declarations for all the global identifiers that are not on a whitelist. <text:s/>This hides those global objects from the untrusted script. <text:s/>For whitelisted identifiers, NeatHtml could provide a proxy object. <text:s/>The proxy object would be responsible for restricting access to the underlying global object. <text:s/>For example, the proxy object for the eval() function would treat it's string parameter as an untrusted script, processing it the same as an untrusted top-level script before passing it to the underlying eval() function. <text:s/>The proxy for the Function object constructor would work the same way.</text:p>
+<text:p text:style-name="Numbered_20_List">Enclose the script in a function declaration, and before the function declaration add local (i.e. “var”) declarations for all the global identifiers that are not on a whitelist. <text:s/>This hides those global objects from the untrusted script. <text:s/>For whitelisted identifiers, NeatHtml could provide a proxy object. <text:s/>The proxy object would be responsible for restricting access to the underlying global object. <text:s/>For example, the proxy object for the built-in global eval() function would treat it's string parameter as an untrusted script, processing it the same as an untrusted top-level script before passing it to the built-in eval() function. <text:s/>The proxy for the Function object constructor would work the same way.</text:p>
 </text:list-item>
 <text:list-item>
-<text:p text:style-name="Numbered_20_List">Convert the resulting script to a quoted JavaScript string (e.g. escaping quotes and newlines) and then try to pass it to the Function object constructor, and call the newly constructed function. <text:s/>This provides a way to catch syntax and execution errors in the untrusted script.</text:p>
+<text:p text:style-name="Numbered_20_List">Convert the resulting script to a quoted JavaScript string (e.g. escaping quotes and newlines), try to pass quoted string to the Function object constructor, and call the newly constructed function. <text:s/>This would provide a way to catch syntax and execution errors in the untrusted script.</text:p>
 </text:list-item>
 </text:list>
 <text:p text:style-name="Text_20_body">With the above technique, the following script:</text:p>
@@ -1774,7 +1773,7 @@
 <text:line-break/>
 <text:s/>)();<text:line-break/>}<text:line-break/>catch (ex) { <text:s/>/* Optionally handle errors */ }</text:span>
 </text:p>
-<text:p text:style-name="Text_20_body">Unfortunately, there is at least one problem with the above technique. <text:s/>Although it hides the global eval() function behind a proxy, it is not able to hide the deprected eval() <text:span text:style-name="T6">method</text:span> that exists for every object. <text:s/>It's not clear how hard it would be to address that. <text:s/>It might be as easy as calling something like “Object.prototype.eval = EvalProxy”. <text:s/>However, it that isn't sufficient, the solution would be considerably more complicated and would probably look something like this:</text:p>
+<text:p text:style-name="Text_20_body">Unfortunately, there is at least one problem with the above technique. <text:s/>Although it hides the global eval() function behind a proxy, it is not able to hide the deprected eval() <text:span text:style-name="T6">method</text:span> that exists for every object. <text:s/>It's not clear how hard it would be to address that. <text:s/>It might be as easy as calling something like “Object.prototype.eval = EvalProxy”. <text:s/>However, if that isn't sufficient, the solution would be considerably more complicated and would probably look something like this:</text:p>
 <text:list text:style-name="Numbered_20_List">
 <text:list-item text:start-value="1">
 <text:p text:style-name="Numbered_20_List">Remove all comments.</text:p>
@@ -1783,10 +1782,10 @@
 <text:p text:style-name="Numbered_20_List">Split the script into code, quoted strings, and regexs.</text:p>
 </text:list-item>
 <text:list-item>
-<text:p text:style-name="Numbered_20_List">In code portion of the script, replace the regex “\.[ \t\r\n]*eval” with “.EvalProxy” to prevent access to the eval method with the dot operator.</text:p>
+<text:p text:style-name="Numbered_20_List">In code portions of the script, replace the regex “\.[ \t\r\n]*eval” with “.EvalProxy” to prevent access to the eval method with the dot operator.</text:p>
 </text:list-item>
 <text:list-item>
-<text:p text:style-name="Numbered_20_List">In code portion of the script, find all “[” characters that used to access object properties instead of start array literals</text:p>
+<text:p text:style-name="Numbered_20_List">In code portions of the script, find all “[” characters that are used to access object properties instead of start array literals.</text:p>
 </text:list-item>
 <text:list-item>
 <text:p text:style-name="Numbered_20_List">Replace the aforementioned “[” characters with “[NeatHtml.Eval2EvalProxy(” and replace the matching “]” characters with “)]”. <text:s text:c="2"/>That would make:<text:line-break/>
@@ -1796,16 +1795,17 @@
 </text:p>
 </text:list-item>
 </text:list>
-<text:p text:style-name="Text_20_body">In addition to restricting object access, the filter might also try to restrict CPU usage of the untrusted script. <text:s/>That is a considerably more complex problem, especially if the untrusted script is allowed to use regular expressions.</text:p>
-<text:p text:style-name="Text_20_body">Despite these challenges, using NeatHtml to restrict untrusted scripts is a goal worth pursuing, primarily because it would work with existing browsers. <text:s/>Proposals which require browser enhancements would leave many users unprotected until an enhanced version of their browser was available and the users decide to upgrade.</text:p>
+<text:p text:style-name="Text_20_body">In addition to restricting object access, the filter could also try to restrict CPU usage of the untrusted script. <text:s text:c="3"/>That is a considerably more complex problem, especially if the untrusted script is allowed to use regular expressions.</text:p>
+<text:p text:style-name="Text_20_body">Despite these challenges, using NeatHtml to restrict untrusted scripts is a goal worth pursuing, primarily because it would not require any changes to the software installed on the user's computer.</text:p>
 <text:h text:style-name="Heading_20_3" text:outline-level="3">Porting the Server-Side Code to Other Environments</text:h>
-<text:p text:style-name="Text_20_body">NeatHtml's current server-side component is written for ASP.NET, but it designed to be small and simple, so that it is easy to port to other development environments. <text:s/>This means that in addition to NeatHtml for ASP.NET, it will be easy to create NeatHtml for Java, NeatHtml for PHP, etc.</text:p>
-<text:p text:style-name="Text_20_body">Other types of ports would also be interesting. <text:s/>First, consider a port that could be plugged into the web server (e.g. NeatHtml for Apache, or NeatHtml for IIS). <text:s/>Such a webserver add-on would filter HTTP responses as they were sent to the browser. <text:s/>To allow the add-on to find the untrusted content in the HTTP responses, developers could mark it like this:</text:p>
+<text:p text:style-name="Text_20_body">NeatHtml's current server-side component is written for ASP.NET, but it designed to be small and simple, so that it is easy to port to other development environments. <text:s/>This means that in addition to NeatHtml for ASP.NET, it should be easy to create NeatHtml for Java, NeatHtml for PHP, etc.</text:p>
+<text:p text:style-name="Text_20_body">Other types of ports would also be interesting. <text:s/>First, consider a port that could be plugged into the web server (e.g. NeatHtml for Apache, or NeatHtml for IIS) to filter HTTP responses as they were sent to the browser. <text:s/>To allow the add-on to find the untrusted content in the HTTP responses, developers would only need to mark it like securely, perhaps like this:</text:p>
 <text:p text:style-name="CodeExample">&lt;NeatHtmlBeginRawUntrusted token=”<text:span text:style-name="Variable">token</text:span>” /&gt;<text:line-break/>
 <text:span text:style-name="Variable">raw untrusted content</text:span>
 <text:line-break/>&lt;NeatHtmlEndRawUntrusted token=”<text:span text:style-name="Variable">token</text:span>” /&gt;</text:p>
-<text:p text:style-name="Text_20_body">where <text:span text:style-name="T6">token</text:span> would be any value that the author of the untrusted content could not determine before submitting the content. <text:s/>This would ensure that the untrusted content couldn't forge the second tag to get content past the add-on.</text:p>
-<text:p text:style-name="Text_20_body">If marking untrusted content in such a way became common enough, the server-side code could be ported to a corporate proxy server add-on or a browser add-ons. <text:s/>This would allow users to protect themselves while requiring the minimum amount of time and effort on the part of site developers.</text:p>
+<text:p text:style-name="Text_20_body">where <text:span text:style-name="T6">token</text:span> would be any value that the author of the untrusted content could not determine before submitting the content. <text:s/>This would ensure that the untrusted content couldn't forge the “&lt;NeatHtmlEndRawUntrusted&gt;” tag to get content past the add-on.</text:p>
+<text:p text:style-name="Text_20_body">If marking untrusted content in such a way became common enough, the server-side code could be ported to proxy server or browser add-ons. <text:s/>Such add-ons would allow users to protect themselves while requiring no additional server-side computational resources and a minimum amount of application developer effort.</text:p>
+<text:p text:style-name="Text_20_body"/>
 </office:text>
 </office:body>
 </office:document>
