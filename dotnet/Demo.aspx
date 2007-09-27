@@ -83,9 +83,19 @@ NeatHtmlTest.AppendTestStatusElement();
 	</p>
 	<div id="customTestContentDiv">
 	<p>
-	Think you can break it? Enter some untrusted content in the area below and click the submit button.  Please
-	email me (dean at brettle dot com) if you can make a test fail.  A test will fail if you can get your content
-	to call window.alert(), spoof the trustedLinkBefore or trustedLinkAfter IDs, or	escape from the markup jail.
+	Think you can break it? Fill out the form below and click the submit button.  The test page automatically runs
+	some or all of the following tests:</p>
+	<ul>
+		<li>The "Markup invasion blocked" test fails if your untrusted content is able to affect the DOM in a way that changes the <code>nextSibling</code> of the DIV in which NeatHtml displays the filtered content.</li>
+		<li>The "XSS blocked" test fails if your content calls <code>window.alert()</code> or <code>window.resizeTo()</code>. I'm obviously interested in stopping any XSS, but if you want to see the test fail you should try to get untrusted content to call one of those functions. This test is not run if you check the "Simulate browser with scripting disabled" checkbox.</li>
+		<li>The "ID spoofing blocked" test fails if your content can cause <code>document.getElementById()</code> to return the wrong element for an ID of "trustedLinkBefore" or "trustedLinkAfter". There are links with those IDs before and after the DIV that displays the untrusted content. They are hidden (display:none) just to reduce clutter on the page. This test is not run if you check the "Simulate browser with scripting disabled" checkbox. 
+		<li>The "Filtered content is correct" test will check the filtered content against a value that you specify.  This test is only run when the "Compare filtered content against expected value" checkbox is checked.  <strong>Note: The test content and expected result are initialized to whatever test you last ran.  If you modify the test content, you either need to modify the expected result or uncheck the "Compare filtered content against expected value" checkbox.</strong></li>
+	</ul>
+	<p>
+	If you check the "Simulate browser with scripting disabled" checkbox, the test page intercepts and ignores all calls to NeatHtml's JavaScript functions so that the filtered content displayed is what a no-script user would see. Checking that box also causes all calls to <code>window.alert()</code> and <code>window.resizeTo()</code> to be ignored since XSS attacks would not run for no-script users. 
+	</p>
+	<p>
+	Please email me (dean at brettle dot com) if you can make a test fail.
 	I'm also interested in any other failure mode you find.  Thanks!
 	</p>
 	<label for="testContentTextarea">Test Untrusted Content<br/></label>
