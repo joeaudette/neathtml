@@ -720,8 +720,33 @@ NeatHtml.Filter.prototype.HtmlEncode = function(s)
 	
 NeatHtml.Filter.prototype.HtmlEncodeAttribute = function(s)
 {
-	return s.replace(/[<>&"']|[^ -~]/g,    // " 
+	// Check Regex capabilities because:
+	// \uXXXX not recognized in regular expressions on Safari...
+	// \x00 no recognized in regular expressions on Konqueror 3.4...
+	// Note that [<>&"']|[^ -~] does not work on those browsers.
+	if ((String.fromCharCode(0) + String.fromCharCode(65535)).match(/\x00\uFFFF/))
+	{	
+		return s.replace(/[<>&"'\x00-\x1F\u007F-\uFFFF]/g,    // " 
 							HtmlEncodeChar);
+	}
+	else
+	{
+		s = s.replace(/[<>&"'\x00-\x1F]/gm,    // " 
+						HtmlEncodeChar);
+		var newS = "";
+		var lastIndex = 0;
+		for (var i = 0; i < s.length; i++)
+		{
+			if (s.charCodeAt(i) <= 31 || s.charCodeAt(i) >= 127)
+			{
+				newS += s.substring(lastIndex, i);
+				newS += HtmlEncodeChar(s.charAt(i));
+				lastIndex = i + 1;
+			}
+		}
+		newS += s.substring(lastIndex, s.length);
+		return newS;
+	}
 						
 	function HtmlEncodeChar(c)
 	{ 

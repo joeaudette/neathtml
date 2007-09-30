@@ -96,7 +96,7 @@ namespace Brettle.Web.NeatHtml
 					string noscriptExpectedPath = Path.Combine(testsPath, testName + ".noscript.expected");
 					if (File.Exists(noscriptExpectedPath))
 						expectedPath = noscriptExpectedPath;
-					if (Request.Params["SupportNoScriptTables"] != "true")
+					if (Request.Params["SupportNoScriptTables"] == "false")
 					{
 						string notablesExpectedPath = Path.Combine(testsPath, testName + ".notables.expected");
 						if (File.Exists(notablesExpectedPath))
