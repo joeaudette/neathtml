@@ -37,6 +37,9 @@ namespace Brettle.Web.NeatHtml
 		protected UntrustedContent untrustedContent;
 		protected HtmlSelect selectedTest;
 		protected HtmlInputCheckBox checkFilteredContent;
+		protected HtmlInputCheckBox supportNoScriptTables;
+		protected string rawUntrustedContent;
+		protected HtmlAnchor editTestLink;
 		
 		protected override void OnInit(EventArgs e)
 		{
@@ -66,13 +69,20 @@ namespace Brettle.Web.NeatHtml
 											new ListItem(Path.GetFileName(testFilePaths[i])));
 				}
 				selectedTest.SelectedIndex = 0;
+				supportNoScriptTables.Checked = (Request.Params["SupportNoScriptTables"] != "false");
 			}
 
+			untrustedContent.SupportNoScriptTables = supportNoScriptTables.Checked;
 			expectedFilteredContent = Request.Params["expectedFilteredContentTextarea"];
 			string testName = Request.Params["selectedTest"];
 			if (testName == null && testContentTextarea.Value.Length == 0)
 			{
 				testName = "Default Test";
+			}
+			editTestLink.Style["display"] = "none";
+			if (selectedTest.SelectedIndex == selectedTest.Items.Count - 1)
+			{
+				editTestLink.Style["display"] = "inline";
 			}
 			if (testName != null && selectedTest.SelectedIndex != selectedTest.Items.Count - 1)
 			{
@@ -86,6 +96,12 @@ namespace Brettle.Web.NeatHtml
 					string noscriptExpectedPath = Path.Combine(testsPath, testName + ".noscript.expected");
 					if (File.Exists(noscriptExpectedPath))
 						expectedPath = noscriptExpectedPath;
+					if (Request.Params["SupportNoScriptTables"] != "true")
+					{
+						string notablesExpectedPath = Path.Combine(testsPath, testName + ".notables.expected");
+						if (File.Exists(notablesExpectedPath))
+							expectedPath = notablesExpectedPath;
+					}
 				}
 				if (File.Exists(expectedPath))
 				{
@@ -98,9 +114,15 @@ namespace Brettle.Web.NeatHtml
 				}
 			}
 
-			string html = testContentTextarea.InnerText;
-			untrustedContent.Controls.Clear();
-			untrustedContent.Controls.Add(new LiteralControl(html));
+			rawUntrustedContent = testContentTextarea.InnerText;
+			
+			if (Request.Params["NoNeatHtml"] == "true") {
+				actualFilteredContent = rawUntrustedContent;
+				Control parent = untrustedContent.Parent;
+				parent.Controls.Add(new LiteralControl(rawUntrustedContent));
+				rawUntrustedContent = "";
+				return;
+			}
 
 			StringWriter sw = new StringWriter();
 			HtmlTextWriter htw = new HtmlTextWriter(sw);

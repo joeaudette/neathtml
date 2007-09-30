@@ -1,0 +1,124 @@
+A tag with 1001 styles.  This crashed Mono until the regex was changed to limit the number of attributes to 
+the number of attributes on the whitelist. 
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;
+top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;
+top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;
+top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;
+top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;
+top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;
+top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;
+top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;
+top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;
+top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;
+top:1;top:1;">
+110 tags with 10 styles each.  This should trigger the complexity limit:
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">
+<a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;">

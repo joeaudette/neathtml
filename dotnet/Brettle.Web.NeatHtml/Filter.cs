@@ -29,46 +29,61 @@ namespace Brettle.Web.NeatHtml
 {
 	public class Filter
 	{
-		public static Filter GetByName(string clientSideName)
-		{
-			return new Filter(clientSideName);
-		}
-
-		public static Filter DefaultFilter = GetByName("NeatHtml.DefaultFilter");
-		
-		private Filter(string clientSideName)
-		{
-			ClientSideName = clientSideName;
-		}
-		
-		public string ClientSideName;
+		public static Filter DefaultFilter = new Filter();
+				
+		public string ClientSideFilterName = "NeatHtml.DefaultFilter";
 		public string NoScriptDownlevelIEWidth = "100%";
 		public string NoScriptDownlevelIEHeight = "400px";
+		public bool SupportNoScriptTables = false;
+		public int MaxComplexity = 1000;
 
 		public string FilterUntrusted(string untrusted)
 		{
-			return ScriptJail.Jail(untrusted, ClientSideName, NoScriptDownlevelIEWidth, NoScriptDownlevelIEHeight);
+			return ScriptJail.Jail(untrusted, ClientSideFilterName, NoScriptDownlevelIEWidth, NoScriptDownlevelIEHeight,
+									SupportNoScriptTables, MaxComplexity);
 		}
 	}
 	
 	internal class ScriptJail
 	{
-		internal static string Jail(string untrusted, string clientSideName, string noScriptDownlevelIEWidth, string noScriptDownlevelIEHeight)
+		internal static string Jail(string untrusted, string clientSideFilterName, 
+									string noScriptDownlevelIEWidth, string noScriptDownlevelIEHeight,
+									bool supportNoScriptTables, int maxComplexity)
 		{
-			ScriptJail jail = new ScriptJail();
-			string jailed = JailRE.Replace(untrusted, new MatchEvaluator(jail.GuardJail));
-
-			// If any untrusted tables are still open, close any open attributes and tags
-			// and then close all the tables.
-			if (jail.UntrustedTables > 0)
+			ScriptJail jail = new ScriptJail(supportNoScriptTables, maxComplexity);
+			string jailed = null;
+			try
 			{
-				jailed += ParserResetString;
-				while (jail.UntrustedTables-- > 0)
-					jailed += "</table>";
+				jailed = JailRE.Replace(untrusted, new MatchEvaluator(jail.GuardJail));
+
+				// If any untrusted tables are still open, close any open attributes and tags
+				// and then close all the tables.
+				if (jail.UntrustedTables > 0)
+				{
+					jailed += ParserResetString;
+					while (jail.UntrustedTables-- > 0)
+						jailed += "</table>";
+				}
+			}
+			catch (ContentTooComplexException)
+			{
+				jailed = "The content that belongs here is too complex to display securely.";
 			}
 
-			return String.Format(Format, clientSideName, jailed, noScriptDownlevelIEWidth, noScriptDownlevelIEHeight);
+			return String.Format(Format, clientSideFilterName, jailed, 
+								noScriptDownlevelIEWidth, noScriptDownlevelIEHeight, maxComplexity);
 		}
+		
+		private ScriptJail(bool supportNoScriptTables, int maxComplexity)
+		{
+			SupportNoScriptTables = supportNoScriptTables;
+			MaxComplexity = maxComplexity;
+		}
+		
+		private bool SupportNoScriptTables;
+		private int MaxComplexity;
+		
+		private int Complexity;
 
 		private static string[] propsAllowedWhenNoScript
 			= {"azimuth","background-attachment","background-color","background-image","background-position",
@@ -97,8 +112,7 @@ namespace Brettle.Web.NeatHtml
 				"datetime", "dir", "disabled", "face", "frame", "frameborder", "headers", "height", "href", "hreflang", "id", 
 				"label", "lang", "language", "longdesc", "marginheight", "marginwidth", "name", "noshade", "nowrap", 
 				"readonly", "rel", "rev", "rows", "rowspan", "rules", "scope", "size", "span", "start", "summary", 
-				"tabindex", "title", "type", "value", "width", "xml:lang", "xml:space",
-				"s", "d" // Used by <NeatHtmlParserReset> and <NeatHtmlEndUntrusted> 
+				"tabindex", "title", "type", "value", "width", "xml:lang", "xml:space"
 				};
 				
 		private static StringDictionary AllowedAttributeNames = GetDict(attrsAllowedWhenNoScript); 
@@ -119,7 +133,8 @@ namespace Brettle.Web.NeatHtml
 		private static string StylePropValueREString = "\\((?<=rgb\\()|[ -%')-9<-[\\]-~]";
 
 		private static Regex StyleAttributeValueRE
-			= new Regex("^(?: *(-?[_a-z][_a-z0-9-]*) *:(?:" + StylePropValueREString + ")*(?:;|$))*$",
+			= new Regex("^(?: *(-?[_a-z][_a-z0-9-]*) *:(?:" + StylePropValueREString + ")*(?:;|$)){0,"
+						+ propsAllowedWhenNoScript.Length + "}$",
 						RegexOptions.Compiled | RegexOptions.IgnoreCase);
 						
 		private static string ParserResetString = "<NeatHtmlParserReset s='' d=\"\" /><script></script>";
@@ -136,7 +151,7 @@ namespace Brettle.Web.NeatHtml
 			+ "try {{ {0}.BeginUntrusted(); }} catch (ex) {{ document.writeln('NeatHtml not found\\074!-' + '-'); }}</script>"
 			+ "<div>{1}</div>"
 			+ "<NeatHtmlEndUntrusted s='' d=\"\" /><script></script><!-- > --><xmp></xmp></td></tr></table><script type='text/javascript'>\n"
-			+ "{0}.ProcessUntrusted();\n"
+			+ "{0}.ProcessUntrusted({4});\n"
 			+ "</script>\n"
 			+ "</div><script type='text/javascript'>\n"
 			+ "{0}.ResizeContainer();\n"
@@ -194,7 +209,7 @@ namespace Brettle.Web.NeatHtml
 														+ "[ \\t\\n\\r]*=[ \\t\\n\\r]*"
 																	// 9: Matches the quoted attr value
 														+ "(\"[^<\"]*\"|'[^<']*'|[^\"'][^ \\t\\n\\r<>]*)"
-													+ ")?))*"
+													+ ")?)){0," + attrsAllowedWhenNoScript.Length + "}"
 																	// 10: Matches if the tag is well-formed
 												+ "([ \\t\\n\\r]*/?>)?"				
 											+ ")"
@@ -206,6 +221,7 @@ namespace Brettle.Web.NeatHtml
 		
 		private string GuardJail(Match m)
 		{
+			if (Complexity++ > MaxComplexity) throw new ContentTooComplexException();
 			if (m.Groups[11].Success) // "--"
 				return "&#45;&#45;";
 			if (m.Groups[2].Success) // HTML comment (not containing "--", so it isn't ambiguous)
@@ -230,6 +246,7 @@ namespace Brettle.Web.NeatHtml
 			int v = 0; // The next quoted value capture index
 			for (int a = 0; a < m.Groups[7].Captures.Count; a++)
 			{
+				if (Complexity++ > MaxComplexity) throw new ContentTooComplexException();
 				string attrName = m.Groups[7].Captures[a].Value;
 				string equalsQuotedValue = m.Groups[8].Captures[a].Value;
 				string quotedValue = "\"" + attrName + "\""; // Default for implicit attrs
@@ -254,6 +271,7 @@ namespace Brettle.Web.NeatHtml
 						int p = 0;
 						for (;p < savMatch.Groups[1].Captures.Count; p++)
 						{
+							if (Complexity++ > MaxComplexity) throw new ContentTooComplexException();
 							string lcPropName =  savMatch.Groups[1].Captures[p].Value.ToLower();
 							if (!AllowedPropertyNames.ContainsKey(lcPropName))
 								break;
@@ -273,7 +291,9 @@ namespace Brettle.Web.NeatHtml
 			string lcTagName = m.Groups[6].Value.ToLower();
 			TagInfo tagInfo = InfoForTag[lcTagName] as TagInfo;
 
-			if (tagInfo == null) // Unknown tag
+			if (tagInfo == null						// Unknown tag
+				|| (!SupportNoScriptTables 
+					&& tagInfo.IsTableRelated)) 	// or tag not supported in this configuration
 				return "<" + m.Groups[4].Value + "NeatHtmlReplace_" + m.Groups[6].Value + attrs + m.Groups[10];
 
 			if (!tagInfo.IsTableRelated) // Not a table-related tag
@@ -334,5 +354,9 @@ namespace Brettle.Web.NeatHtml
 		internal static TagInfo TABLE = new TagInfo(true, true, false);
 		internal static TagInfo TABLE_CELL = new TagInfo(true, false, true);
 		internal static TagInfo TABLE_OTHER = new TagInfo(true, false, false);
+	}
+	
+	internal class ContentTooComplexException : Exception
+	{
 	}
 }

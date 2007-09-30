@@ -168,6 +168,9 @@ NeatHtmlTest.AssertEquals = function (expected, actual, msg)
 		throw msg + "AssertEquals() Failed: types unequal: " + typeof(expected) + "!=" + typeof(actual);
 	}
 	if (expected != actual) {
+		if (typeof(expected) != "string") {
+				throw msg + "AssertEquals() Failed: " + expected + " != " + actual;			
+		}
 		var chunkSize = 40;
 		for (var i = 0; i < expected.length || i < actual.length; i += chunkSize)	{
 			if (expected.substring(i, i + chunkSize) != actual.substring(i, i + chunkSize)) {
@@ -245,6 +248,7 @@ window.resizeTo = function(w, h)
 
 NeatHtmlTest.DefaultNoScriptTests = [
 			["Markup invasion blocked", function () {
+				NeatHtmlTest.AssertEquals(false, !NeatHtmlTest.Container.nextSibling, "NeatHtmlTest.Container.nextSibling is null or undefined.");
 				NeatHtmlTest.AssertEquals(NeatHtmlTest.AfterContainer, NeatHtmlTest.Container.nextSibling);
 			}],
 			null

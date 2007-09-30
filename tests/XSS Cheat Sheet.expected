@@ -36,7 +36,7 @@ XSS (Cross Site Scripting):
 vulnerable with no special XSS vector requirements the word "XSS" will pop up. 
 Use the URL encoding calculator below to encode the entire string. Tip: if 
 you're in a rush and need to quickly check a page, often times injecting the 
-depreciated "" tag will be enough to check to see if something is 
+depreciated "&lt;PLAINTEXT&gt;" tag will be enough to check to see if something is 
 vulnerable to XSS by messing up the output appreciably:
       
 ';alert(String.fromCharCode(88,83,83))//\';alert(String.fromCharCode(88,83,83))/

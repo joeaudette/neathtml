@@ -1,0 +1,69 @@
+<div>			<div style="margin-top: -50px; height: 50px; background-color: red;">Let me out with a negative margin-top!</div>
+			<p>Here is a table with lots of XSS attacks and tag soup markup:</p>
+			<NeatHtmlReplace_table border="1">
+				<NeatHtmlReplace_tr>
+					<NeatHtmlReplace_th>Script attacks
+					<NeatHtmlReplace_td>script element<br/>
+						<script>
+						window.alert('XSS from script element');
+						</script>
+						script elem in CDATA<br/>
+						
+						&lt;script&gt;
+						window.alert('XSS from script element in CDATA section');
+						&lt;/script&gt;
+												
+					<NeatHtmlReplace_td>
+						<a onclick_NeatHtmlReplace="window.alert('XSS_on_click')" href='http://www.google.com/'>on* attr</a><br />
+						<a href="javascript:alert('XSS_on_link')">javascript href</a><br />
+					<NeatHtmlReplace_td id='styleXss' style_NeatHtmlReplace='nonstandard-attribute1: expression(alert(&quot;XSS from style&quot;)); nonstandard-attribute2: expr/**/ession(alert(&quot;XSS from style with comment&quot;)); nonstandard-attribute3: expres\000073ion(alert(&quot;XSS from style with escape&quot;)); background-color: rgb(192,255,192);'>
+						green despite script in style
+					<NeatHtmlReplace_td>
+						<a id='trustedLinkBefore' href='http://www.google.com/'>spoof existing ID</a><br />
+						<a id='trustedLinkAfter' href='http://www.google.com/'>spoof future ID</a><br />
+				<NeatHtmlReplace_tr>
+					<NeatHtmlReplace_th>Tag soup
+					<NeatHtmlReplace_td><ul><li>no &lt;/li> 1/2<li>no &lt;/li> 2/2</ul>
+					<NeatHtmlReplace_td>unmatched &lt;/em> </em>
+					<NeatHtmlReplace_td><B>varying</B> <i>case</I> <U>tags</u>
+					<NeatHtmlReplace_td><p>line<br>break with &lt;br&gt;
+				<NeatHtmlReplace_tr>
+					<NeatHtmlReplace_th>Special characters and attributes
+					<NeatHtmlReplace_td><a implicit_attr_NeatHtmlReplace="implicit_attr" href="http://www.google.com/search?hl=en&q=neathtml&btnG=Search">unquoted and unencoded link</a>
+					<NeatHtmlReplace_td><font face='&#9;&#0;'>non-printable</font> and <font face='&#xdead;'>non-ascii</font> attr values
+					<NeatHtmlReplace_td>A B C with entities: &#65;&nbsp;&#x42;&nbsp;&#X43;
+					<NeatHtmlReplace_td>Unencoded <NeatHtmlLt />&lt;, and &
+			</NeatHtmlReplace_table>
+			<br/>
+			<NeatHtmlReplace_table background_NeatHtmlReplace="http://www.brettle.com/Data/Sites/1/logos/deanatwork_sidesmall.jpg" border="1" style="border-spacing: 0;">
+				<NeatHtmlReplace_tr>
+					<NeatHtmlReplace_td style_NeatHtmlReplace="counter-increment: trusted-num;">Increment a CSS counter.  For result, see just under the
+						untrusted content box.
+					</NeatHtmlReplace_td>
+					<NeatHtmlReplace_td id="innerTableContainer">
+						Nested table:
+						<NeatHtmlReplace_table id="innerTable" border="1">
+							<NeatHtmlReplace_tr>
+								<NeatHtmlReplace_td style_NeatHtmlReplace="background-image: url(http://www.brettle.com/Data/Sites/1/logos/deanatwork_sidesmall.jpg)">style="background-image: url(...)"</NeatHtmlReplace_td>
+								<NeatHtmlReplace_td style="background-color: rgb(0,255,0);">style="background-color: rgb(...);"</NeatHtmlReplace_td>
+							</NeatHtmlReplace_tr>
+						</NeatHtmlReplace_table>
+					</NeatHtmlReplace_td>
+					<NeatHtmlReplace_td>
+						Try to break out of the layout jail
+						<div style="position: absolute; top: 0; right: 0; color: red;">Let me out!</div>
+						<div style="position: absolute; top: -100px; right: 0; color: red;">Let me out with a negative top property!</div>
+					</NeatHtmlReplace_td>
+				</NeatHtmlReplace_tr>
+			</NeatHtmlReplace_table>
+
+			Try to break out of the markup jail...
+			</NeatHtmlReplace_table>
+            </div>
+            </div>
+            </div>
+			"Help! Let me out of this box!"
+			Try to pull trusted content into the box...
+			<NeatHtmlReplace_iframe><NeatHtmlReplace_object><script>
+
+</div>

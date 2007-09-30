@@ -52,6 +52,30 @@ namespace Brettle.Web.NeatHtml
 		[DefaultValue("NeatHtml.DefaultFilter")]
 		public string ClientSideFilterName = "NeatHtml.DefaultFilter";
 		
+		/// <summary>
+		/// Enables/disables support for displaying TABLE elements to users that have JavaScript disabled.
+		/// </summary>
+		/// <remarks>
+		/// Due to the complexity of supporting tables for no-script users, enabling this support could be a
+		/// security risk.  Only set this to true if you need well-formed tables in the untrusted content to
+		/// be displayed properly to no-script users.
+		/// </remarks>
+		[DefaultValue(false)]
+		public bool SupportNoScriptTables = false;
+		
+		/// <summary>
+		/// The maximum number of "<" characters (including in tags), attributes, and style properties, combined, 
+		/// that are allowed in the untrusted content.
+		/// </summary>
+		/// <remarks>
+		/// This limits the effectiveness of Denial of Service attacks that use pathological untrusted content
+		/// to increase processing time.  If you expect benign content to contain many tags (e.g. for large tables),
+		/// or complex markup, you might want to increase this value.  If you expect benign content to contain 
+		/// relatively little markup, you might want to decrease this value.
+		/// </remarks>
+		[DefaultValue(1000)]
+		public int MaxComplexity = 1000;
+
 		private bool IsDesignTime = (HttpContext.Current == null);
 
 		// This is used to ensure that the browser gets the latest NeatHtml.js each time this assembly is
@@ -98,7 +122,11 @@ namespace Brettle.Web.NeatHtml
 			htw.Close();
 
 			// Filter the string and write the result
-			writer.Write(Filter.GetByName(ClientSideFilterName).FilterUntrusted(sw.ToString()));
+			Filter f = new Filter();
+			f.ClientSideFilterName = ClientSideFilterName;
+			f.SupportNoScriptTables = SupportNoScriptTables;
+			f.MaxComplexity = MaxComplexity;
+			writer.Write(f.FilterUntrusted(sw.ToString()));
 		}
 	}
 }

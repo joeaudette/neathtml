@@ -31,18 +31,21 @@ Simplest usage (note that comments and absence of whitespace between tags can be
 			try { NeatHtml.DefaultFilter.BeginUntrusted(); } catch (ex) { document.writeln('NeatHtml not found\074!-' + '-'); }</script><div>
 				PREPROCESSED_UNTRUSTED_CONTENT
 		<NeatHtmlEndUntrusted s='' d="" /><xmp></xmp><!-- > --><script></script></td></tr></table>
-	<script type="text/javascript">NeatHtml.DefaultFilter.ProcessUntrusted();</script>
+	<script type="text/javascript">NeatHtml.DefaultFilter.ProcessUntrusted(MAX_COMPLEXITY);</script>
 	</div><script type='text/javascript'>NeatHtml.DefaultFilter.ResizeContainer();</script>
 	
 where:
 
-	PREPROCESSED_UNTRUSTED_CONTENT has been preprocessed on the server.  See ../dotnet/Brettle.Web.NeatHtml/Filter.cs for a
-	sample implementation.
+	PREPROCESSED_UNTRUSTED_CONTENT has been preprocessed on the server.  See ../dotnet/Brettle.Web.NeatHtml/Filter.cs
+		for a	sample implementation.
 				
 	NOSCRIPT_IE6_WIDTH and NOSCRIPT_IE6_HEIGHT are the desired dimensions of the div that will display the
 		untrusted content in IE6 and earlier when script is disabled.  If the untrusted content is larger, 
 		scrollbars will be added to the div.  These values have no effect on other browsers nor do they have
 		an effect when script is enabled.
+	
+	MAX_COMPLEXITY is the maximum number of regular expression matches which should be done while processing the
+		content.  This limits the effectiveness of DoS attacks.  This is optional.  It defaults to 1000.
 		
 To change the way various tags and attributes are handled:
 
@@ -87,6 +90,10 @@ To change the way various tags and attributes are handled:
 
 
 NeatHtml = {};
+
+NeatHtml.MaxComplexity = 1000;
+NeatHtml.Complexity = 0;
+NeatHtml.ContentTooComplexException = "The content that belongs here is too complex to display securely.";
 
 NeatHtml.Filter = function(elemActions, attrActions, styleActions, entityCharCodeMap)
 {
@@ -284,6 +291,7 @@ NeatHtml.Filter.prototype.HandleStyle = function(tagName, attr)
 	this.StyleDeclRe.lastIndex = 0;
 	while (null != (match = this.StyleDeclRe.exec(attr.value)))
 	{
+		if (NeatHtml.Complexity++ > NeatHtml.MaxComplexity) throw NeatHtml.ContentTooComplexException;
 		prop.Name = match[1];
 		prop.Value = match[2];
 		var action = this.StyleActions[prop.Name] || this.RemoveStyle;
@@ -311,6 +319,7 @@ NeatHtml.Filter.prototype.AllowElem = function(tagInfo)
 	attrRe.lastIndex = 0;
 	while (null != (matches = attrRe.exec(tagInfo.attrs)))
 	{
+		if (NeatHtml.Complexity++ > NeatHtml.MaxComplexity) throw NeatHtml.ContentTooComplexException;
 		HandleAttr.apply(this, matches);
 	}
 
@@ -386,8 +395,14 @@ NeatHtml.Filter.prototype.BeginUntrusted = function() {
 	}
 };
 
-NeatHtml.Filter.prototype.ProcessUntrusted = function() {
+NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity) {
 	var my = this;
+	if (typeof(maxComplexity) == "undefined")
+	{
+		maxComplexity = 1000;
+	}
+	NeatHtml.MaxComplexity = maxComplexity;
+	NeatHtml.Complexity = 0;
 	var containingDiv = FindContainingDiv(this.BeginUntrustedScript);
 	var xmlStr;
 	try
@@ -411,7 +426,10 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 	}
 	catch (ex)
 	{
-		containingDiv.innerHTML = "<pre>" + ex.toString().replace(/</g, "&lt;").replace(/&/g, "&amp;") + "</pre>";
+		if (ex == NeatHtml.ContentTooComplexException)
+			containingDiv.innerHTML = this.FilteredContent = "<div>" + ex.toString() + "</div>";
+		else
+			containingDiv.innerHTML = this.FilteredContent = "<div><pre>" + ex.toString().replace(/</g, "&lt;").replace(/&/g, "&amp;") + "</pre></div>";
 	}
 	
 	return this.FilteredContent;
@@ -471,6 +489,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 		var searchStartIndex = 0;
 		while (null != (matches = tagSoupRe.exec(s)))
 		{
+			if (NeatHtml.Complexity++ > NeatHtml.MaxComplexity) throw NeatHtml.ContentTooComplexException;
 			var text = s.substring(searchStartIndex, matches.index);
 			// Text should not be the start of the output 
 			if (openTagInfos.length && openTagInfos[openTagInfos.length-1].bOutputContent)
@@ -641,6 +660,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function() {
 				{
 					break;
 				}
+				if (NeatHtml.Complexity++ > NeatHtml.MaxComplexity) throw NeatHtml.ContentTooComplexException;
 			}
 			// If we didn't find a matching open tag, then remove the close tag
 			if (result == null)
@@ -686,6 +706,7 @@ NeatHtml.Filter.prototype.HtmlEncode = function(s)
 {
 	return s.replace(/[<>&"']/g,    // " 
 						function (c) { 
+		if (NeatHtml.Complexity++ > NeatHtml.MaxComplexity) throw NeatHtml.ContentTooComplexException;
 		switch (c)
 		{
 			case '<': return "&lt;";  
@@ -699,35 +720,12 @@ NeatHtml.Filter.prototype.HtmlEncode = function(s)
 	
 NeatHtml.Filter.prototype.HtmlEncodeAttribute = function(s)
 {
-	// Check Regex capabilities because:
-	// \uXXXX not recognized in regular expressions on Safari...
-	// \x00 no recognized in regular expressions on Konqueror 3.4...
-	if ((String.fromCharCode(0) + String.fromCharCode(65535)).match(/\x00\uFFFF/))
-	{	
-		return s.replace(/[<>&"'\x00-\x1F\u007F-\uFFFF]/g,    // " 
+	return s.replace(/[<>&"']|[^ -~]/g,    // " 
 							HtmlEncodeChar);
-	}
-	else
-	{
-		s = s.replace(/[<>&"'\x00-\x1F]/gm,    // " 
-						HtmlEncodeChar);
-		var newS = "";
-		var lastIndex = 0;
-		for (var i = 0; i < s.length; i++)
-		{
-			if (s.charCodeAt(i) <= 31 || s.charCodeAt(i) >= 127)
-			{
-				newS += s.substring(lastIndex, i);
-				newS += HtmlEncodeChar(s.charAt(i));
-				lastIndex = i + 1;
-			}
-		}
-		newS += s.substring(lastIndex, s.length);
-		return newS;
-	}
 						
 	function HtmlEncodeChar(c)
 	{ 
+		if (NeatHtml.Complexity++ > NeatHtml.MaxComplexity) throw NeatHtml.ContentTooComplexException;
 		switch (c)
 		{
 			case '<': return "&lt;";  
@@ -745,6 +743,7 @@ NeatHtml.Filter.prototype.HtmlDecode = function(s)
 	var my = this;
 	return s.replace(/&(#(0|[1-9][0-9]{0,9})|#[xX]([0-9a-fA-F]{1,8})|([A-Z:_a-z][A-Z:_a-z0-9._]{0,10}));/g, 
 						function (match, isEntity, decDigits, hexDigits, name) {
+		if (NeatHtml.Complexity++ > NeatHtml.MaxComplexity) throw NeatHtml.ContentTooComplexException;
 		if (decDigits != null && decDigits.length > 0)
 			return String.fromCharCode(parseInt(decDigits, 10));
 		if (hexDigits != null && hexDigits.length > 0)
