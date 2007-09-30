@@ -64,17 +64,17 @@ namespace Brettle.Web.NeatHtml
 		public bool SupportNoScriptTables = false;
 		
 		/// <summary>
-		/// The maximum number of "<" characters (including in tags), attributes, and style properties, combined, 
-		/// that are allowed in the untrusted content.
+		/// The maximum number of "<" characters (including in tags), "&" characters (including entities), 
+		/// attributes, and style properties, combined, that are allowed in the untrusted content.
 		/// </summary>
 		/// <remarks>
 		/// This limits the effectiveness of Denial of Service attacks that use pathological untrusted content
-		/// to increase processing time.  If you expect benign content to contain many tags (e.g. for large tables),
+		/// to increase processing time.  If you expect benign content to contain many entities,
 		/// or complex markup, you might want to increase this value.  If you expect benign content to contain 
-		/// relatively little markup, you might want to decrease this value.
+		/// relatively few entities and little markup, you might want to decrease this value.
 		/// </remarks>
-		[DefaultValue(1000)]
-		public int MaxComplexity = 1000;
+		[DefaultValue(10000)]
+		public int MaxComplexity = 10000;
 
 		private bool IsDesignTime = (HttpContext.Current == null);
 

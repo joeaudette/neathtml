@@ -35,7 +35,7 @@ namespace Brettle.Web.NeatHtml
 		public string NoScriptDownlevelIEWidth = "100%";
 		public string NoScriptDownlevelIEHeight = "400px";
 		public bool SupportNoScriptTables = false;
-		public int MaxComplexity = 1000;
+		public int MaxComplexity = 10000;
 
 		public string FilterUntrusted(string untrusted)
 		{

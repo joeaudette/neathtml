@@ -45,7 +45,7 @@ where:
 		an effect when script is enabled.
 	
 	MAX_COMPLEXITY is the maximum number of regular expression matches which should be done while processing the
-		content.  This limits the effectiveness of DoS attacks.  This is optional.  It defaults to 1000.
+		content.  This limits the effectiveness of DoS attacks.  This is optional.  It defaults to 10000.
 		
 To change the way various tags and attributes are handled:
 
@@ -91,14 +91,14 @@ To change the way various tags and attributes are handled:
 
 NeatHtml = {};
 
-NeatHtml.MaxComplexity = 1000;
-NeatHtml.Complexity = 0;
 NeatHtml.ContentTooComplexException = "The content that belongs here is too complex to display securely.";
 
 NeatHtml.Filter = function(elemActions, attrActions, styleActions, entityCharCodeMap)
 {
 	var my = this;
 	
+	this.MaxComplexity = 1000;
+	this.Complexity = 0;
 	this.ElemActions = elemActions || GetDefaultElemActions();
 	this.AttrActions = attrActions || GetDefaultAttrActions();
 	this.StyleActions = styleActions || GetDefaultStyleActions();
@@ -277,7 +277,7 @@ NeatHtml.Filter.prototype.AddPrefixToValue = function(tagName, attr)
 	return true;
 };
 
-NeatHtml.Filter.prototype.HandleStyle = function(tagName, attr)
+NeatHtml.Filter.prototype.HandleStyle = function(tagName, attr, filter)
 {
 	// Look for safe style declarations in the attribute value and replace the attribute value with just
 	// those safe style declarations.
@@ -291,7 +291,7 @@ NeatHtml.Filter.prototype.HandleStyle = function(tagName, attr)
 	this.StyleDeclRe.lastIndex = 0;
 	while (null != (match = this.StyleDeclRe.exec(attr.value)))
 	{
-		if (NeatHtml.Complexity++ > NeatHtml.MaxComplexity) throw NeatHtml.ContentTooComplexException;
+		if (filter.Complexity++ > filter.MaxComplexity) throw NeatHtml.ContentTooComplexException;
 		prop.Name = match[1];
 		prop.Value = match[2];
 		var action = this.StyleActions[prop.Name] || this.RemoveStyle;
@@ -308,7 +308,7 @@ NeatHtml.Filter.prototype.RemoveTag = function(tagInfo)
 	tagInfo.bOutputTags = false;
 };
 
-NeatHtml.Filter.prototype.AllowElem = function(tagInfo)
+NeatHtml.Filter.prototype.AllowElem = function(tagInfo, filter)
 {
 	var my = this;
 
@@ -319,7 +319,7 @@ NeatHtml.Filter.prototype.AllowElem = function(tagInfo)
 	attrRe.lastIndex = 0;
 	while (null != (matches = attrRe.exec(tagInfo.attrs)))
 	{
-		if (NeatHtml.Complexity++ > NeatHtml.MaxComplexity) throw NeatHtml.ContentTooComplexException;
+		if (filter.Complexity++ > filter.MaxComplexity) throw NeatHtml.ContentTooComplexException;
 		HandleAttr.apply(this, matches);
 	}
 
@@ -329,7 +329,7 @@ NeatHtml.Filter.prototype.AllowElem = function(tagInfo)
 	for (var i = 0; i < attrArray.length; i++)
 	{
 		newAttrs += " " + attrArray[i].name 
-			+ '="' + this.HtmlEncodeAttribute(attrArray[i].value) + '"';   // '
+			+ '="' + this.HtmlEncodeAttribute(attrArray[i].value, filter) + '"';   // '
 	}
 	
 	tagInfo.attrs = newAttrs;
@@ -347,7 +347,7 @@ NeatHtml.Filter.prototype.AllowElem = function(tagInfo)
 		var firstChar = attrValue.charAt(0)
 		if (firstChar == '"' || firstChar == "'")
 			attrValue = attrValue.substring(1, attrValue.length-1);
-		attrValue = my.HtmlDecode(attrValue);
+		attrValue = my.HtmlDecode(attrValue, filter);
 		attrArray.push({name: attrName, value: attrValue});			
 	}
 	
@@ -357,7 +357,7 @@ NeatHtml.Filter.prototype.AllowElem = function(tagInfo)
 		{
 			var attr = attrArray[i];
 			var action = my.AttrActions[attr.name] || my.AttrActions[attr.name.toLowerCase()] || my.RemoveAttr;
-			if (!action.call(my, tagName, attr))
+			if (!action.call(my, tagName, attr, filter))
 			{
 				attrArray.splice(i, 1);
 			}
@@ -401,8 +401,8 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity) {
 	{
 		maxComplexity = 1000;
 	}
-	NeatHtml.MaxComplexity = maxComplexity;
-	NeatHtml.Complexity = 0;
+	this.MaxComplexity = maxComplexity;
+	this.Complexity = 0;
 	var containingDiv = FindContainingDiv(this.BeginUntrustedScript);
 	var xmlStr;
 	try
@@ -458,7 +458,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity) {
 		{
 	 		s = n.innerHTML;
 	 		// Unquote the HTML special characters.
-			s = my.HtmlDecode(s);
+			s = my.HtmlDecode(s, my);
 		}
 
 		s = s.substring(0, s.indexOf("<NeatHtmlEndUntrusted"));
@@ -489,7 +489,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity) {
 		var searchStartIndex = 0;
 		while (null != (matches = tagSoupRe.exec(s)))
 		{
-			if (NeatHtml.Complexity++ > NeatHtml.MaxComplexity) throw NeatHtml.ContentTooComplexException;
+			if (my.Complexity++ > my.MaxComplexity) throw NeatHtml.ContentTooComplexException;
 			var text = s.substring(searchStartIndex, matches.index);
 			// Text should not be the start of the output 
 			if (openTagInfos.length && openTagInfos[openTagInfos.length-1].bOutputContent)
@@ -513,7 +513,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity) {
 		function HandleAmpOrOpenAngle(match, isAmp, afterAmp, isValidXmlEntityRef, charEntityRef, upperCaseHexEntityRef, isOpenAngle, isEndTag, raw, tagName, attrs, isNotEncoded) 
 		{
 			if (isAmp) return HandleAmpersand(match, isValidXmlEntityRef, afterAmp, charEntityRef, upperCaseHexEntityRef);
-			if (isNotEncoded)	return my.HtmlEncode(match);
+			if (isNotEncoded)	return my.HtmlEncode(match, my);
 			if (isOpenAngle) return HandleOpenAngle(match, isEndTag, tagName, attrs);
 		}
 
@@ -522,7 +522,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity) {
 			if (isValidXmlEntityRef)
 				return match;
 			if (!charEntityRef)
-				return my.HtmlEncode(match);
+				return my.HtmlEncode(match, my);
 			if (upperCaseHexEntityRef)
 				return match.toLowerCase();
 			// It is a character entity reference but it isn't supported in XML
@@ -533,7 +533,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity) {
 			}
 			var charCode = my.EntityCharCodeMap[charEntityRef];
 			if (!charCode)
-				return my.HtmlEncode(match);
+				return my.HtmlEncode(match, my);
 			return "&#" + charCode + ";";
 		}
 
@@ -544,7 +544,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity) {
 				if (/^!\[CDATA\[.*$/.test(tagName))
 				{
 					tagSoupRe.lastIndex = s.indexOf("]]>", matches.index + "<![CDATA[".length);
-					if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match);
+					if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match, my);
 					tagSoupRe.lastIndex += "]]>".length;
 					return "";
 				}
@@ -567,19 +567,19 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity) {
 					tagSoupRe.lastIndex += 2;
 				}
 					
-				if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match);
+				if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match, my);
 				return "";
 			}
 			if (/^\?.*$/.test(tagName))
 			{
 				tagSoupRe.lastIndex = s.indexOf("?>", matches.index + "<?".length);
-				if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match);
+				if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match, my);
 				tagSoupRe.lastIndex += "?>".length;
 				return "";
 			}
 			// If it doesn't look like a tag then it is probably an unencoded '<'.
 			if (! /^[A-Z:_a-z][A-Z:_a-z0-9._]*$/.test(tagName) || isEndTag && openTagInfos.length == 0) 
-				return my.HtmlEncode(match);
+				return my.HtmlEncode(match, my);
 			// Otherwise it is a begin or end tag
 			if (isEndTag)
 				return HandleEndTag(match, tagName);
@@ -618,7 +618,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity) {
 			tagInfo.attrs = attrs;
 			tagInfo.bOutputTags = tagInfo.bOutputContent = true;
 
-			action.call(my, tagInfo);
+			action.call(my, tagInfo, my);
 			if (openTagInfos.length && !openTagInfos[openTagInfos.length-1].bOutputContent)
 				tagInfo.bOutputTags = tagInfo.bOutputContent = false;
 			
@@ -660,7 +660,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity) {
 				{
 					break;
 				}
-				if (NeatHtml.Complexity++ > NeatHtml.MaxComplexity) throw NeatHtml.ContentTooComplexException;
+				if (my.Complexity++ > my.MaxComplexity) throw NeatHtml.ContentTooComplexException;
 			}
 			// If we didn't find a matching open tag, then remove the close tag
 			if (result == null)
@@ -702,11 +702,11 @@ NeatHtml.Filter.prototype.ResizeContainer = function()
 	parent.style.overflow = "hidden";
 };
 
-NeatHtml.Filter.prototype.HtmlEncode = function(s)
+NeatHtml.Filter.prototype.HtmlEncode = function(s, filter)
 {
 	return s.replace(/[<>&"']/g,    // " 
 						function (c) { 
-		if (NeatHtml.Complexity++ > NeatHtml.MaxComplexity) throw NeatHtml.ContentTooComplexException;
+		if (filter && filter.Complexity++ > filter.MaxComplexity) throw NeatHtml.ContentTooComplexException;
 		switch (c)
 		{
 			case '<': return "&lt;";  
@@ -718,21 +718,18 @@ NeatHtml.Filter.prototype.HtmlEncode = function(s)
 	});  
 }
 	
-NeatHtml.Filter.prototype.HtmlEncodeAttribute = function(s)
+NeatHtml.Filter.prototype.HtmlEncodeAttribute = function(s, filter)
 {
-	// Check Regex capabilities because:
-	// \uXXXX not recognized in regular expressions on Safari...
-	// \x00 no recognized in regular expressions on Konqueror 3.4...
-	// Note that [<>&"']|[^ -~] does not work on those browsers.
-	if ((String.fromCharCode(0) + String.fromCharCode(65535)).match(/\x00\uFFFF/))
+	s = s.replace(/[<>&"']|[^ -~]/gm,    // " 
+					HtmlEncodeChar);
+	// Check Regex capabilities because
+	// [^ -~] does not match non-ascii in Safari 1.2/1.3 and Konqueror 3.4.
+	if ((String.fromCharCode(0) + String.fromCharCode(65535)).match(/[^ -~][^ -~]/))
 	{	
-		return s.replace(/[<>&"'\x00-\x1F\u007F-\uFFFF]/g,    // " 
-							HtmlEncodeChar);
+		return s;
 	}
 	else
 	{
-		s = s.replace(/[<>&"'\x00-\x1F]/gm,    // " 
-						HtmlEncodeChar);
 		var newS = "";
 		var lastIndex = 0;
 		for (var i = 0; i < s.length; i++)
@@ -750,7 +747,7 @@ NeatHtml.Filter.prototype.HtmlEncodeAttribute = function(s)
 						
 	function HtmlEncodeChar(c)
 	{ 
-		if (NeatHtml.Complexity++ > NeatHtml.MaxComplexity) throw NeatHtml.ContentTooComplexException;
+		if (filter && filter.Complexity++ > filter.MaxComplexity) throw NeatHtml.ContentTooComplexException;
 		switch (c)
 		{
 			case '<': return "&lt;";  
@@ -763,12 +760,12 @@ NeatHtml.Filter.prototype.HtmlEncodeAttribute = function(s)
 	}
 }
 	
-NeatHtml.Filter.prototype.HtmlDecode = function(s)
+NeatHtml.Filter.prototype.HtmlDecode = function(s, filter)
 {
 	var my = this;
 	return s.replace(/&(#(0|[1-9][0-9]{0,9})|#[xX]([0-9a-fA-F]{1,8})|([A-Z:_a-z][A-Z:_a-z0-9._]{0,10}));/g, 
 						function (match, isEntity, decDigits, hexDigits, name) {
-		if (NeatHtml.Complexity++ > NeatHtml.MaxComplexity) throw NeatHtml.ContentTooComplexException;
+		if (filter && filter.Complexity++ > filter.MaxComplexity) throw NeatHtml.ContentTooComplexException;
 		if (decDigits != null && decDigits.length > 0)
 			return String.fromCharCode(parseInt(decDigits, 10));
 		if (hexDigits != null && hexDigits.length > 0)

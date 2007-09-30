@@ -5,21 +5,21 @@
 <dc:title>Fighting Cross Site Scripting (XSS) with Some Javascript Judo</dc:title>
 <meta:creation-date>2007-09-14T11:03:22</meta:creation-date>
 <dc:creator>Dean Brettle</dc:creator>
-<dc:date>2007-09-29T20:51:23</dc:date>
+<dc:date>2007-09-29T23:08:07</dc:date>
 <meta:printed-by>Dean Brettle</meta:printed-by>
 <meta:print-date>2007-09-24T08:51:38</meta:print-date>
 <dc:language>en-US</dc:language>
-<meta:editing-cycles>102</meta:editing-cycles>
-<meta:editing-duration>P10DT2H25M22S</meta:editing-duration>
+<meta:editing-cycles>103</meta:editing-cycles>
+<meta:editing-duration>P10DT2H26M27S</meta:editing-duration>
 <meta:user-defined meta:name="Info 1"/>
 <meta:user-defined meta:name="Info 2"/>
 <meta:user-defined meta:name="Info 3"/>
 <meta:user-defined meta:name="Info 4"/>
-<meta:document-statistic meta:table-count="1" meta:image-count="0" meta:object-count="0" meta:page-count="22" meta:paragraph-count="234" meta:word-count="7734" meta:character-count="52784"/>
+<meta:document-statistic meta:table-count="1" meta:image-count="0" meta:object-count="0" meta:page-count="22" meta:paragraph-count="234" meta:word-count="7734" meta:character-count="52811"/>
 </office:meta>
 <office:settings>
 <config:config-item-set config:name="ooo:view-settings">
-<config:config-item config:name="ViewAreaTop" config:type="int">508423</config:config-item>
+<config:config-item config:name="ViewAreaTop" config:type="int">486833</config:config-item>
 <config:config-item config:name="ViewAreaLeft" config:type="int">0</config:config-item>
 <config:config-item config:name="ViewAreaWidth" config:type="int">32651</config:config-item>
 <config:config-item config:name="ViewAreaHeight" config:type="int">20930</config:config-item>
@@ -28,12 +28,12 @@
 <config:config-item-map-indexed config:name="Views">
 <config:config-item-map-entry>
 <config:config-item config:name="ViewId" config:type="string">view2</config:config-item>
-<config:config-item config:name="ViewLeft" config:type="int">11042</config:config-item>
+<config:config-item config:name="ViewLeft" config:type="int">11148</config:config-item>
 <config:config-item config:name="ViewTop" config:type="int">503731</config:config-item>
 <config:config-item config:name="VisibleLeft" config:type="int">0</config:config-item>
-<config:config-item config:name="VisibleTop" config:type="int">508423</config:config-item>
+<config:config-item config:name="VisibleTop" config:type="int">486833</config:config-item>
 <config:config-item config:name="VisibleRight" config:type="int">32650</config:config-item>
-<config:config-item config:name="VisibleBottom" config:type="int">529352</config:config-item>
+<config:config-item config:name="VisibleBottom" config:type="int">507762</config:config-item>
 <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
 <config:config-item config:name="ZoomFactor" config:type="short">100</config:config-item>
 <config:config-item config:name="IsSelectedFrame" config:type="boolean">false</config:config-item>
@@ -57,7 +57,7 @@
 <config:config-item config:name="PrintTables" config:type="boolean">true</config:config-item>
 <config:config-item config:name="ChartAutoUpdate" config:type="boolean">true</config:config-item>
 <config:config-item config:name="PrintControls" config:type="boolean">true</config:config-item>
-<config:config-item config:name="PrinterSetup" config:type="base64Binary">nAH+/09mZmljZWpldF81NjEwX2dyYXlzY2FsZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ1VQUzpPZmZpY2VqZXRfNTYxMF9ncmF5c2NhbGUAAAAWAAMA4gAAAAAA//8FAFZUAAAkbQAASm9iRGF0YSAxCnByaW50ZXI9T2ZmaWNlamV0XzU2MTBfZ3JheXNjYWxlCm9yaWVudGF0aW9uPVBvcnRyYWl0CmNvcGllcz0xCnNjYWxlPTEwMAptYXJnaW5kYWp1c3RtZW50PTAsMCwwLDAKY29sb3JkZXB0aD0yNApwc2xldmVsPTAKY29sb3JkZXZpY2U9MApQUERDb250ZXhEYXRhClF1YWxpdHk6RnJvbVByaW50b3V0TW9kZQBQcmludG91dE1vZGU6RHJhZnQuR3JheQBQYWdlU2l6ZTpMZXR0ZXIAAA==</config:config-item>
+<config:config-item config:name="PrinterSetup" config:type="base64Binary">nAH+/09mZmljZWpldF81NjEwX2dyYXlzY2FsZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ1VQUzpPZmZpY2VqZXRfNTYxMF9ncmF5c2NhbGUAAAAWAAMA4gAAAAAA//8FAFZUAAAkbQAASm9iRGF0YSAxCnByaW50ZXI9T2ZmaWNlamV0XzU2MTBfZ3JheXNjYWxlCm9yaWVudGF0aW9uPVBvcnRyYWl0CmNvcGllcz0xCnNjYWxlPTEwMAptYXJnaW5kYWp1c3RtZW50PTAsMCwwLDAKY29sb3JkZXB0aD0yNApwc2xldmVsPTAKY29sb3JkZXZpY2U9MApQUERDb250ZXhEYXRhClByaW50b3V0TW9kZTpEcmFmdC5HcmF5AFF1YWxpdHk6RnJvbVByaW50b3V0TW9kZQBQYWdlU2l6ZTpMZXR0ZXIAAA==</config:config-item>
 <config:config-item config:name="IgnoreTabsAndBlanksForLineCalculation" config:type="boolean">false</config:config-item>
 <config:config-item config:name="PrintAnnotationMode" config:type="short">0</config:config-item>
 <config:config-item config:name="LoadReadonly" config:type="boolean">false</config:config-item>
@@ -787,7 +787,6 @@
 </office:master-styles>
 <office:body>
 <office:text>
-<office:forms form:automatic-focus="false" form:apply-design-mode="false"/>
 <text:sequence-decls>
 <text:sequence-decl text:display-outline-level="0" text:name="Illustration"/>
 <text:sequence-decl text:display-outline-level="0" text:name="Table"/>
@@ -809,11 +808,11 @@
 </text:a>
 <text:span text:style-name="T1">Last updated </text:span>
 <text:span text:style-name="T1">
-<text:date style:data-style-name="N37" text:date-value="2007-09-29T20:51:24">09/29/07</text:date>
+<text:date style:data-style-name="N37" text:date-value="2007-09-29T23:08:07.99">09/29/07</text:date>
 </text:span>
 <text:span text:style-name="T1"/>
 <text:span text:style-name="T1">
-<text:time style:data-style-name="N106" text:time-value="2007-09-29T20:51:24">08:51:24PM</text:time>
+<text:time style:data-style-name="N106" text:time-value="2007-09-29T23:08:07.99">11:08:08PM</text:time>
 </text:span>
 <text:span text:style-name="T1"/>
 </text:p>
@@ -1662,7 +1661,7 @@
 <text:h text:style-name="Heading_20_3" text:outline-level="3">Preventing CSS Counter Manipulation</text:h>
 <text:p text:style-name="Text_20_body">Recall that untrusted content can use “counter-reset” or “counter-increment” to manipulate CSS counters that are used by trusted content. <text:s/>To ensure that trusted content can use CSS counters securely, the property name whitelist used by the server to remove CSRF attacks, does not contain those properties.</text:p>
 <text:h text:style-name="Heading_20_2" text:outline-level="2">Preventing NeatHtml from Being Used for Denial of Service Attacks</text:h>
-<text:p text:style-name="Text_20_body">Consider an attack that use pathological untrusted content in an attempt to mount a DoS attack against either the server or the user's browser. <text:s/>Specifically, content which contains a very large number of “&lt;” characters, or a very large number of attributes might take the server or ProcessUntrusted() a long time to process. <text:s/>Additionally, content with a large number of “&amp;” characters can take ProcessUntrusted() a long time to process. <text:s/>NeatHtml was designed to take time proportional to the size of the untrusted content, but the constant of proportionality can be high for the cases just mentioned. <text:s/>Processing is slow in these cases because they cause a large number of regex matches and subsequent function calls. <text:s/>To address this, NeatHtml tracks the number of regex matches that have occurred, and stops processing when a configurable limit is exceeded. <text:s/>By default, the limit is 1000.</text:p>
+<text:p text:style-name="Text_20_body">Consider an attack that use pathological untrusted content in an attempt to mount a DoS attack against either the server or the user's browser. <text:s/>Specifically, content which contains a very large number of “&lt;” characters, or a very large number of attributes might take the server or ProcessUntrusted() a long time to process. <text:s/>Additionally, content with a large number of “&amp;” characters can take ProcessUntrusted() a long time to process. <text:s/>NeatHtml was designed to take time proportional to the size of the untrusted content, but the constant of proportionality can be high for the cases just mentioned. <text:s/>Processing is slow in these cases because they cause a large number of regex matches and subsequent function calls. <text:s/>To address this, NeatHtml tracks the number of regex matches that have occurred, and stops processing when a configurable limit is exceeded. <text:s/>By default, the limit is 10000.</text:p>
 <text:h text:style-name="Heading_20_1" text:outline-level="1">Future Work</text:h>
 <text:p text:style-name="Text_20_body">This section describes ways that NeatHtml could be extended or improved. <text:s/>Potential performance improvements are discussed as well as additional functionality.</text:p>
 <text:h text:style-name="Heading_20_2" text:outline-level="2">Improving Server-Side Performance</text:h>
