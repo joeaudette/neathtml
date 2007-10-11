@@ -130,7 +130,7 @@ namespace Brettle.Web.NeatHtml
 		}
 		
 		// Style property value whitelist.  Note: '&' '\' and '(' [except 'rgb('] are not on it.
-		private static string StylePropValueREString = "\\((?<=rgb\\()|[ -%')-9<-[\\]-~]";
+		private static string StylePropValueREString = "\\((?<=rgb\\()|[ -%')-9<-\\[\\]-~]";
 
 		private static Regex StyleAttributeValueRE
 			= new Regex("^(?: *(-?[_a-z][_a-z0-9-]*) *:(?:" + StylePropValueREString + ")*(?:;|$)){0,"
