@@ -7,7 +7,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="content-style-type" content="text/css">
 <meta http-equiv="expires" content="0">
-<script type="text/javascript" src="/NeatHtml/NeatHtmlTest.js"></script>
+<script type="text/javascript" src="./NeatHtml/NeatHtmlTest.js"></script>
 <style>
 .Trusted {
 	counter-increment: trusted-num;
