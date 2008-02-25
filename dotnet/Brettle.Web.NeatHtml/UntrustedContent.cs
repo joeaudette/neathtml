@@ -27,6 +27,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
 using System.IO;
 using System.Security.Permissions;
+using System.Drawing.Design;
 
 namespace Brettle.Web.NeatHtml
 {	
@@ -96,14 +97,57 @@ namespace Brettle.Web.NeatHtml
 			}
 		}
 				
+		/// <summary>
+		/// URL of NeatHtml.js.</summary>
+		/// <remarks>
+		/// If the URL starts with "~", the "~" will be replaced with the web application root as returned by
+		/// <see cref="HttpRequest.ApplicationPath"/>.  By default, "~/NeatHtml/NeatHtml.js" will be used.</remarks>
+		[Editor(typeof(UrlEditor), typeof(UITypeEditor)), Bindable(true), DefaultValue("~/NeatHtml/NeatHtml.js")]
+		public string ClientScriptUrl
+		{
+			get { return (string)ViewState["ClientScriptUrl"]; }
+			set { ViewState["ClientScriptUrl"] = value; }
+		}
+				
+		internal static string ApplyAppPathModifier(string url)
+		{
+			string appPath = HttpContext.Current.Request.ApplicationPath;
+			if (appPath == "/")
+			{
+				appPath = "";
+			}
+			string requestUrl = HttpContext.Current.Request.RawUrl;
+			string result = HttpContext.Current.Response.ApplyAppPathModifier(url);
+			
+			// Workaround Mono XSP bug where ApplyAppPathModifier() doesn't add the session id
+			if (requestUrl.StartsWith(appPath + "/(") && !result.StartsWith(appPath + "/("))
+			{
+				if (url.StartsWith("/") && url.StartsWith(appPath))
+				{
+					url = "~" + url.Remove(0, appPath.Length);
+				}
+				if (url.StartsWith("~/"))
+				{
+					string[] compsOfPathWithinApp = requestUrl.Substring(appPath.Length).Split('/');
+					url = appPath + "/" + compsOfPathWithinApp[1] + "/" + url.Substring(2);
+				}
+				result = url;
+			}
+			return result;
+		}
+		
 		protected override void OnPreRender (EventArgs e)
 		{
 			if (!IsDesignTime)
 			{
+				if (ClientScriptUrl == null)
+				{
+					ClientScriptUrl = "~/NeatHtml/NeatHtml.js";
+				}
 				if (!Page.IsClientScriptBlockRegistered("NeatHtmlJs"))
 				{
 					Page.RegisterClientScriptBlock("NeatHtmlJs", @"
-	<script type='text/javascript' language='javascript' src='" + AppPath + @"/NeatHtml/NeatHtml.js?guid=" 
+	<script type='text/javascript' language='javascript' src='" + ApplyAppPathModifier(ClientScriptUrl) + @"?guid=" 
 		+ CacheBustingGuid + @"'></script>");
 				}
 			}
