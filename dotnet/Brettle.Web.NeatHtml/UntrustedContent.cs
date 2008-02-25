@@ -48,10 +48,15 @@ namespace Brettle.Web.NeatHtml
 		/// The name of the filter in client-side script.
 		/// </summary>
 		/// <remarks>
-		/// You can create and configure multiple filter in client-side script.
+		/// You can create and configure multiple filters in client-side script.
 		/// </remarks>
 		[DefaultValue("NeatHtml.DefaultFilter")]
-		public string ClientSideFilterName = "NeatHtml.DefaultFilter";
+		public string ClientSideFilterName
+		{
+			get { return (ViewState["ClientSideFilterName"] != null 
+				              ? (string)ViewState["ClientSideFilterName"] : "NeatHtml.DefaultFilter"); }
+			set { ViewState["ClientSideFilterName"] = value; }
+		}
 		
 		/// <summary>
 		/// Enables/disables support for displaying TABLE elements to users that have JavaScript disabled.
@@ -62,7 +67,11 @@ namespace Brettle.Web.NeatHtml
 		/// be displayed properly to no-script users.
 		/// </remarks>
 		[DefaultValue(false)]
-		public bool SupportNoScriptTables = false;
+		public bool SupportNoScriptTables
+		{
+			get { return (ViewState["SupportNoScriptTables"] != null && (bool)ViewState["SupportNoScriptTables"]); }
+			set { ViewState["SupportNoScriptTables"] = value; }
+		}
 		
 		/// <summary>
 		/// The maximum number of "<" characters (including in tags), "&" characters (including entities), 
@@ -75,7 +84,11 @@ namespace Brettle.Web.NeatHtml
 		/// relatively few entities and little markup, you might want to decrease this value.
 		/// </remarks>
 		[DefaultValue(10000)]
-		public int MaxComplexity = 10000;
+		public int MaxComplexity
+		{
+			get { return (ViewState["MaxComplexity"] != null ? (int)ViewState["MaxComplexity"] : 10000); }
+			set { ViewState["MaxComplexity"] = value; }
+		}
 
 		private bool IsDesignTime = (HttpContext.Current == null);
 
