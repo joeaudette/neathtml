@@ -42,7 +42,12 @@ namespace Brettle.Web.NeatHtml
 	[AspNetHostingPermissionAttribute (SecurityAction.InheritanceDemand, Level = AspNetHostingPermissionLevel.Minimal)]
 	[ParseChildren(false)]
 	[PersistChildren(true)]
-	public class UntrustedContent : System.Web.UI.WebControls.WebControl
+#if NET_2_0
+	[Designer(typeof(System.Web.UI.Design.ContainerControlDesigner))]
+#else
+	[Designer(typeof(System.Web.UI.Design.ReadWriteControlDesigner))]
+#endif
+	public class UntrustedContent : System.Web.UI.Control
 	{
 		/// <summary>
 		/// The name of the filter in client-side script.
