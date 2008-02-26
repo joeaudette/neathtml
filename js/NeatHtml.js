@@ -30,7 +30,7 @@ Simplest usage (note that comments and absence of whitespace between tags can be
 		<table style='border-spacing: 0;'><tr><td style='padding: 0;'><!-- test comment --><script type="text/javascript">
 			try { NeatHtml.DefaultFilter.BeginUntrusted(); } catch (ex) { document.writeln('NeatHtml not found\074!-' + '-'); }</script><div>
 				PREPROCESSED_UNTRUSTED_CONTENT
-		<NeatHtmlEndUntrusted s='' d="" /><xmp></xmp><!-- > --><script></script></td></tr></table>
+		<input name='NeatHtmlEndUntrusted' type='hidden' value=\"\" /><xmp></xmp><!-- > --><script></script></td></tr></table>
 	<script type="text/javascript">NeatHtml.DefaultFilter.ProcessUntrusted(MAX_COMPLEXITY);</script>
 	</div><script type='text/javascript'>NeatHtml.DefaultFilter.ResizeContainer();</script>
 	
@@ -461,7 +461,7 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity) {
 			s = my.HtmlDecode(s, my);
 		}
 
-		s = s.substring(0, s.indexOf("<NeatHtmlEndUntrusted"));
+		s = s.substring(0, s.indexOf("<input name='NeatHtmlEndUntrusted'"));
 		
 		// Make the result available for use by tests 
 		my.UnfilteredContent = s;
