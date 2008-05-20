@@ -62,22 +62,22 @@ in any modern browser so they are omitted here):
 JavaScript directive in context of an image, but it does in other contexts, but 
 the following show the principles that would work in other tags as well - I'll 
 probably revise this at a later date):
-      
+      <IMG />
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       No quotes and no semicolon:
-      
+      <IMG />
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Case insensitive XSS attack vector:
-      
+      <IMG />
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       HTML entities (the semicolons are required for this to work):
-      
+      <IMG />
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -85,7 +85,7 @@ probably revise this at a later date):
 quotes you can use a grave accent to encapsulate the JavaScript string - this 
 is also useful because lots of cross site scripting filters don't know about 
 grave accents):
-      
+      <IMG />
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -95,19 +95,19 @@ engine to create our XSS vector within an IMG tag that should be encapsulated
 within quotes. I assume this was originally meant to correct sloppy coding. 
 This would make it significantly more difficult to correctly parse apart an 
 HTML tag:
-      ">
+      <IMG />">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       fromCharCode (if no quotes of any kind are allowed you can eval() a 
 fromCharCode in JavaScript to create any XSS vector you need). Click here to 
 build your own (thanks to Hannes Leopold):
-      
+      <IMG />
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       UTF-8 Unicode encoding (all of the XSS examples that use a javascript: 
-directive inside of an 
+directive inside of an <IMG />
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -117,7 +117,7 @@ padding - up to 7 numeric characters total). This is also useful against people
 who decode against strings like $tmp_string =~ s/.*\&amp;#(\d+);.*/$1/; which 
 incorrectly assumes a semicolon is required to terminate a html encoded string 
 (I've seen this in the wild):
-      
+      <IMG />
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -125,16 +125,16 @@ incorrectly assumes a semicolon is required to terminate a html encoded string
 the above string $tmp_string =~ s/.*\&amp;#(\d+);.*/$1/; which assumes that there 
 is a numeric character following the pound symbol - which is not true with hex 
 HTML characters). Use the XSS calculator for more information:
-      
+      <IMG />
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
-      Embedded tab to break up the cross site scripting attack: 
+      Embedded tab to break up the cross site scripting attack: <IMG />
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Embedded encoded tab to break up XSS:
-      
+      <IMG />
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -142,7 +142,7 @@ HTML characters). Use the XSS calculator for more information:
 chars 09-13 (decimal) will work for this attack. That is incorrect. Only 09 
 (horizontal tab), 10 (newline) and 13 (carriage return) work. See the ascii 
 chart for more details. The following four XSS examples illustrate this vector:
-      
+      <IMG />
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -150,14 +150,14 @@ chart for more details. The following four XSS examples illustrate this vector:
 making these strings longer than they have to be because the zeros could be 
 omitted. Often I've seen filters that assume the hex and dec encoding has to be 
 two or three characters. The real rule is 1-7 characters.):
-      
+      <IMG />
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Multiline Injected JavaScript using ASCII carriage returns (same as above 
 only a more extreme example of this XSS vector) these are not spaces just one 
 of the three characters as described above:
-      
+      <IMG />
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -170,7 +170,7 @@ older versions of Opera (circa 7.11 on Windows) were vulnerable to one
 additional char 173 (the soft hypen control char). But the null char %00 is 
 much more useful and helped me bypass certain real world filters with a 
 variation on this example:
-      perl -e 'print "";' > out
+      perl -e 'print "<IMG />";' > out
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -187,7 +187,7 @@ useful if the pattern match doesn't take into account spaces in the word
 "javascript:" -which is correct since that won't render- and makes the false 
 assumption that you can't have a space between the quote and the "javascript:" 
 keyword. The actual reality is you can have any char from 1-32 in decimal):
-      
+      <IMG />
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 

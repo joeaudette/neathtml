@@ -221,10 +221,10 @@ NeatHtmlTest.DefaultFilter.BeginUntrusted = function() {
 		NeatHtml.DefaultFilter.BeginUntrusted();
 };
 
-NeatHtmlTest.DefaultFilter.ProcessUntrusted = function(maxComplexity) {
+NeatHtmlTest.DefaultFilter.ProcessUntrusted = function(maxComplexity, trustedImageUrlRegExp) {
 	if (!NeatHtmlTest.NoScript && !NeatHtmlTest.NoNeatHtml)
 	{
-		NeatHtml.DefaultFilter.ProcessUntrusted(maxComplexity);
+		NeatHtml.DefaultFilter.ProcessUntrusted(maxComplexity, trustedImageUrlRegExp);
 	}
 };
 

@@ -22,6 +22,17 @@
 						<a id='trustedLinkBefore' href='http://www.google.com/'>spoof existing ID</a><br />
 						<a id='trustedLinkAfter' href='http://www.google.com/'>spoof future ID</a><br />
 				<NeatHtmlReplace_tr>
+					<NeatHtmlReplace_th>CSRF attacks
+					<NeatHtmlReplace_td>trusted image:<br/>
+						<img src="tests/trusted/test.png" />
+					<NeatHtmlReplace_td>untrusted images:<br/>
+						<img src_NeatHtmlReplace="tests/untrusted/test.png" />
+						<img src_NeatHtmlReplace="tests/untrusted/test.png" lowsrc_NeatHtmlReplace="tests/untrusted/test.png" />
+					<NeatHtmlReplace_td>SRC attr in &lt;script&gt;:<br/>
+						<script type="text/javascript" src_NeatHtmlReplace="tests/untrusted/test.js"></script>
+					<NeatHtmlReplace_td>SRC attr in &lt;iframe&gt;:<br/>
+						<NeatHtmlReplace_iframe src_NeatHtmlReplace="tests/untrusted/test.html"></NeatHtmlReplace_iframe>
+				<NeatHtmlReplace_tr>
 					<NeatHtmlReplace_th>Tag soup
 					<NeatHtmlReplace_td><ul><li>no &lt;/li> 1/2<li>no &lt;/li> 2/2</ul>
 					<NeatHtmlReplace_td>unmatched &lt;/em> </em>

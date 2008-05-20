@@ -20,6 +20,18 @@
 						<a id="NeatHtml_trustedLinkBefore" href="http://www.google.com/">spoof existing ID</a><br />
 						<a id="NeatHtml_trustedLinkAfter" href="http://www.google.com/">spoof future ID</a><br />
 				<tr>
+					<th>CSRF attacks
+					<td>trusted image:<br />
+						<img src="tests/trusted/test.png" />
+					</td><td>untrusted images:<br />
+						<img />
+						<img />
+						
+					</td><td>SRC attr in &lt;script&gt;:<br />
+						
+					</td><td>SRC attr in &lt;iframe&gt;:<br />
+						
+				<tr>
 					<th>Tag soup
 					<td><ul><li>no &lt;/li> 1/2</li><li>no &lt;/li> 2/2</li></ul>
 					</td><td>unmatched &lt;/em> 
@@ -31,7 +43,7 @@
 					</td><td><font face="&#9;&#0;">non-printable</font> and <font face="&#57005;">non-ascii</font> attr values
 					</td><td>A B C with entities: &#65;&#160;&#x42;&#160;&#x43;
 					</td><td>Unencoded &lt;, and &amp;
-			</td></th></tr></p></td></th></tr></td></th></tr></table>
+			</td></th></tr></p></td></th></tr></td></th></tr></td></th></tr></table>
 			<br />
 			<table border="1" style="border-spacing: 0; ">
 				<tr>

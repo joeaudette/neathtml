@@ -28,6 +28,7 @@ using System.Web.UI.HtmlControls;
 using System.IO;
 using System.Security.Permissions;
 using System.Drawing.Design;
+using System.Text.RegularExpressions;
 
 namespace Brettle.Web.NeatHtml
 {	
@@ -127,6 +128,29 @@ namespace Brettle.Web.NeatHtml
 			set { ViewState["ClientScriptUrl"] = value; }
 		}
 				
+		/// <summary>
+		/// The regular expression pattern that a trusted image URL must match.
+		/// </summary>
+		[DefaultValue("^$")]
+		public string TrustedImageUrlPattern
+		{
+			get { return (string)ViewState["TrustedImageUrlPattern"]; }
+			set { 
+				ViewState["TrustedImageUrlPattern"] = value;
+				_TrustedImageUrlRegex = new Regex(value);
+			}
+		}
+		
+		private Regex _TrustedImageUrlRegex = null;
+		private Regex TrustedImageUrlRegex
+		{
+			get {
+				if (_TrustedImageUrlRegex == null)
+					_TrustedImageUrlRegex = new Regex(TrustedImageUrlPattern);
+				return _TrustedImageUrlRegex;
+			}
+		}
+		
 		internal static string ApplyAppPathModifier(string url)
 		{
 			string appPath = HttpContext.Current.Request.ApplicationPath;
@@ -188,6 +212,7 @@ namespace Brettle.Web.NeatHtml
 			f.ClientSideFilterName = ClientSideFilterName;
 			f.SupportNoScriptTables = SupportNoScriptTables;
 			f.MaxComplexity = MaxComplexity;
+			f.TrustedImageUrlRegex = TrustedImageUrlRegex;
 			writer.Write(f.FilterUntrusted(sw.ToString()));
 		}
 	}

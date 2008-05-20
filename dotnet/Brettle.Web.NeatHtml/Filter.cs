@@ -36,11 +36,12 @@ namespace Brettle.Web.NeatHtml
 		public string NoScriptDownlevelIEHeight = "400px";
 		public bool SupportNoScriptTables = false;
 		public int MaxComplexity = 10000;
+		public Regex TrustedImageUrlRegex = null;
 
 		public string FilterUntrusted(string untrusted)
 		{
 			return ScriptJail.Jail(untrusted, ClientSideFilterName, NoScriptDownlevelIEWidth, NoScriptDownlevelIEHeight,
-									SupportNoScriptTables, MaxComplexity);
+									SupportNoScriptTables, MaxComplexity, TrustedImageUrlRegex);
 		}
 	}
 	
@@ -48,9 +49,9 @@ namespace Brettle.Web.NeatHtml
 	{
 		internal static string Jail(string untrusted, string clientSideFilterName, 
 									string noScriptDownlevelIEWidth, string noScriptDownlevelIEHeight,
-									bool supportNoScriptTables, int maxComplexity)
+									bool supportNoScriptTables, int maxComplexity, Regex trustedImageUrlRegex)
 		{
-			ScriptJail jail = new ScriptJail(supportNoScriptTables, maxComplexity);
+			ScriptJail jail = new ScriptJail(supportNoScriptTables, maxComplexity, trustedImageUrlRegex);
 			string jailed = null;
 			try
 			{
@@ -71,17 +72,21 @@ namespace Brettle.Web.NeatHtml
 			}
 
 			return String.Format(Format, clientSideFilterName, jailed, 
-								noScriptDownlevelIEWidth, noScriptDownlevelIEHeight, maxComplexity);
+			                     noScriptDownlevelIEWidth, noScriptDownlevelIEHeight,
+			                     maxComplexity, 
+			                     trustedImageUrlRegex == null ? "null" : "new RegExp(\"" + trustedImageUrlRegex + "\")");
 		}
 		
-		private ScriptJail(bool supportNoScriptTables, int maxComplexity)
+		private ScriptJail(bool supportNoScriptTables, int maxComplexity, Regex trustedImageUrlRegex)
 		{
 			SupportNoScriptTables = supportNoScriptTables;
 			MaxComplexity = maxComplexity;
+			TrustedImageUrlRegex = trustedImageUrlRegex;
 		}
 		
 		private bool SupportNoScriptTables;
 		private int MaxComplexity;
+		private Regex TrustedImageUrlRegex;
 		
 		private int Complexity;
 
@@ -151,7 +156,7 @@ namespace Brettle.Web.NeatHtml
 			+ "try {{ {0}.BeginUntrusted(); }} catch (ex) {{ document.writeln('NeatHtml not found\\074!-' + '-'); }}</script>"
 			+ "<div>{1}</div>"
 			+ "<input name='NeatHtmlEndUntrusted' type='hidden' value=\"\" /><script type='text/javascript'></script><!-- > --><!-- <xmp></xmp><! --></td></tr></table><script type='text/javascript'>\n"
-			+ "{0}.ProcessUntrusted({4});\n"
+			+ "{0}.ProcessUntrusted({4}, {5});\n"
 			+ "</script>\n"
 			+ "</div><script type='text/javascript'>\n"
 			+ "{0}.ResizeContainer();\n"
@@ -166,8 +171,8 @@ namespace Brettle.Web.NeatHtml
 		 		"script" // OK when script is disabled.  Hides script source from user.
 		 		// Do NOT allow "iframe" or "object", unless you are willing to track them like with tables.
 		 		// Do NOT allow "xmp" -- it is used to hold the untrusted content on some browsers 
-				// Do NOT allow "input", unless you block name='NeatHtmlEndUntrusted'
 		 		// (eg. Safari/Konqueror).
+				// Do NOT allow "input", unless you block name='NeatHtmlEndUntrusted'
 			};
 
 		private static Hashtable InfoForTag = GetInfoForTags();
@@ -241,6 +246,7 @@ namespace Brettle.Web.NeatHtml
 			}
 
 			// If we get here we have a well-formed tag.
+			string lcTagName = m.Groups[6].Value.ToLower();
 
 			// Handle attributes
 			StringBuilder attrsBuilder = new StringBuilder();
@@ -284,14 +290,24 @@ namespace Brettle.Web.NeatHtml
 						}
 					}
 				}
+				if (TrustedImageUrlRegex != null 
+				    && lcTagName == "img" && lcAttrName == "src" && equalsQuotedValue.Length > 0)
+				{
+					string unquotedValue = quotedValue.Substring(1, quotedValue.Length-2);
+					if (TrustedImageUrlRegex.IsMatch(unquotedValue))
+					{
+						attrsBuilder.Append(" " + attrName + "=" + quotedValue);
+						continue;
+					}
+				}
 				attrsBuilder.Append(" " + attrName + "_NeatHtmlReplace=" + quotedValue);
 			}
 			string attrs = attrsBuilder.ToString();
 			
-			// Look up the appropriate action based on the tag name
-			string lcTagName = m.Groups[6].Value.ToLower();
+			if (TrustedImageUrlRegex != null && lcTagName == "img")
+				return "<" + m.Groups[4].Value + m.Groups[6].Value + attrs + m.Groups[10];
+			
 			TagInfo tagInfo = InfoForTag[lcTagName] as TagInfo;
-
 			if (tagInfo == null						// Unknown tag
 				|| (!SupportNoScriptTables 
 					&& tagInfo.IsTableRelated)) 	// or tag not supported in this configuration

@@ -31,7 +31,7 @@ Simplest usage (note that comments and absence of whitespace between tags can be
 			try { NeatHtml.DefaultFilter.BeginUntrusted(); } catch (ex) { document.writeln('NeatHtml not found\074!-' + '-'); }</script><div>
 				PREPROCESSED_UNTRUSTED_CONTENT
 		<input name='NeatHtmlEndUntrusted' type='hidden' value=\"\" /><xmp></xmp><!-- > --><script></script></td></tr></table>
-	<script type="text/javascript">NeatHtml.DefaultFilter.ProcessUntrusted(MAX_COMPLEXITY);</script>
+	<script type="text/javascript">NeatHtml.DefaultFilter.ProcessUntrusted(MAX_COMPLEXITY, TRUSTED_IMAGE_URL_REGEXP);</script>
 	</div><script type='text/javascript'>NeatHtml.DefaultFilter.ResizeContainer();</script>
 	
 where:
@@ -46,6 +46,9 @@ where:
 	
 	MAX_COMPLEXITY is the maximum number of regular expression matches which should be done while processing the
 		content.  This limits the effectiveness of DoS attacks.  This is optional.  It defaults to 10000.
+		
+	TRUSTED_IMAGE_URL_PATTERN is the RegExp object which an image URL must match for it
+		to be displayed.  This is optional.  By default, no images are trusted.
 		
 To change the way various tags and attributes are handled:
 
@@ -82,9 +85,6 @@ To change the way various tags and attributes are handled:
 				'font-weight': filter.AllowStyle,
 				'font': filter.AllowStyle
 			};
-		Or you could add support for <img> elements to the default filter by doing:
-			filter.ElemActions.img = filter.AllowElem;
-			filter.AttrActions.src = filter.AllowAttr;
 	3. Change "NeatHtml.DefaultFilter" to "filter" in both places in the simple usage example above.
 */
 
@@ -133,6 +133,8 @@ NeatHtml.Filter = function(elemActions, attrActions, styleActions, entityCharCod
 			elemActions[t] = my.RemoveElem; 
 		}
 		
+		elemActions["img"] = my.HandleImg;
+		
 		return elemActions;
 	}
 	
@@ -155,6 +157,7 @@ NeatHtml.Filter = function(elemActions, attrActions, styleActions, entityCharCod
 		}
 	
 		attrActions["href"] = my.HandleUrl; 
+		attrActions["src"] = my.HandleSrc; 
 		attrActions["style"] = my.HandleStyle;
 		attrActions["id"] = my.AddPrefixToValue;
 		
@@ -271,6 +274,15 @@ NeatHtml.Filter.prototype.HandleUrl = function(tagName, attr)
 	return true;
 };
 		
+NeatHtml.Filter.prototype.HandleSrc = function(tagName, attr)
+{
+	if (this.TrustedImageUrlRegExp != null && tagName == "img" && this.TrustedImageUrlRegExp.test(attr.value))
+	{
+		return true;
+	}
+	return false;
+};
+		
 NeatHtml.Filter.prototype.AddPrefixToValue = function(tagName, attr)
 {
 	attr.value = this.IdPrefix + attr.value;
@@ -368,6 +380,13 @@ NeatHtml.Filter.prototype.AllowElem = function(tagInfo, filter)
 		}
 	}
 };
+
+NeatHtml.Filter.prototype.HandleImg = function(tagInfo, filter)
+{
+	if (filter.TrustedImageUrlRegExp != null)
+		return this.AllowElem(tagInfo, filter);
+	return false;	
+};
 		
 NeatHtml.Filter.prototype.RemoveElem = function(tagInfo)
 {
@@ -395,13 +414,18 @@ NeatHtml.Filter.prototype.BeginUntrusted = function() {
 	}
 };
 
-NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity) {
+NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity, trustedImageUrlRegExp) {
 	var my = this;
 	if (typeof(maxComplexity) == "undefined")
 	{
 		maxComplexity = 1000;
 	}
 	this.MaxComplexity = maxComplexity;
+	if (typeof(trustedImageUrlRegExp) == "undefined")
+	{
+		trustedImageUrlRegExp = null;
+	}
+	this.TrustedImageUrlRegExp = trustedImageUrlRegExp;
 	this.Complexity = 0;
 	var containingDiv = FindContainingDiv(this.BeginUntrustedScript);
 	var xmlStr;
