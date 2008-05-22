@@ -383,9 +383,9 @@ NeatHtml.Filter.prototype.AllowElem = function(tagInfo, filter)
 
 NeatHtml.Filter.prototype.HandleImg = function(tagInfo, filter)
 {
-	if (filter.TrustedImageUrlRegExp != null)
+	if (this.TrustedImageUrlRegExp != null)
 		return this.AllowElem(tagInfo, filter);
-	return false;	
+	return this.RemoveTag(tagInfo);	
 };
 		
 NeatHtml.Filter.prototype.RemoveElem = function(tagInfo)

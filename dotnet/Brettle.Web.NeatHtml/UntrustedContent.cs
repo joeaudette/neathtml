@@ -103,19 +103,6 @@ namespace Brettle.Web.NeatHtml
 		// but computing a hash on that file everytime this assembly is loaded strikes me as overkill.
 		private static Guid CacheBustingGuid = System.Guid.NewGuid();
 
-		private string AppPath
-		{
-			get 
-			{
-				string appPath = Context.Request.ApplicationPath;
-				if (appPath == "/")
-				{
-					appPath = "";
-				}
-				return appPath;
-			}
-		}
-				
 		/// <summary>
 		/// URL of NeatHtml.js.</summary>
 		/// <remarks>
@@ -145,7 +132,7 @@ namespace Brettle.Web.NeatHtml
 		private Regex TrustedImageUrlRegex
 		{
 			get {
-				if (_TrustedImageUrlRegex == null)
+				if (_TrustedImageUrlRegex == null && TrustedImageUrlPattern != null)
 					_TrustedImageUrlRegex = new Regex(TrustedImageUrlPattern);
 				return _TrustedImageUrlRegex;
 			}
