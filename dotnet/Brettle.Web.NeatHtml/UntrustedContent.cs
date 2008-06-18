@@ -138,6 +138,30 @@ namespace Brettle.Web.NeatHtml
 			}
 		}
 		
+		/// <summary>
+		/// The regular expression pattern that a link URL must match in order for it to void being marked with
+		/// rel="nofollow"
+		/// </summary>
+		[DefaultValue("^$")]
+		public string SpamFreeLinkUrlPattern
+		{
+			get { return (string)ViewState["SpamFreeLinkUrlPattern"]; }
+			set { 
+				ViewState["SpamFreeLinkUrlPattern"] = value;
+				_SpamFreeLinkUrlRegex = new Regex(value);
+			}
+		}
+		
+		private Regex _SpamFreeLinkUrlRegex = null;
+		private Regex SpamFreeLinkUrlRegex
+		{
+			get {
+				if (_SpamFreeLinkUrlRegex == null && SpamFreeLinkUrlPattern != null)
+					_SpamFreeLinkUrlRegex = new Regex(SpamFreeLinkUrlPattern);
+				return _SpamFreeLinkUrlRegex;
+			}
+		}
+		
 		internal static string ApplyAppPathModifier(string url)
 		{
 			string appPath = HttpContext.Current.Request.ApplicationPath;
@@ -200,6 +224,7 @@ namespace Brettle.Web.NeatHtml
 			f.SupportNoScriptTables = SupportNoScriptTables;
 			f.MaxComplexity = MaxComplexity;
 			f.TrustedImageUrlRegex = TrustedImageUrlRegex;
+			f.SpamFreeLinkUrlRegex = SpamFreeLinkUrlRegex;
 			writer.Write(f.FilterUntrusted(sw.ToString()));
 		}
 	}

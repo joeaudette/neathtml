@@ -179,6 +179,7 @@ label { font-weight: bold; }
 	<NeatHtml:UntrustedContent id="untrustedContent" runat="server" 
 		ClientSideFilterName="NeatHtmlTest.DefaultFilter"
 		TrustedImageUrlPattern="^tests/trusted/[A-Za-z0-9]+\.(png|jpg|gif)$"
+		SpamFreeLinkUrlPattern="^(javascript:|http://(www.google.com|www.brettle.com|ha.ckers.org)/).*$"
 		><%= rawUntrustedContent %></NeatHtml:UntrustedContent>
 	</div><p id="afterUntrustedContentParent" class="Trusted" style="font-color: #FF3333">If the browser supports the CSS :after pseudo-element and the counter() function, then "#2" should appear to the right --> </p>
 	<NeatHtmlEndUntrusted s='' d=\"\" /><script></script><!-- > --><xmp></xmp><object style="display:none;"></object><iframe style="display:none;"></iframe>

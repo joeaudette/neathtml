@@ -18,7 +18,7 @@
 						green despite script in style
 					</td><td>
 						<a id="NeatHtml_trustedLinkBefore" href="http://www.google.com/">spoof existing ID</a><br />
-						<a id="NeatHtml_trustedLinkAfter" href="http://www.google.com/">spoof future ID</a><br />
+						<a id="NeatHtml_trustedLinkAfter" rel="nofollow" href="http://www.Vicerex.com/">spoof future ID</a><br />
 				<tr>
 					<th>CSRF attacks
 					<td>trusted image:<br />

@@ -5,20 +5,20 @@
 <dc:title>NeatHtml Manual</dc:title>
 <meta:creation-date>2007-09-14T11:03:22</meta:creation-date>
 <dc:creator>Dean Brettle</dc:creator>
-<dc:date>2008-05-21T18:42:51</dc:date>
+<dc:date>2008-06-17T19:00:22</dc:date>
 <meta:printed-by>Dean Brettle</meta:printed-by>
 <meta:print-date>2007-09-24T08:51:38</meta:print-date>
-<meta:editing-cycles>123</meta:editing-cycles>
-<meta:editing-duration>P14DT1H39M50S</meta:editing-duration>
+<meta:editing-cycles>126</meta:editing-cycles>
+<meta:editing-duration>P14DT2H53M53S</meta:editing-duration>
 <meta:user-defined meta:name="Info 1"/>
 <meta:user-defined meta:name="Info 2"/>
 <meta:user-defined meta:name="Info 3"/>
 <meta:user-defined meta:name="Info 4"/>
-<meta:document-statistic meta:table-count="0" meta:image-count="0" meta:object-count="0" meta:page-count="4" meta:paragraph-count="55" meta:word-count="1146" meta:character-count="7464"/>
+<meta:document-statistic meta:table-count="0" meta:image-count="0" meta:object-count="0" meta:page-count="4" meta:paragraph-count="58" meta:word-count="1298" meta:character-count="8412"/>
 </office:meta>
 <office:settings>
 <config:config-item-set config:name="ooo:view-settings">
-<config:config-item config:name="ViewAreaTop" config:type="int">66675</config:config-item>
+<config:config-item config:name="ViewAreaTop" config:type="int">67945</config:config-item>
 <config:config-item config:name="ViewAreaLeft" config:type="int">-4419</config:config-item>
 <config:config-item config:name="ViewAreaWidth" config:type="int">32440</config:config-item>
 <config:config-item config:name="ViewAreaHeight" config:type="int">15030</config:config-item>
@@ -27,12 +27,12 @@
 <config:config-item-map-indexed config:name="Views">
 <config:config-item-map-entry>
 <config:config-item config:name="ViewId" config:type="string">view2</config:config-item>
-<config:config-item config:name="ViewLeft" config:type="int">15882</config:config-item>
-<config:config-item config:name="ViewTop" config:type="int">73175</config:config-item>
+<config:config-item config:name="ViewLeft" config:type="int">10853</config:config-item>
+<config:config-item config:name="ViewTop" config:type="int">76962</config:config-item>
 <config:config-item config:name="VisibleLeft" config:type="int">-4419</config:config-item>
-<config:config-item config:name="VisibleTop" config:type="int">66675</config:config-item>
+<config:config-item config:name="VisibleTop" config:type="int">67945</config:config-item>
 <config:config-item config:name="VisibleRight" config:type="int">28019</config:config-item>
-<config:config-item config:name="VisibleBottom" config:type="int">81703</config:config-item>
+<config:config-item config:name="VisibleBottom" config:type="int">82973</config:config-item>
 <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
 <config:config-item config:name="ZoomFactor" config:type="short">100</config:config-item>
 <config:config-item config:name="IsSelectedFrame" config:type="boolean">false</config:config-item>
@@ -681,36 +681,49 @@
 <style:style style:name="P15" style:family="paragraph" style:parent-style-name="Title" style:master-page-name="">
 <style:paragraph-properties style:page-number="auto"/>
 </style:style>
-<style:style style:name="P16" style:family="paragraph" style:parent-style-name="CodeExample" style:list-style-name="L3"/>
-<style:style style:name="P17" style:family="paragraph" style:parent-style-name="CodeExample" style:list-style-name="L3"/>
-<style:style style:name="P18" style:family="paragraph" style:parent-style-name="Title" style:master-page-name="HTML">
+<style:style style:name="P16" style:family="paragraph" style:parent-style-name="Title" style:master-page-name="">
 <style:paragraph-properties style:page-number="auto"/>
 </style:style>
-<style:style style:name="P19" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L1"/>
-<style:style style:name="P20" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L3"/>
-<style:style style:name="P21" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L3"/>
-<style:style style:name="P22" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L1">
-<style:paragraph-properties fo:margin-top="0in" fo:margin-bottom="0in"/>
+<style:style style:name="P17" style:family="paragraph" style:parent-style-name="Contents_20_1">
+<style:paragraph-properties>
+<style:tab-stops/>
+</style:paragraph-properties>
 </style:style>
-<style:style style:name="P23" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L1">
-<style:paragraph-properties fo:margin-top="0in" fo:margin-bottom="0in"/>
+<style:style style:name="P18" style:family="paragraph" style:parent-style-name="Contents_20_2">
+<style:paragraph-properties>
+<style:tab-stops/>
+</style:paragraph-properties>
 </style:style>
-<style:style style:name="P24" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L1">
-<style:paragraph-properties fo:margin-top="0in" fo:margin-bottom="0in"/>
+<style:style style:name="P19" style:family="paragraph" style:parent-style-name="Title" style:master-page-name="HTML">
+<style:paragraph-properties style:page-number="auto"/>
 </style:style>
+<style:style style:name="P20" style:family="paragraph" style:parent-style-name="CodeExample" style:list-style-name="L3"/>
+<style:style style:name="P21" style:family="paragraph" style:parent-style-name="CodeExample" style:list-style-name="L3"/>
+<style:style style:name="P22" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L1"/>
+<style:style style:name="P23" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L3"/>
+<style:style style:name="P24" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L3"/>
 <style:style style:name="P25" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L1">
 <style:paragraph-properties fo:margin-top="0in" fo:margin-bottom="0in"/>
 </style:style>
 <style:style style:name="P26" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L1">
 <style:paragraph-properties fo:margin-top="0in" fo:margin-bottom="0in"/>
 </style:style>
-<style:style style:name="P27" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L2">
+<style:style style:name="P27" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L1">
 <style:paragraph-properties fo:margin-top="0in" fo:margin-bottom="0in"/>
 </style:style>
-<style:style style:name="P28" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L2">
+<style:style style:name="P28" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L1">
 <style:paragraph-properties fo:margin-top="0in" fo:margin-bottom="0in"/>
 </style:style>
-<style:style style:name="P29" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L2">
+<style:style style:name="P29" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L1">
+<style:paragraph-properties fo:margin-top="0in" fo:margin-bottom="0in"/>
+</style:style>
+<style:style style:name="P30" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L2">
+<style:paragraph-properties fo:margin-top="0in" fo:margin-bottom="0in"/>
+</style:style>
+<style:style style:name="P31" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L2">
+<style:paragraph-properties fo:margin-top="0in" fo:margin-bottom="0in"/>
+</style:style>
+<style:style style:name="P32" style:family="paragraph" style:parent-style-name="Text_20_body" style:list-style-name="L2">
 <style:paragraph-properties fo:margin-top="0in" fo:margin-bottom="0in"/>
 </style:style>
 <style:style style:name="T1" style:family="text">
@@ -905,7 +918,7 @@
 <text:sequence-decl text:display-outline-level="0" text:name="Text"/>
 <text:sequence-decl text:display-outline-level="0" text:name="Drawing"/>
 </text:sequence-decls>
-<text:p text:style-name="P18">NeatHtml™ Manual</text:p>
+<text:p text:style-name="P19">NeatHtml™ Manual</text:p>
 <text:p text:style-name="P1">
 <text:span text:style-name="Emphasis">
 <text:span text:style-name="T1">by </text:span>
@@ -928,7 +941,7 @@
 </text:span>
 <text:span text:style-name="Emphasis">
 <text:span text:style-name="T1">
-<text:date style:data-style-name="N37" text:date-value="2008-05-21T18:42:51">05/21/08</text:date>
+<text:date style:data-style-name="N37" text:date-value="2008-06-17T19:00:23">06/17/08</text:date>
 </text:span>
 </text:span>
 <text:span text:style-name="Emphasis">
@@ -936,7 +949,7 @@
 </text:span>
 <text:span text:style-name="Emphasis">
 <text:span text:style-name="T1">
-<text:time style:data-style-name="N116" text:time-value="2008-05-21T18:42:51">06:42:51PM</text:time>
+<text:time style:data-style-name="N116" text:time-value="2008-06-17T19:00:23">07:00:23PM</text:time>
 </text:span>
 </text:span>
 <text:span text:style-name="Emphasis">
@@ -1036,13 +1049,16 @@
 <text:a xlink:type="simple" xlink:href="#5.1.Displaying images|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Displaying images</text:a>
 </text:p>
 <text:p text:style-name="P3">5.2 <text:s/>
-<text:a xlink:type="simple" xlink:href="#5.2.Displaying untrusted tables to users that don't support scripting|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Displaying untrusted tables to users that don't support scripting</text:a>
+<text:a xlink:type="simple" xlink:href="#5.2.Removing rel=”nofollow” from links|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Removing rel=”nofollow” from links</text:a>
 </text:p>
 <text:p text:style-name="P3">5.3 <text:s/>
-<text:a xlink:type="simple" xlink:href="#5.3.Putting NeatHtml.js in a different location|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Putting NeatHtml.js in a different location</text:a>
+<text:a xlink:type="simple" xlink:href="#5.3.Displaying untrusted tables to users that don't support scripting|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Displaying untrusted tables to users that don't support scripting</text:a>
 </text:p>
 <text:p text:style-name="P3">5.4 <text:s/>
-<text:a xlink:type="simple" xlink:href="#5.4.Changing the complexity allowed for untrusted content|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Changing the complexity allowed for untrusted content</text:a>
+<text:a xlink:type="simple" xlink:href="#5.4.Putting NeatHtml.js in a different location|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Putting NeatHtml.js in a different location</text:a>
+</text:p>
+<text:p text:style-name="P3">5.5 <text:s/>
+<text:a xlink:type="simple" xlink:href="#5.5.Changing the complexity allowed for untrusted content|outline" text:style-name="Internet_20_link" text:visited-style-name="Internet_20_link">Changing the complexity allowed for untrusted content</text:a>
 </text:p>
 </text:index-body>
 </text:table-of-content>
@@ -1062,11 +1078,11 @@
 <text:p text:style-name="Bulleted_20_List">Microsoft Internet Explorer (IE) version 7.</text:p>
 </text:list-item>
 <text:list-item>
-<text:p text:style-name="Bulleted_20_List">Microsoft Internet Explorer (IE) version 6.</text:p>
+<text:p text:style-name="Bulleted_20_List">
+<text:soft-page-break/>Microsoft Internet Explorer (IE) version 6.</text:p>
 </text:list-item>
 <text:list-item>
-<text:p text:style-name="Bulleted_20_List">
-<text:soft-page-break/>Mozilla Firefox (FF) versions 1.5 and 2.0.</text:p>
+<text:p text:style-name="Bulleted_20_List">Mozilla Firefox (FF) versions 1.5 and 2.0.</text:p>
 </text:list-item>
 <text:list-item>
 <text:p text:style-name="Bulleted_20_List">Opera 9.21.</text:p>
@@ -1085,27 +1101,27 @@
 <text:p text:style-name="Text_20_body">Installing NeatHtml is simple: </text:p>
 <text:list text:style-name="L1">
 <text:list-item>
-<text:p text:style-name="P22">If you haven't already, download the release and extract it wherever you want. All the files will be extracted into a subdirectory named “NeatHtml<text:span text:style-name="Source_20_Text">-</text:span>
+<text:p text:style-name="P25">If you haven't already, download the release and extract it wherever you want. All the files will be extracted into a subdirectory named “NeatHtml<text:span text:style-name="Source_20_Text">-</text:span>
 <text:span text:style-name="Emphasis">version”</text:span>, where version is the version of the release you are installing. </text:p>
 </text:list-item>
 <text:list-item>
-<text:p text:style-name="P22">(Optional) To see the demo running on your server, configure IIS, mod_mono, or XSP so that “NeatHtml-<text:span text:style-name="Emphasis">version</text:span>
+<text:p text:style-name="P25">(Optional) To see the demo running on your server, configure IIS, mod_mono, or XSP so that “NeatHtml-<text:span text:style-name="Emphasis">version</text:span>
 <text:span text:style-name="Emphasis">
 <text:span text:style-name="T1">\dotnet”</text:span>
 </text:span>
 <text:span text:style-name="Emphasis"/>is a web application. Then point your browser at the Demo.aspx on that website. To use NeatHtml in your own web application, continue with the remaining installation steps. </text:p>
 </text:list-item>
 <text:list-item>
-<text:p text:style-name="P22">If you will be using the Visual Studio Web Form Designer, add the NeatHtml controls to your toolbox. To do that, right-click on the Toolbox, click “Add/Remove Items” or “Choose Items”, Browse to “NeatHtml-<text:span text:style-name="Emphasis">version</text:span>\dotnet\bin\Brettle.Web.NeatHtml.dll”, click Open, and then click OK. <text:s/>A reference to Brettle.Web.NeatHtml.dll will automatically be added to your project the first time you use the designer to add the NeatHtml UntrustedContent control to a form. </text:p>
+<text:p text:style-name="P25">If you will be using the Visual Studio Web Form Designer, add the NeatHtml controls to your toolbox. To do that, right-click on the Toolbox, click “Add/Remove Items” or “Choose Items”, Browse to “NeatHtml-<text:span text:style-name="Emphasis">version</text:span>\dotnet\bin\Brettle.Web.NeatHtml.dll”, click Open, and then click OK. <text:s/>A reference to Brettle.Web.NeatHtml.dll will automatically be added to your project the first time you use the designer to add the NeatHtml UntrustedContent control to a form. </text:p>
 </text:list-item>
 <text:list-item>
-<text:p text:style-name="P22">If you won't be using the Visual Studio Web Form Designer, add a reference to your web application that refers to the “NeatHtml-<text:span text:style-name="Emphasis">version</text:span>\dotnet\bin\Brettle.Web.NeatHtml.dll”. </text:p>
+<text:p text:style-name="P25">If you won't be using the Visual Studio Web Form Designer, add a reference to your web application that refers to the “NeatHtml-<text:span text:style-name="Emphasis">version</text:span>\dotnet\bin\Brettle.Web.NeatHtml.dll”. </text:p>
 </text:list-item>
 <text:list-item>
-<text:p text:style-name="P22">Create a NeatHtml<text:span text:style-name="Source_20_Text">\</text:span> subdirectory in your web application by copying “NeatHtml-<text:span text:style-name="Emphasis">version\</text:span>dotnet\NeatHtml\” and its contents.</text:p>
+<text:p text:style-name="P25">Create a NeatHtml<text:span text:style-name="Source_20_Text">\</text:span> subdirectory in your web application by copying “NeatHtml-<text:span text:style-name="Emphasis">version\</text:span>dotnet\NeatHtml\” and its contents.</text:p>
 </text:list-item>
 <text:list-item>
-<text:p text:style-name="P19">(Optional) Copy “Demo.aspx” and “Demo.aspx.cs” from “NeatHtml-<text:span text:style-name="Emphasis">version</text:span>\dotnet\” into your application. Point your browser at “Demo.aspx” and verify that the demo functions properly. </text:p>
+<text:p text:style-name="P22">(Optional) Copy “Demo.aspx” and “Demo.aspx.cs” from “NeatHtml-<text:span text:style-name="Emphasis">version</text:span>\dotnet\” into your application. Point your browser at “Demo.aspx” and verify that the demo functions properly. </text:p>
 </text:list-item>
 </text:list>
 <text:h text:style-name="Heading_20_1" text:outline-level="1">Basic Usage</text:h>
@@ -1114,13 +1130,13 @@
 <text:p text:style-name="Text_20_body">To use the Visual Studio web form designer to add NeatHtml to a web form, follow these steps: </text:p>
 <text:list text:style-name="L2">
 <text:list-item>
-<text:p text:style-name="P27">If you are using Visual Studio 2005 or later, rebuild NeatHtml against the .NET 2.0 runtime with the preprocessing symbol “NET_2_0” defined.</text:p>
+<text:p text:style-name="P30">If you are using Visual Studio 2005 or later, rebuild NeatHtml against the .NET 2.0 runtime with the preprocessing symbol “NET_2_0” defined.</text:p>
 </text:list-item>
 <text:list-item>
-<text:p text:style-name="P27">Drag the UntrustedContent control from the toolbox onto your web form wherever you want the untrusted content to be displayed. </text:p>
+<text:p text:style-name="P30">Drag the UntrustedContent control from the toolbox onto your web form wherever you want the untrusted content to be displayed. </text:p>
 </text:list-item>
 <text:list-item>
-<text:p text:style-name="P27">Drag whatever control(s) you want to use to render the untrusted content onto the UntrustedContent control. <text:s/>For example, you could drag a Literal control onto the UntrustedContent control and edit its contents.</text:p>
+<text:p text:style-name="P30">Drag whatever control(s) you want to use to render the untrusted content onto the UntrustedContent control. <text:s/>For example, you could drag a Literal control onto the UntrustedContent control and edit its contents.</text:p>
 </text:list-item>
 </text:list>
 <text:h text:style-name="Heading_20_2" text:outline-level="2">
@@ -1129,12 +1145,12 @@
 <text:p text:style-name="Text_20_body">To use NeatHtml on a web form <text:span text:style-name="T4">without</text:span> using the Visual Studio designer, follow these steps: </text:p>
 <text:list text:style-name="L3">
 <text:list-item>
-<text:p text:style-name="P20">Add the following to the top of your page:</text:p>
-<text:p text:style-name="P16">&lt;%@ Register TagPrefix="NeatHtml" Namespace="Brettle.Web.NeatHtml" Assembly="Brettle.Web.NeatHtml" %&gt;</text:p>
+<text:p text:style-name="P23">Add the following to the top of your page:</text:p>
+<text:p text:style-name="P20">&lt;%@ Register TagPrefix="NeatHtml" Namespace="Brettle.Web.NeatHtml" Assembly="Brettle.Web.NeatHtml" %&gt;</text:p>
 </text:list-item>
 <text:list-item>
-<text:p text:style-name="P20">Place whatever controls you use to display the untrusted content inside the UntrustedContent control, like this: </text:p>
-<text:p text:style-name="P16">&lt;NeatHtml:UntrustedContent runat="server"&gt;<text:line-break/>
+<text:p text:style-name="P23">Place whatever controls you use to display the untrusted content inside the UntrustedContent control, like this: </text:p>
+<text:p text:style-name="P20">&lt;NeatHtml:UntrustedContent runat="server"&gt;<text:line-break/>
 <text:s/>
 <text:span text:style-name="Emphasis">controls to render the raw untrusted content (e.g. a LiteralControl)</text:span>
 <text:line-break/>&lt;/NeatHtml:UntrustedContent&gt;</text:p>
@@ -1143,12 +1159,14 @@
 <text:h text:style-name="Heading_20_1" text:outline-level="1">Advanced Usage</text:h>
 <text:h text:style-name="Heading_20_2" text:outline-level="2">Displaying images</text:h>
 <text:p text:style-name="Text_20_body">By default, no IMG elements are displayed because they can be used to mount CSRF attacks. <text:s/>If there are particular images with URLs that you trust, you can set the TrustedImageUrlPattern property to the regular expression pattern string that the SRC attribute of an IMG element must match in order for the image to be displayed. <text:s/>For example, to allow images in your top-level “images” folder to be displayed, you might set TrustedImageUrlPattern to something like “^/images/[a-zA-Z0-9]+\.(png|jpg|jpeg|gif)$”. <text:s/>If you are confident that your entire site is not susceptible to CSRF attacks, you could allow any image on your site to be displayed in untrusted content by using “^[/.].*$”. <text:s/>To completely disable NeatHtml's removal of automated CSRF attacks and allow display of any image on any website, you might use “^.*$”.</text:p>
+<text:h text:style-name="Heading_20_2" text:outline-level="2">Removing rel=”nofollow” from links</text:h>
+<text:p text:style-name="Text_20_body">By default, NeatHtml adds rel=”<text:a xlink:type="simple" xlink:href="http://en.wikipedia.org/wiki/Nofollow">nofollow</text:a>” to any allowed element that contains an HREF attribute. <text:s/>This discourages <text:a xlink:type="simple" xlink:href="http://en.wikipedia.org/wiki/Spamdexing#Link_spam">link spam</text:a> in untrusted content because most search engines ignore such links when building their indices. <text:s/>Links will still display properly and users can follow them, but the links won't be indexed by most search engines. <text:s/>If there are particular links that you want to allow search engines to index, you can set the SpamFreeLinkUrlPattern property to the regular expression pattern string that the HREF attribute must match in order for it to be indexed. <text:s/>NeatHtml will not add the rel=”nofollow” to link URLs which match the pattern. <text:s/>For example, to allow relative links to pages on your own site, you might set SpamFreeLinkUrlPattern to something like “^[/.].*$”. <text:s/>To completely disable this feature of NeatHtml and allow indexing of all links, you might use “^.*$”.</text:p>
 <text:h text:style-name="Heading_20_2" text:outline-level="2">Displaying untrusted tables to users that don't support scripting</text:h>
-<text:p text:style-name="Text_20_body">The algorithm used to allow tables has not been extensively tested and using it involves taking an unnecessary risk if benign content is not expected to contain TABLE elements. <text:s/>For that reason, support for displaying untrusted tables to no-script users is optional, and disabled by default. <text:s/>To enable that support, set the SupportNoScriptTables property to “true”.</text:p>
+<text:p text:style-name="Text_20_body">The algorithm used to allow tables has not been extensively tested and using it involves taking an unnecessary risk if benign content is not expected to contain TABLE elements. <text:s/>For that reason, support for displaying untrusted tables to no-script users is optional, and disabled by default. <text:s/>To enable that support, set the <text:soft-page-break/>SupportNoScriptTables property to “true”.</text:p>
 <text:h text:style-name="Heading_20_2" text:outline-level="2">Putting NeatHtml.js in a different location</text:h>
 <text:p text:style-name="Text_20_body">If you prefer to put NeatHtml.js in a location other than the “NeatHtml” subdirectory in your application root, set the ClientScriptUrl property to the URL of NeatHtml.js. <text:s/>If the URL starts with "~", the "~" will be replaced with the web application root.</text:p>
 <text:h text:style-name="Heading_20_2" text:outline-level="2">Changing the complexity allowed for untrusted content</text:h>
-<text:p text:style-name="Text_20_body">NeatHtml was designed to take time proportional to the size of the untrusted content, but the constant of <text:soft-page-break/>proportionality can be high if the untrusted content contains a very large number of “&lt;” characters, or “&amp;” characters, or attributes. <text:s/>Processing is slow in these cases because they cause a large number of regex matches and subsequent function calls. <text:s/>To restrict the amount of <text:s/>processing required, NeatHtml tracks the number of regex matches that have occurred. <text:s/>When a configurable limit is exceeded, NeatHtml stops processing and instead of displaying the untrusted content, simply displays, "The content that belongs here is too complex to display securely." <text:s/>To change the limit, set the MaxComplexity property to the desired limit. <text:s/>By default, the limit is 10000.</text:p>
+<text:p text:style-name="Text_20_body">NeatHtml was designed to take time proportional to the size of the untrusted content, but the constant of proportionality can be high if the untrusted content contains a very large number of “&lt;” characters, or “&amp;” characters, or attributes. <text:s/>Processing is slow in these cases because they cause a large number of regex matches and subsequent function calls. <text:s/>To restrict the amount of <text:s/>processing required, NeatHtml tracks the number of regex matches that have occurred. <text:s/>When a configurable limit is exceeded, NeatHtml stops processing and instead of displaying the untrusted content, simply displays, "The content that belongs here is too complex to display securely." <text:s/>To change the limit, set the MaxComplexity property to the desired limit. <text:s/>By default, the limit is 10000.</text:p>
 </office:text>
 </office:body>
 </office:document>

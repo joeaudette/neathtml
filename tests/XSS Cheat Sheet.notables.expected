@@ -916,18 +916,18 @@ URL string evasion (assuming "http://www.google.com/" is programmatically
 disallowed):
 
       IP verses hostname:
-      <A HREF="http://66.102.7.147/">XSS</A>
+      <A rel="nofollow" HREF="http://66.102.7.147/">XSS</A>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       URL encoding:
-      <A HREF="http://%77%77%77%2E%67%6F%6F%67%6C%65%2E%63%6F%6D">XSS</A>
+      <A rel="nofollow" HREF="http://%77%77%77%2E%67%6F%6F%67%6C%65%2E%63%6F%6D">XSS</A>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Dword encoding (Note: there are other of variations of Dword encoding - 
 see the IP Obfuscation calculator below for more details):
-      <A HREF="http://1113982867/">XSS</A>
+      <A rel="nofollow" HREF="http://1113982867/">XSS</A>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -935,20 +935,20 @@ see the IP Obfuscation calculator below for more details):
 neighborhood of 240 total characters as you can see on the second digit, and 
 since the hex number is between 0 and F the leading zero on the third hex 
 quotet is not required):
-      <A HREF="http://0x42.0x0000066.0x7.0x93/">XSS</A>
+      <A rel="nofollow" HREF="http://0x42.0x0000066.0x7.0x93/">XSS</A>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Octal encoding (again padding is allowed, although you must keep it above 
 4 total characters per class - as in class A, class B, etc...):
-      <A HREF="http://0102.0146.0007.00000223/">XSS</A>
+      <A rel="nofollow" HREF="http://0102.0146.0007.00000223/">XSS</A>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Mixed encoding (let's mix and match base encoding and throw in some tabs 
 and newlines - why browsers allow this, I'll never know). The tabs and newlines 
 only work if this is encapsulated with quotes:
-      <A HREF="h tt p://6&#9;6.000146.0x7.147/">XSS</A>
+      <A rel="nofollow" HREF="h tt p://6&#9;6.000146.0x7.147/">XSS</A>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -958,7 +958,7 @@ characters can go a long way) and can easily bypass regex like
 "(ht|f)tp(s)?://" (thanks to Ozh for part of this one). You can also change the 
 "//" to "\\". You do need to keep the slashes in place, however, otherwise this 
 will be interpreted as a relative path URL.
-      <A HREF="//www.google.com/">XSS</A>
+      <A rel="nofollow" HREF="//www.google.com/">XSS</A>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -968,7 +968,7 @@ exploitable page is the top for some random keyword (as you see here) you can
 use that feature against any Firefox user. This uses Firefox's "keyword:" 
 protocol. You can concatinate several keywords by using something like the 
 following "keyword:XSS+RSnake" for instance. This no longer works within 
-Firefox as of 2.0. <A HREF="//google">XSS</A>
+Firefox as of 2.0. <A rel="nofollow" HREF="//google">XSS</A>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -979,7 +979,7 @@ believes that this is the old HTTP Basic Auth phishing attack, which it is not.
 It's simply a malformed URL. If you click okay on the dialogue it will work, 
 but as a result of the erroneous dialogue box I am saying that this is not 
 supported in Opera, and it is no longer supported in Firefox as of 2.0:
-      <A HREF="http://ha.ckers.org@google">XSS</A>
+      <A rel="nofollow" HREF="http://ha.ckers.org@google">XSS</A>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -987,19 +987,19 @@ supported in Opera, and it is no longer supported in Firefox as of 2.0:
 work in Firefox and Opera only, because if their implementation of the "feeling 
 lucky" function. Like all of the above it requires that you are #1 in Google 
 for the keyword in question (in this case "google"):
-      <A HREF="http://google:ha.ckers.org">XSS</A>
+      <A rel="nofollow" HREF="http://google:ha.ckers.org">XSS</A>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Removing cnames (when combined with the above URL, removing "www." will 
 save an additional 4 bytes for a total byte savings of 9 for servers that have 
 this set up properly):
-      <A HREF="http://google.com/">XSS</A>
+      <A rel="nofollow" HREF="http://google.com/">XSS</A>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
       Extra dot for absolute DNS:
-      <A HREF="http://www.google.com./">XSS</A>
+      <A rel="nofollow" HREF="http://www.google.com./">XSS</A>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 
@@ -1014,7 +1014,7 @@ vector against a several separate real world XSS filters by using the
 conversion filter itself (here is an example) to help create the attack vector 
 (IE: "java&#x26;#x09;script:" was converted into "java&#x09;script:", which 
 renders in IE, Netscape 8.1+ in secure site mode and Opera):
-      <A HREF="http://www.gohttp://www.google.com/ogle.com/">XSS</A>
+      <A rel="nofollow" HREF="http://www.gohttp://www.google.com/ogle.com/">XSS</A>
       Browser support: [IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]
 
 

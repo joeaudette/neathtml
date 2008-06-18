@@ -37,11 +37,12 @@ namespace Brettle.Web.NeatHtml
 		public bool SupportNoScriptTables = false;
 		public int MaxComplexity = 10000;
 		public Regex TrustedImageUrlRegex = null;
+		public Regex SpamFreeLinkUrlRegex = null;
 
 		public string FilterUntrusted(string untrusted)
 		{
 			return ScriptJail.Jail(untrusted, ClientSideFilterName, NoScriptDownlevelIEWidth, NoScriptDownlevelIEHeight,
-									SupportNoScriptTables, MaxComplexity, TrustedImageUrlRegex);
+									SupportNoScriptTables, MaxComplexity, TrustedImageUrlRegex, SpamFreeLinkUrlRegex);
 		}
 	}
 	
@@ -49,9 +50,10 @@ namespace Brettle.Web.NeatHtml
 	{
 		internal static string Jail(string untrusted, string clientSideFilterName, 
 									string noScriptDownlevelIEWidth, string noScriptDownlevelIEHeight,
-									bool supportNoScriptTables, int maxComplexity, Regex trustedImageUrlRegex)
+									bool supportNoScriptTables, int maxComplexity, 
+		                            Regex trustedImageUrlRegex, Regex spamFreeLinkUrlRegex)
 		{
-			ScriptJail jail = new ScriptJail(supportNoScriptTables, maxComplexity, trustedImageUrlRegex);
+			ScriptJail jail = new ScriptJail(supportNoScriptTables, maxComplexity, trustedImageUrlRegex, spamFreeLinkUrlRegex);
 			string jailed = null;
 			try
 			{
@@ -77,16 +79,19 @@ namespace Brettle.Web.NeatHtml
 			                     trustedImageUrlRegex == null ? "null" : "new RegExp(\"" + trustedImageUrlRegex + "\")");
 		}
 		
-		private ScriptJail(bool supportNoScriptTables, int maxComplexity, Regex trustedImageUrlRegex)
+		private ScriptJail(bool supportNoScriptTables, int maxComplexity, 
+		                   Regex trustedImageUrlRegex, Regex spamFreeLinkUrlRegex)
 		{
 			SupportNoScriptTables = supportNoScriptTables;
 			MaxComplexity = maxComplexity;
 			TrustedImageUrlRegex = trustedImageUrlRegex;
+			SpamFreeLinkUrlRegex = spamFreeLinkUrlRegex;
 		}
 		
 		private bool SupportNoScriptTables;
 		private int MaxComplexity;
 		private Regex TrustedImageUrlRegex;
+		private Regex SpamFreeLinkUrlRegex;
 		
 		private int Complexity;
 
@@ -265,6 +270,14 @@ namespace Brettle.Web.NeatHtml
 					v++;
 				}
 				string lcAttrName = attrName.ToLower();
+				if (lcAttrName == "href" && equalsQuotedValue.Length > 0)
+				{
+					string unquotedValue = quotedValue.Substring(1, quotedValue.Length-2);
+					if (SpamFreeLinkUrlRegex == null || !SpamFreeLinkUrlRegex.IsMatch(unquotedValue))
+					{
+						attrsBuilder.Append(" rel=\"nofollow\"");
+					}
+				}
 				if (AllowedAttributeNames.ContainsKey(lcAttrName))
 				{
 					attrsBuilder.Append(" " + attrName + "=" + quotedValue);
