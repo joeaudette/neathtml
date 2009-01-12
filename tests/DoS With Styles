@@ -1,4 +1,8 @@
-A tag with 1001 styles.  This crashed Mono until the regex was changed to limit the number of properties to 
+A tag with a style somewhat long style property value containing a word with an unrecognized character.
+This caused the StyleDeclRe in JS to run too long in Firefox 3.0.5 (at least), until it was changed to
+require whitespace between words in property values.
+<a style="border-color: windowtext windowtext windowtext -DoS-attempt-on-styleDeclRe;">
+A tag with 1001 styles.  This crashed Mono until the regex was changed to limit the number of properties to
 the number of properties on the whitelist. 
 <a style="top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;
 top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;top:1;

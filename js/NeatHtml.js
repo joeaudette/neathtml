@@ -105,8 +105,8 @@ NeatHtml.Filter = function(elemActions, attrActions, styleActions, entityCharCod
 	this.EntityCharCodeMap = entityCharCodeMap || GetDefaultEntityCharCodeMap();
 	this.IdPrefix = "NeatHtml_";
 	
-	this.StyleDeclRe = /(-?[_a-z][_a-z0-9-]*)[ \t\r\n\f]*:[ \t\r\n\f]*((([-+]?([0-9]+|[0-9]*\.[0-9]+)(%|[_a-z][_a-z0-9-]*)?|[_a-z][_a-z0-9-]*|"[^\n\r\f"]*"|'[^\n\r\f']*'|#([0-9a-f]{3}|[0-9a-f]{6})|rgb\( *[0-9]*%? *, *[0-9]*%? *, *[0-9]*%? *\))[ \t\r\n\f]*[,\/]?)+)(;|$)/igm;    // " 
-	
+	this.StyleDeclRe = /(-?[_a-z][_a-z0-9-]*)[ \t\r\n\f]*:[ \t\r\n\f]*((([-+]?([0-9]+|[0-9]*\.[0-9]+)(%|[_a-z][_a-z0-9-]*)?|[_a-z][_a-z0-9-]*|"[^\n\r\f"]*"|'[^\n\r\f']*'|#([0-9a-f]{3}|[0-9a-f]{6})|rgb\( *[0-9]*%? *, *[0-9]*%? *, *[0-9]*%? *\)))([ \t\r\n\f]+[,\/]?([-+]?([0-9]+|[0-9]*\.[0-9]+)(%|[_a-z][_a-z0-9-]*)?|[_a-z][_a-z0-9-]*|"[^\n\r\f"]*"|'[^\n\r\f']*'|#([0-9a-f]{3}|[0-9a-f]{6})|rgb\( *[0-9]*%? *, *[0-9]*%? *, *[0-9]*%? *\)))*[ \t\r\n\f]*)(;|$)/igm;    // "
+
 	function GetDefaultElemActions()
 	{
 		// These tags and their content is allowed.
