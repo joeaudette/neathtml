@@ -704,26 +704,30 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity, trustedImag
 };
 
 
-NeatHtml.Filter.prototype.ResizeContainer = function()
-{
-	// Find the calling script element and remember it so we can use it to find the untrusted content.
-	var scriptElems = document.getElementsByTagName("script");
-	var parent = scriptElems[scriptElems.length - 1].previousSibling;
-	var my = this;
+NeatHtml.Filter.prototype.ResizeContainer = function() {
+    // Find the calling script element and remember it so we can use it to find the untrusted content.
+    var scriptElems = document.getElementsByTagName("script");
+    var parent = scriptElems[scriptElems.length - 1].previousSibling;
+    var my = this;
 
-	// For IE6 and earlier, we used conditional comments to set the overflow to "auto".  For all other browsers,
-	// the overflow was set to "hidden".  We only need to resize the container in IE6 and earlier.  The 
-	// resizing code below does not always work properly in at least Firefox 1.5, 2.0, and Netscape 7.2,
-	// so skip it for all browsers exception IE6 and earlier.
-	if (parent.style.overflow == "hidden") 
-		return;
-	
-	// Limit the width of the content based on the width of the containing div, and
-	// set the height of the div based on the new content.  This allows IE6 to hide overflow that was
-	// absolutely positioned.
-	parent.firstChild.style.width = parent.style.width;
-	parent.style.height = parent.firstChild.scrollHeight + "px";
-	parent.style.overflow = "hidden";
+    // For IE6 and earlier, we used conditional comments to set the overflow to "auto".  For all other browsers,
+    // the overflow was set to "hidden".  We only need to resize the container in IE6 and earlier.  The 
+    // resizing code below does not always work properly in at least Firefox 1.5, 2.0, and Netscape 7.2,
+    // so skip it for all browsers exception IE6 and earlier.
+    var overflow = parent.style.overflow;
+    // The style.overflow property is empty on WebKit-based browsers (e.g. Safari 3.2.1), but is available
+    // via getComputedStyle(), so use that if necessary.
+    if (!overflow && document.defaultView && document.defaultView.getComputedStyle)
+        overflow = document.defaultView.getComputedStyle(parent, null).getPropertyValue("overflow");
+    if (overflow == "hidden")
+        return;
+
+    // Limit the width of the content based on the width of the containing div, and
+    // set the height of the div based on the new content.  This allows IE6 to hide overflow that was
+    // absolutely positioned.
+    parent.firstChild.style.width = parent.style.width;
+    parent.style.height = parent.firstChild.scrollHeight + "px";
+    parent.style.overflow = "hidden";
 };
 
 NeatHtml.Filter.prototype.HtmlEncode = function(s, filter)
