@@ -21,16 +21,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 Simplest usage (note that comments and absence of whitespace between tags can be significant):
 	
-<![if gte IE 7]>
+<!--[if gte IE 7]><!-->
 	<div class="NeatHtml" style="overflow: hidden; position: relative; border: none; padding: 0; margin: 0;">
-<![endif]>
+<!--<![endif]-->
 <!--[if lt IE 7]>
-	<div class="NeatHtml" style="width: NOSCRIPT_IE6_WIDTH; height: NOSCRIPT_IE6_HEIGHT; overflow: auto; position: relative; border: none; padding: 0; margin: 0;">	
+	<div class="NeatHtml" style="width: NOSCRIPT_IE6_WIDTH; height: NOSCRIPT_IE6_HEIGHT; overflow: auto; position: relative; border: none; padding: 0; margin: 0;">
+	<xml><script type='text/javascript'>NeatHtml.ScriptsRunInXml = true;</script></xml>
 <![endif]-->
 		<table style='border-spacing: 0;'><tr><td style='padding: 0;'><!-- test comment --><script type="text/javascript">
 			try { NeatHtml.DefaultFilter.BeginUntrusted(); } catch (ex) { document.writeln('NeatHtml not found\074!-' + '-'); }</script><div>
 				PREPROCESSED_UNTRUSTED_CONTENT
-		<input name='NeatHtmlEndUntrusted' type='hidden' value=\"\" /><xmp></xmp><!-- > --><script></script></td></tr></table>
+		</div><input name='NeatHtmlEndUntrusted' type='hidden' value="" /><script type='text/javascript'></script><!-- > --><!-- <xmp></xmp><xml></xml><! --></td></tr></table>
 	<script type="text/javascript">NeatHtml.DefaultFilter.ProcessUntrusted(MAX_COMPLEXITY, TRUSTED_IMAGE_URL_REGEXP);</script>
 	</div><script type='text/javascript'>NeatHtml.DefaultFilter.ResizeContainer();</script>
 	
@@ -394,23 +395,50 @@ NeatHtml.Filter.prototype.RemoveElem = function(tagInfo)
 };
 	
 NeatHtml.Filter.prototype.BeginUntrusted = function() {
-	// Inject markup to prevent the untrusted content from being parsed as HTML.  
-	// If we are able to extract content from comments, start a comment.
-	// Otherwise (e.g. Safari and Konqueror), start an <xmp> element.
-
-	// Find the calling script element and remember it so we can use it to find the untrusted content.
-	var scriptElems = document.getElementsByTagName("script");
-	this.BeginUntrustedScript = scriptElems[scriptElems.length - 1];
-
-	// The calling script element must be preceded by an HTML comment (i.e. <!-- something -->).  
-	if (this.BeginUntrustedScript.previousSibling 
-		&& this.BeginUntrustedScript.previousSibling.nodeType == 8 /* Node.COMMENT_NODE */)
+	try
 	{
-		document.write("<!--");
+		// Inject markup to prevent the untrusted content from being parsed as HTML.  
+		// If we are able to extract content from comments, start a comment.
+		// Otherwise, if scripts don't run in <xml> elements (e.g. Windows Mobile), start an <xml> element.
+		// Otherwise (e.g. Safari and Konqueror), start an <xmp> element.
+	
+		// Find the calling script element and remember it so we can use it to find the untrusted content.
+		var scriptElems = document.getElementsByTagName("script");
+		this.BeginUntrustedScript = scriptElems[scriptElems.length - 1];
+	
+		// The calling script element must be preceded by an HTML comment (i.e. <!-- something -->).
+		var prevSibling = this.BeginUntrustedScript.previousSibling || GetPreviousSibling(this.BeginUntrustedScript);
+		if (prevSibling && prevSibling.nodeType == 8 /* Node.COMMENT_NODE */)
+		{
+			document.write("<!--");
+		}
+		else if (!NeatHtml.ScriptsRunInXml) // Windows Mobile 6 and below
+		{
+			document.write("<xml>");
+		}
+		else
+		{
+			document.write("<xmp>");
+		}
 	}
-	else
+	catch (ex)
 	{
-		document.write("<xmp>");
+		document.writeln("NeatHtml error: browser too old");
+		document.write("<!--"); // Hide the content in a comment.
+		return;
+	}
+	return;
+
+	function GetPreviousSibling(n)
+	{
+		var p = n.parentNode;
+		var children = p.childNodes;
+		for (var i=1; i < children.length; i++)
+		{
+			if (children.item(i) == n)
+				return children.item(i-1);
+		}
+		return null;
 	}
 };
 
@@ -438,13 +466,6 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity, trustedImag
 		// Make the result available for use by tests 
 		this.FilteredContent = xmlStr;
 
-		// Add some branding 
-/*
-		var endTagPos = xmlStr.lastIndexOf("/") - 1;
-		xmlStr = xmlStr.substring(0, endTagPos)
-			+ "<div style='text-align: right;'><em><a href='http://www.brettle.com/neathtml'>Powered by NeatHtml&trade;</a></em></div>" 
-			+ xmlStr.substring(endTagPos, xmlStr.length);
-*/
 		// Replace the original untrusted content (and surrounding table)
 		containingDiv.innerHTML = xmlStr;
 	}
@@ -453,7 +474,8 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity, trustedImag
 		if (ex == NeatHtml.ContentTooComplexException)
 			containingDiv.innerHTML = this.FilteredContent = "<div>" + ex.toString() + "</div>";
 		else
-			containingDiv.innerHTML = this.FilteredContent = "<div><pre>" + ex.toString().replace(/</g, "&lt;").replace(/&/g, "&amp;") + "</pre></div>";
+			var errMsg = ex.toString();
+			containingDiv.innerHTML = this.FilteredContent = "<div><pre>" + errMsg.replace(/</g, "&lt;").replace(/&/g, "&amp;") + "</pre></div>";
 	}
 	
 	return this.FilteredContent;
@@ -469,10 +491,22 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity, trustedImag
 		return n;
 	}
 
-	function GetUntrustedContent() 
+	function GetNextSibling(n)
+	{
+		var p = n.parentNode;
+		var children = p.childNodes;
+		for (var i=0; i < children.length-1; i++)
+		{
+			if (children.item(i) == n)
+				return children.item(i+1);
+		}
+		return null;
+	}
+
+	function GetUntrustedContent()
 	{
 		// The untrusted content is in the node that immediately follows the script element that called BeginUntrusted. 
-		var n = my.BeginUntrustedScript.nextSibling;
+		var n = my.BeginUntrustedScript.nextSibling || GetNextSibling(my.BeginUntrustedScript);
 		var s;
 		if (n.nodeType == 8 /* Node.COMMENT_NODE */)
 		{
@@ -484,8 +518,14 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity, trustedImag
 	 		// Unquote the HTML special characters.
 			s = my.HtmlDecode(s, my);
 		}
-
-		s = s.substring(0, s.indexOf("<input name='NeatHtmlEndUntrusted'"));
+		else if (n.tagName == "XML")
+		{
+	 		s = n.innerText;
+		}
+		var endIndex = s.indexOf("<input name='NeatHtmlEndUntrusted'");
+		if (endIndex == -1)
+			endIndex = s.length;
+		s = s.substring(0, endIndex);
 		
 		// Make the result available for use by tests 
 		my.UnfilteredContent = s;
@@ -805,4 +845,3 @@ NeatHtml.Filter.prototype.HtmlDecode = function(s, filter)
 }
 
 NeatHtml.DefaultFilter = new NeatHtml.Filter();
-

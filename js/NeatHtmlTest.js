@@ -212,11 +212,14 @@ NeatHtmlTest.Container = null;
 NeatHtmlTest.AfterContainer = null;
 
 NeatHtmlTest.DefaultFilter.BeginUntrusted = function() {
-	var scriptElems = document.getElementsByTagName("script");
-	var callingScriptElem = scriptElems[scriptElems.length - 1];
-	NeatHtmlTest.Container = callingScriptElem;
-	while (NeatHtmlTest.Container.tagName.toLowerCase() != "div")
-		NeatHtmlTest.Container = NeatHtmlTest.Container.parentNode;
+	if (typeof(document.getElementsByTagName) == "function")
+	{
+		var scriptElems = document.getElementsByTagName("script");
+		var callingScriptElem = scriptElems[scriptElems.length - 1];
+		NeatHtmlTest.Container = callingScriptElem;
+		while (NeatHtmlTest.Container.tagName.toLowerCase() != "div")
+			NeatHtmlTest.Container = NeatHtmlTest.Container.parentNode;
+	}
 	if (!NeatHtmlTest.NoScript && !NeatHtmlTest.NoNeatHtml)
 		NeatHtml.DefaultFilter.BeginUntrusted();
 };
