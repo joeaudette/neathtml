@@ -454,14 +454,13 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity, trustedImag
 		trustedImageUrlRegExp = null;
 	}
 	this.TrustedImageUrlRegExp = trustedImageUrlRegExp;
-	this.Complexity = 0;
 	var containingDiv = FindContainingDiv(this.BeginUntrustedScript);
 	var xmlStr;
 	try
 	{
 		var untrustedContent = GetUntrustedContent();
 		
-		xmlStr = FilterTagSoupToXml(untrustedContent);
+		xmlStr = this.FilterFirstElement(untrustedContent);
 
 		// Make the result available for use by tests 
 		this.FilteredContent = xmlStr;
@@ -539,216 +538,249 @@ NeatHtml.Filter.prototype.ProcessUntrusted = function(maxComplexity, trustedImag
 //		alert(s);
 		return s;
 	}
-	
-	function FilterTagSoupToXml(s)
+};
+
+NeatHtml.Filter.prototype.Filter = function(s, destDiv)
+{
+	var result = this.FilterFirstElement("<div>" + s + "</div>");
+	result = result.substring("<div>".length, result.length - "</div>".length);
+	if (typeof(destDiv) != "undefined")
 	{
-		// According to HTML 3.2
-		var endTagsForbidden = { br:1, hr:1, meta:1, col:1, isindex:1, img:1, link:1, area:1, basefont:1, param:1, input:1, base:1 };
-		var endTagsOptional = { li:1, p:1, dt:1, dd:1, thead:1, tfoot:1, tbody:1, colgroup:1, tr:1, th:1, td:1, plaintext:1, option:1 };
-		var openTagInfos = [];
-		var matches = null;
-		var filteredXml = "";
-		var tagSoupRe = /(&((#[0-9]{1,10};|#x[0-9a-fA-F]{1,8};|amp;|lt;|gt;|quot;)|([A-Z:_a-z][A-Z:_a-z0-9._]{0,10};|(#X[0-9a-fA-F]{1,8};|))))|(<(\/?)(([!\?A-Z:_a-z][^ \t\n\r\/>]*)([^>]*)>|([^!\?A-Z:_a-z])))/gm; 
-		tagSoupRe.lastIndex = 0;
-		var searchStartIndex = 0;
-		while (null != (matches = tagSoupRe.exec(s)))
+		destDiv.innerHTML = '<!--[if gte IE 7]><!-->'
+			+ '<div class="NeatHtml" style="overflow: hidden; position: relative; border: none; padding: 0; margin: 0;">'
+			+ '<!--<![endif]-->'
+			+ '<!--[if lt IE 7]>'
+			+ '<div class="NeatHtml" style="overflow: auto; position: relative; border: none; padding: 0; margin: 0;">'
+			+ '<![endif]-->'
+			+ result
+			+ '</div>';
+		for (var i = 0; i < destDiv.childNodes.length; i++)
 		{
-			if (my.Complexity++ > my.MaxComplexity) throw NeatHtml.ContentTooComplexException;
-			var text = s.substring(searchStartIndex, matches.index);
-			// Text should not be the start of the output 
-			if (openTagInfos.length && openTagInfos[openTagInfos.length-1].bOutputContent)
-				filteredXml += text;
-			
-			filteredXml += HandleAmpOrOpenAngle.apply(this, matches);
-			searchStartIndex = tagSoupRe.lastIndex;
+			if (destDiv.childNodes.item(i).tagName == "DIV")
+			{
+				this.ResizeContainer(destDiv.childNodes.item(i));
+				break;
+			}
 		}
+	}
+	return result;
+}
+
+NeatHtml.Filter.prototype.FilterFirstElement = function(s)
+{
+	var my = this;
+	my.Complexity = 0;
+	// According to HTML 3.2
+	var endTagsForbidden = { br:1, hr:1, meta:1, col:1, isindex:1, img:1, link:1, area:1, basefont:1, param:1, input:1, base:1 };
+	var endTagsOptional = { li:1, p:1, dt:1, dd:1, thead:1, tfoot:1, tbody:1, colgroup:1, tr:1, th:1, td:1, plaintext:1, option:1 };
+	var openTagInfos = [];
+	var matches = null;
+	var filteredXml = "";
+	var tagSoupRe = /(&((#[0-9]{1,10};|#x[0-9a-fA-F]{1,8};|amp;|lt;|gt;|quot;)|([A-Z:_a-z][A-Z:_a-z0-9._]{0,10};|(#X[0-9a-fA-F]{1,8};|))))|(<(\/?)(([!\?A-Z:_a-z][^ \t\n\r\/>]*)([^>]*)>|([^!\?A-Z:_a-z])))/gm; 
+	tagSoupRe.lastIndex = 0;
+	var searchStartIndex = 0;
+	while (null != (matches = tagSoupRe.exec(s)))
+	{
+		if (my.Complexity++ > my.MaxComplexity) throw NeatHtml.ContentTooComplexException;
+		var text = s.substring(searchStartIndex, matches.index);
+		// Text should not be the start of the output 
+		if (openTagInfos.length && openTagInfos[openTagInfos.length-1].bOutputContent)
+			filteredXml += text;
 		
-		// Close any remaining open tags
-		while (openTagInfos.length)
-		{
-		 	var openTagInfo = openTagInfos.pop();
-		 	if (openTagInfo.bOutputTags)
-				filteredXml += "</" + openTagInfo.outTagName + ">";
-		}
+		filteredXml += HandleAmpOrOpenAngle.apply(this, matches);
+		searchStartIndex = tagSoupRe.lastIndex;
+	}
+	
+	// Close any remaining open tags
+	while (openTagInfos.length)
+	{
+	 	var openTagInfo = openTagInfos.pop();
+	 	if (openTagInfo.bOutputTags)
+			filteredXml += "</" + openTagInfo.outTagName + ">";
+	}
 // alert(s);
-		return filteredXml;
+	return filteredXml;
 
-		/* Local functions */
-		function HandleAmpOrOpenAngle(match, isAmp, afterAmp, isValidXmlEntityRef, charEntityRef, upperCaseHexEntityRef, isOpenAngle, isEndTag, raw, tagName, attrs, isNotEncoded) 
+	/* Local functions */
+	function HandleAmpOrOpenAngle(match, isAmp, afterAmp, isValidXmlEntityRef, charEntityRef, upperCaseHexEntityRef, isOpenAngle, isEndTag, raw, tagName, attrs, isNotEncoded) 
+	{
+		if (isAmp) return HandleAmpersand(match, isValidXmlEntityRef, afterAmp, charEntityRef, upperCaseHexEntityRef);
+		if (isNotEncoded)	return my.HtmlEncode(match, my);
+		if (isOpenAngle) return HandleOpenAngle(match, isEndTag, tagName, attrs);
+	}
+
+	function HandleAmpersand(match, isValidXmlEntityRef, afterAmp, charEntityRef, upperCaseHexEntityRef)
+	{
+		if (isValidXmlEntityRef)
+			return match;
+		if (!charEntityRef)
+			return my.HtmlEncode(match, my);
+		if (upperCaseHexEntityRef)
+			return match.toLowerCase();
+		// It is a character entity reference but it isn't supported in XML
+		if (charEntityRef)
 		{
-			if (isAmp) return HandleAmpersand(match, isValidXmlEntityRef, afterAmp, charEntityRef, upperCaseHexEntityRef);
-			if (isNotEncoded)	return my.HtmlEncode(match, my);
-			if (isOpenAngle) return HandleOpenAngle(match, isEndTag, tagName, attrs);
+			// Strip the trailing semicolon
+			charEntityRef = charEntityRef.substring(0, charEntityRef.length-1);
 		}
+		var charCode = my.EntityCharCodeMap[charEntityRef];
+		if (!charCode)
+			return my.HtmlEncode(match, my);
+		return "&#" + charCode + ";";
+	}
 
-		function HandleAmpersand(match, isValidXmlEntityRef, afterAmp, charEntityRef, upperCaseHexEntityRef)
+	function HandleOpenAngle(match, isEndTag, tagName, attrs)
+	{
+		if (/^!.*$/.test(tagName))
 		{
-			if (isValidXmlEntityRef)
-				return match;
-			if (!charEntityRef)
-				return my.HtmlEncode(match, my);
-			if (upperCaseHexEntityRef)
-				return match.toLowerCase();
-			// It is a character entity reference but it isn't supported in XML
-			if (charEntityRef)
+			if (/^!\[CDATA\[.*$/.test(tagName))
 			{
-				// Strip the trailing semicolon
-				charEntityRef = charEntityRef.substring(0, charEntityRef.length-1);
-			}
-			var charCode = my.EntityCharCodeMap[charEntityRef];
-			if (!charCode)
-				return my.HtmlEncode(match, my);
-			return "&#" + charCode + ";";
-		}
-
-		function HandleOpenAngle(match, isEndTag, tagName, attrs)
-		{
-			if (/^!.*$/.test(tagName))
-			{
-				if (/^!\[CDATA\[.*$/.test(tagName))
-				{
-					tagSoupRe.lastIndex = s.indexOf("]]>", matches.index + "<![CDATA[".length);
-					if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match, my);
-					tagSoupRe.lastIndex += "]]>".length;
-					return "";
-				}
-				tagSoupRe.lastIndex = matches.index + "<!".length;
-				while (tagSoupRe.lastIndex != -1)
-				{
-					var dashDashIndex = s.indexOf("--", tagSoupRe.lastIndex);
-					var closeAngleIndex = s.indexOf(">", tagSoupRe.lastIndex);
-					if (closeAngleIndex == -1) break;
-					if (closeAngleIndex < dashDashIndex)
-					{
-						tagSoupRe.lastIndex = closeAngleIndex + 1;
-						break;
-					}
-					tagSoupRe.lastIndex = dashDashIndex;
-					if (tagSoupRe.lastIndex == -1) break;
-					tagSoupRe.lastIndex += 2;
-					tagSoupRe.lastIndex = s.indexOf("--", tagSoupRe.lastIndex);
-					if (tagSoupRe.lastIndex == -1) break;
-					tagSoupRe.lastIndex += 2;
-				}
-					
+				tagSoupRe.lastIndex = s.indexOf("]]>", matches.index + "<![CDATA[".length);
 				if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match, my);
+				tagSoupRe.lastIndex += "]]>".length;
 				return "";
 			}
-			if (/^\?.*$/.test(tagName))
+			tagSoupRe.lastIndex = matches.index + "<!".length;
+			while (tagSoupRe.lastIndex != -1)
 			{
-				tagSoupRe.lastIndex = s.indexOf("?>", matches.index + "<?".length);
-				if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match, my);
-				tagSoupRe.lastIndex += "?>".length;
-				return "";
-			}
-			// If it doesn't look like a tag then it is probably an unencoded '<'.
-			if (! /^[A-Z:_a-z][A-Z:_a-z0-9._]*$/.test(tagName) || isEndTag && openTagInfos.length == 0) 
-				return my.HtmlEncode(match, my);
-			// Otherwise it is a begin or end tag
-			if (isEndTag)
-				return HandleEndTag(match, tagName);
-			else
-			{
-				return HandleBeginTag(match, tagName, attrs);
-			}
-		}
-			
-		function HandleBeginTag(match, tagName, attrs)
-		{
-			var lcTagName = tagName.toLowerCase();
-			var output = "";
-			// If this tag has an optional end tag and the current open elem has the same tag name,
-			// close the one that is open
-			if (endTagsOptional[lcTagName] && openTagInfos.length)
-			{
-				var openTagInfo = openTagInfos[openTagInfos.length-1];
-				if (openTagInfo.tagName.toLowerCase() == lcTagName)
+				var dashDashIndex = s.indexOf("--", tagSoupRe.lastIndex);
+				var closeAngleIndex = s.indexOf(">", tagSoupRe.lastIndex);
+				if (closeAngleIndex == -1) break;
+				if (closeAngleIndex < dashDashIndex)
 				{
-					if (openTagInfo.bOutputTags)
-						output = "</" + openTagInfo.outTagName + ">";
-					openTagInfos.pop();
-					// If there aren't any open tags left, ignore everything else
-					if (openTagInfo.length == 0)
-						tagSoupRe.lastIndex = s.length;
+					tagSoupRe.lastIndex = closeAngleIndex + 1;
+					break;
 				}
+				tagSoupRe.lastIndex = dashDashIndex;
+				if (tagSoupRe.lastIndex == -1) break;
+				tagSoupRe.lastIndex += 2;
+				tagSoupRe.lastIndex = s.indexOf("--", tagSoupRe.lastIndex);
+				if (tagSoupRe.lastIndex == -1) break;
+				tagSoupRe.lastIndex += 2;
 			}
-			
-			attrs = attrs.replace(/&((#[0-9]{1,10};|#x[0-9a-fA-F]{1,8};|amp;|lt;|gt;|quot;|apos;)|([A-Z:_a-z][A-Z:_a-z0-9._]{0,10};|(#X[0-9a-fA-F]{1,8};|)))/gm,
-												HandleAmpersand);
-
-			var action = my.ElemActions[tagName] || my.ElemActions[lcTagName] || my.RemoveTag;
-			var tagInfo = { };
-			tagInfo.tagName = tagInfo.outTagName = tagName;
-			tagInfo.attrs = attrs;
-			tagInfo.bOutputTags = tagInfo.bOutputContent = true;
-
-			action.call(my, tagInfo, my);
-			if (openTagInfos.length && !openTagInfos[openTagInfos.length-1].bOutputContent)
-				tagInfo.bOutputTags = tagInfo.bOutputContent = false;
-			
-			var newTag = "<" + tagInfo.outTagName + tagInfo.attrs;
-			if (attrs.charAt(attrs.length-1) == "/" || endTagsForbidden[lcTagName])
+				
+			if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match, my);
+			return "";
+		}
+		if (/^\?.*$/.test(tagName))
+		{
+			tagSoupRe.lastIndex = s.indexOf("?>", matches.index + "<?".length);
+			if (tagSoupRe.lastIndex == -1) return my.HtmlEncode(match, my);
+			tagSoupRe.lastIndex += "?>".length;
+			return "";
+		}
+		// If it doesn't look like a tag then it is probably an unencoded '<'.
+		if (! /^[A-Z:_a-z][A-Z:_a-z0-9._]*$/.test(tagName) || isEndTag && openTagInfos.length == 0) 
+			return my.HtmlEncode(match, my);
+		// Otherwise it is a begin or end tag
+		if (isEndTag)
+			return HandleEndTag(match, tagName);
+		else
+		{
+			return HandleBeginTag(match, tagName, attrs);
+		}
+	}
+		
+	function HandleBeginTag(match, tagName, attrs)
+	{
+		var lcTagName = tagName.toLowerCase();
+		var output = "";
+		// If this tag has an optional end tag and the current open elem has the same tag name,
+		// close the one that is open
+		if (endTagsOptional[lcTagName] && openTagInfos.length)
+		{
+			var openTagInfo = openTagInfos[openTagInfos.length-1];
+			if (openTagInfo.tagName.toLowerCase() == lcTagName)
 			{
-				newTag += " />";
+				if (openTagInfo.bOutputTags)
+					output = "</" + openTagInfo.outTagName + ">";
+				openTagInfos.pop();
+				// If there aren't any open tags left, ignore everything else
+				if (openTagInfo.length == 0)
+					tagSoupRe.lastIndex = s.length;
 			}
-			else
-			{
-				newTag += ">";
-				openTagInfos.push(tagInfo);
-			}			
-			if (tagInfo.bOutputTags)
-				output += newTag;
-			return output;
 		}
 		
-		function HandleEndTag(match, tagName)
+		attrs = attrs.replace(/&((#[0-9]{1,10};|#x[0-9a-fA-F]{1,8};|amp;|lt;|gt;|quot;|apos;)|([A-Z:_a-z][A-Z:_a-z0-9._]{0,10};|(#X[0-9a-fA-F]{1,8};|)))/gm,
+											HandleAmpersand);
+
+		var action = my.ElemActions[tagName] || my.ElemActions[lcTagName] || my.RemoveTag;
+		var tagInfo = { };
+		tagInfo.tagName = tagInfo.outTagName = tagName;
+		tagInfo.attrs = attrs;
+		tagInfo.bOutputTags = tagInfo.bOutputContent = true;
+
+		action.call(my, tagInfo, my);
+		if (openTagInfos.length && !openTagInfos[openTagInfos.length-1].bOutputContent)
+			tagInfo.bOutputTags = tagInfo.bOutputContent = false;
+		
+		var newTag = "<" + tagInfo.outTagName + tagInfo.attrs;
+		if (attrs.charAt(attrs.length-1) == "/" || endTagsForbidden[lcTagName])
 		{
-			var lcTagName = tagName.toLowerCase();
-			var result = null;
-			var tagIndex = openTagInfos.length - 1;
-			for (var closeTags = ""; tagIndex >= 0; tagIndex--)
-			{
-			 	var openTagInfo = openTagInfos[tagIndex];
-				lcOpenTagName = openTagInfo.tagName.toLowerCase();
-				if (openTagInfo.bOutputTags)
-				{
-					closeTags += "</" + openTagInfo.outTagName + ">";
-				}
-				if (lcOpenTagName == lcTagName)
-				{
-					result = closeTags;
-					break;
-				}
-				// If the open tag must be explicitly closed, ignore those close tag.
-				if (!endTagsOptional[lcOpenTagName])
-				{
-					break;
-				}
-				if (my.Complexity++ > my.MaxComplexity) throw NeatHtml.ContentTooComplexException;
-			}
-			// If we didn't find a matching open tag, then remove the close tag
-			if (result == null)
-			{
-				return "";
-			}
-			// Remove the tags from the stack of open tags
-			openTagInfos.splice(tagIndex, openTagInfos.length - tagIndex);
-			// If there aren't any open tags left, ignore everything else
-			if (openTagInfos.length == 0)
-			{
-				tagSoupRe.lastIndex = s.length;
-			}
-			return result;
+			newTag += " />";
 		}
+		else
+		{
+			newTag += ">";
+			openTagInfos.push(tagInfo);
+		}			
+		if (tagInfo.bOutputTags)
+			output += newTag;
+		return output;
+	}
+	
+	function HandleEndTag(match, tagName)
+	{
+		var lcTagName = tagName.toLowerCase();
+		var result = null;
+		var tagIndex = openTagInfos.length - 1;
+		for (var closeTags = ""; tagIndex >= 0; tagIndex--)
+		{
+		 	var openTagInfo = openTagInfos[tagIndex];
+			lcOpenTagName = openTagInfo.tagName.toLowerCase();
+			if (openTagInfo.bOutputTags)
+			{
+				closeTags += "</" + openTagInfo.outTagName + ">";
+			}
+			if (lcOpenTagName == lcTagName)
+			{
+				result = closeTags;
+				break;
+			}
+			// If the open tag must be explicitly closed, ignore those close tag.
+			if (!endTagsOptional[lcOpenTagName])
+			{
+				break;
+			}
+			if (my.Complexity++ > my.MaxComplexity) throw NeatHtml.ContentTooComplexException;
+		}
+		// If we didn't find a matching open tag, then remove the close tag
+		if (result == null)
+		{
+			return "";
+		}
+		// Remove the tags from the stack of open tags
+		openTagInfos.splice(tagIndex, openTagInfos.length - tagIndex);
+		// If there aren't any open tags left, ignore everything else
+		if (openTagInfos.length == 0)
+		{
+			tagSoupRe.lastIndex = s.length;
+		}
+		return result;
 	}
 };
 
-
-NeatHtml.Filter.prototype.ResizeContainer = function() {
-    // Find the calling script element and remember it so we can use it to find the untrusted content.
-    var scriptElems = document.getElementsByTagName("script");
-    var parent = scriptElems[scriptElems.length - 1].previousSibling;
+NeatHtml.Filter.prototype.ResizeContainer = function(container) {
     var my = this;
+	var parent;
+	if (typeof(container) != "undefined")
+		parent = container;
+	else
+	{
+	    // Find the calling script element and remember it so we can use it to find the container.
+	    var scriptElems = document.getElementsByTagName("script");
+	    parent = scriptElems[scriptElems.length - 1].previousSibling;
+	}
 
     // For IE6 and earlier, we used conditional comments to set the overflow to "auto".  For all other browsers,
     // the overflow was set to "hidden".  We only need to resize the container in IE6 and earlier.  The 
