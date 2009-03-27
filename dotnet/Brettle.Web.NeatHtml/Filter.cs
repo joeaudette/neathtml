@@ -156,7 +156,6 @@ namespace Brettle.Web.NeatHtml
 			+ "<!--<![endif]-->\n"
 			+ "<!--[if lt IE 7]>\n"
 			+ "<div class='NeatHtml' style='width: {2}; height: {3}; overflow: auto; position: relative; border: none; padding: 0; margin: 0;'>\n"
-			+ "<xml><script type='text/javascript'>NeatHtml.ScriptsRunInXml = true;</script></xml>"
 			+ "<![endif]-->\n"
 			+ "<table style='border-spacing: 0;'><tr><td style='padding: 0;'><!-- test comment --><script type='text/javascript'>\n"
 			+ "try {{ {0}.BeginUntrusted(); }} catch (ex) {{ document.writeln('NeatHtml not found\\074!-' + '-'); }}</script>"

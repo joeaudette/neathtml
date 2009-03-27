@@ -26,7 +26,6 @@ Simplest usage (note that comments and absence of whitespace between tags can be
 <!--<![endif]-->
 <!--[if lt IE 7]>
 	<div class="NeatHtml" style="width: NOSCRIPT_IE6_WIDTH; height: NOSCRIPT_IE6_HEIGHT; overflow: auto; position: relative; border: none; padding: 0; margin: 0;">
-	<xml><script type='text/javascript'>NeatHtml.ScriptsRunInXml = true;</script></xml>
 <![endif]-->
 		<table style='border-spacing: 0;'><tr><td style='padding: 0;'><!-- test comment --><script type="text/javascript">
 			try { NeatHtml.DefaultFilter.BeginUntrusted(); } catch (ex) { document.writeln('NeatHtml not found\074!-' + '-'); }</script><div>
@@ -412,13 +411,23 @@ NeatHtml.Filter.prototype.BeginUntrusted = function() {
 		{
 			document.write("<!--");
 		}
-		else if (!NeatHtml.ScriptsRunInXml) // Windows Mobile 6 and below
-		{
-			document.write("<xml>");
-		}
 		else
 		{
-			document.write("<xmp>");
+			var ua = navigator.userAgent.toLowerCase();
+			if (ua.indexOf("iemobile") != -1) // Windows Mobile 6+
+			{
+				document.write("<xml>");
+			}
+			else if (ua.indexOf("webkit") != -1 || ua.indexOf("khtml") != -1)
+			{
+				document.write("<xmp>");
+			}
+			else
+			{
+				document.writeln("NeatHtml error: unrecognized browser: " + navigator.userAgent);
+				document.write("<!--"); // Hide the content in a comment.
+				return;
+			}
 		}
 	}
 	catch (ex)

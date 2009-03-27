@@ -5,12 +5,12 @@
       <dc:title>Fighting Cross Site Scripting (XSS) with Some Javascript Judo</dc:title>
       <meta:creation-date>2007-09-14T11:03:22</meta:creation-date>
       <dc:creator>Dean Brettle</dc:creator>
-      <dc:date>2009-03-26T00:30:55</dc:date>
+      <dc:date>2009-03-27T12:57:38</dc:date>
       <meta:printed-by>Dean Brettle</meta:printed-by>
       <meta:print-date>2007-09-24T08:51:38</meta:print-date>
-      <meta:editing-cycles>113</meta:editing-cycles>
-      <meta:editing-duration>PT248H11M48S</meta:editing-duration>
-      <meta:document-statistic meta:table-count="1" meta:image-count="0" meta:object-count="0" meta:page-count="20" meta:paragraph-count="238" meta:word-count="8251" meta:character-count="56454"/>
+      <meta:editing-cycles>116</meta:editing-cycles>
+      <meta:editing-duration>PT250H33M07S</meta:editing-duration>
+      <meta:document-statistic meta:table-count="1" meta:image-count="0" meta:object-count="0" meta:page-count="20" meta:paragraph-count="240" meta:word-count="8167" meta:character-count="55185"/>
       <meta:user-defined meta:name="Info 1"/>
       <meta:user-defined meta:name="Info 2"/>
       <meta:user-defined meta:name="Info 3"/>
@@ -18,7 +18,7 @@
    </office:meta>
    <office:settings>
       <config:config-item-set config:name="ooo:view-settings">
-         <config:config-item config:name="ViewAreaTop" config:type="int">274320</config:config-item>
+         <config:config-item config:name="ViewAreaTop" config:type="int">40005</config:config-item>
          <config:config-item config:name="ViewAreaLeft" config:type="int">0</config:config-item>
          <config:config-item config:name="ViewAreaWidth" config:type="int">23153</config:config-item>
          <config:config-item config:name="ViewAreaHeight" config:type="int">12569</config:config-item>
@@ -27,12 +27,12 @@
          <config:config-item-map-indexed config:name="Views">
             <config:config-item-map-entry>
                <config:config-item config:name="ViewId" config:type="string">view2</config:config-item>
-               <config:config-item config:name="ViewLeft" config:type="int">5339</config:config-item>
-               <config:config-item config:name="ViewTop" config:type="int">261710</config:config-item>
+               <config:config-item config:name="ViewLeft" config:type="int">11749</config:config-item>
+               <config:config-item config:name="ViewTop" config:type="int">46533</config:config-item>
                <config:config-item config:name="VisibleLeft" config:type="int">0</config:config-item>
-               <config:config-item config:name="VisibleTop" config:type="int">274320</config:config-item>
+               <config:config-item config:name="VisibleTop" config:type="int">40005</config:config-item>
                <config:config-item config:name="VisibleRight" config:type="int">23151</config:config-item>
-               <config:config-item config:name="VisibleBottom" config:type="int">286888</config:config-item>
+               <config:config-item config:name="VisibleBottom" config:type="int">52573</config:config-item>
                <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
                <config:config-item config:name="ViewLayoutColumns" config:type="short">0</config:config-item>
                <config:config-item config:name="ViewLayoutBookMode" config:type="boolean">false</config:config-item>
@@ -842,7 +842,7 @@
             </text:span>
             <text:span text:style-name="Emphasis">
                <text:span text:style-name="T1">
-                  <text:date style:data-style-name="N37" text:date-value="2009-03-26T00:30:56">03/26/09</text:date>
+                  <text:date style:data-style-name="N37" text:date-value="2009-03-27T12:57:37.99">03/27/09</text:date>
                </text:span>
             </text:span>
             <text:span text:style-name="Emphasis">
@@ -850,7 +850,7 @@
             </text:span>
             <text:span text:style-name="Emphasis">
                <text:span text:style-name="T1">
-                  <text:time style:data-style-name="N116" text:time-value="2009-03-26T00:30:56">12:30:56AM</text:time>
+                  <text:time style:data-style-name="N116" text:time-value="2009-03-27T12:57:37.99">12:57:38PM</text:time>
                </text:span>
             </text:span>
             <text:span text:style-name="Emphasis">
@@ -1011,30 +1011,36 @@
          <text:p text:style-name="Text_20_body">NeatHtml primarily uses three simple but effective techniques. <text:s/>The first technique uses JavaScript's document.writeln() to inject markup (e.g. “&lt;!--”) that will hide the untrusted content from the browser's HTML parser until the untrusted content has been filtered. <text:s/>This "JavaScript Judo" technique uses the source of an attacker's power (i.e. JavaScript) against him. <text:s/>Using JavaScript to filter the untrusted content also minimizes server load. <text:s/>The technique was inspired by <text:a xlink:type="simple" xlink:href="http://www.mindedsecurity.com/">Stefano Di Paola's</text:a> work on <text:a xlink:type="simple" xlink:href="http://www.wisec.it/sectou.php?id=46c5843ea4900">Preventing XSS with Data Binding</text:a>. <text:s/>The primary disadvantage to the data binding approach is that the untrusted content is not in the normal document flow. <text:s/>This causes accessibility problems for users who disable script and for search engine spiders. <text:s/>NeatHtml avoids this problem by leaving the untrusted content in the document flow but using JavaScript-injected markup to hide it from the browser until it has been filtered. <text:s/>As a result, search engine spiders and users who disable script see untrusted content normally.</text:p>
          <text:p text:style-name="Text_20_body">NeatHtml's two other techniques restrict where the untrusted content will be displayed. <text:s/>The “Layout Lockdown” technique is merely a DIV element styled with “<text:a xlink:type="simple" xlink:href="http://www.w3.org/TR/REC-CSS2/visufx.html#overflow">overflow</text:a>: hidden” combined with workarounds for Internet Explorer 6. <text:s/>The “Table Trap” technique protects no-script users from untrusted content which tries to close a containing trusted element like the Layout Lockdown DIV element. <text:s/>A Table Trap prevents this by enclosing the untrusted content in a TABLE element and prohibiting the untrusted content from closing the TABLE. <text:s/>All three techniques are discussed in more detail in <text:a xlink:type="simple" xlink:href="#2.Technical Details|outline">Section 2</text:a>.</text:p>
          <text:p text:style-name="Text_20_body">NeatHtml should work with any browser that supports both JavaScript 1.3 and a few DOM APIs. It does <text:span text:style-name="T4">not</text:span> use the browser's internal XML/HTML parser to parse the untrusted content, thereby eliminating many browser compatibility issues. It has been tested against:</text:p>
-         <text:list xml:id="list1750291307" text:style-name="Bulleted_20_List">
+         <text:list xml:id="list591875923" text:style-name="Bulleted_20_List">
             <text:list-item>
-               <text:p text:style-name="Bulleted_20_List">Microsoft Internet Explorer (IE) version 7.</text:p>
+               <text:p text:style-name="Bulleted_20_List">Microsoft Internet Explorer (IE) versions 6, 7, and 8.</text:p>
             </text:list-item>
             <text:list-item>
-               <text:p text:style-name="Bulleted_20_List">Microsoft Internet Explorer (IE) version 6.</text:p>
+               <text:p text:style-name="Bulleted_20_List">Mozilla Firefox (FF) versions 1.5, 2.0, and 3.0.</text:p>
             </text:list-item>
             <text:list-item>
-               <text:p text:style-name="Bulleted_20_List">Mozilla Firefox (FF) versions 1.5 and 2.0.</text:p>
+               <text:p text:style-name="Bulleted_20_List">Mac Safari versions 1.2, 1.3, 2.0, and 3.2.</text:p>
             </text:list-item>
             <text:list-item>
-               <text:p text:style-name="Bulleted_20_List">Opera 9.21.</text:p>
+               <text:p text:style-name="Bulleted_20_List">Opera 9.</text:p>
             </text:list-item>
             <text:list-item>
-               <text:p text:style-name="Bulleted_20_List">Netscape 7.2.</text:p>
+               <text:p text:style-name="Bulleted_20_List">Chrome 1.0</text:p>
             </text:list-item>
             <text:list-item>
-               <text:p text:style-name="Bulleted_20_List">Mac Safari versions 1.2, 1.3, and 2.0.</text:p>
+               <text:p text:style-name="Bulleted_20_List">Microsoft Internet Explorer (IE) Mobile 6.</text:p>
+            </text:list-item>
+            <text:list-item>
+               <text:p text:style-name="Bulleted_20_List">Android's default browser</text:p>
+            </text:list-item>
+            <text:list-item>
+               <text:p text:style-name="Bulleted_20_List">Netscape versions 7.2, and 9.0.</text:p>
             </text:list-item>
             <text:list-item>
                <text:p text:style-name="Bulleted_20_List">Konqueror 3.4.0-5 and 3.5.7.</text:p>
             </text:list-item>
             <text:list-item>
-               <text:p text:style-name="Bulleted_20_List">Microsoft Internet Explorer (IE) Mobile 6.</text:p>
+               <text:p text:style-name="Bulleted_20_List">Camino 1.5</text:p>
             </text:list-item>
          </text:list>
          <text:p text:style-name="Text_20_body">NeatHtml consists of the NeatHtml.js JavaScript library and a small server-side component for ASP.NET. <text:s/>The server-side component is approximately 400 lines of code and should be easy to port to other web development platforms. <text:s/>To facilitate porting and testing, NeatHtml includes a JavaScript test framework and a <text:a xlink:type="simple" xlink:href="http://www.brettle.com/NeatHtml/dotnet/Demo.aspx">demo page</text:a> which uses the test framework and demonstrates the capabilities of NeatHtml. <text:s/>NeatHtml is licensed under the <text:a xlink:type="simple" xlink:href="http://www.gnu.org/copyleft/lesser.html#TOC1">
@@ -1075,22 +1081,20 @@
             <text:span text:style-name="Variable">preprocessed untrusted content</text:span>
             <text:span text:style-name="T9">&lt;/xml&gt;</text:span>
             <text:line-break/>&lt;script type='text/javascript'&gt;<text:line-break/> NeatHtml.DefaultFilter.ProcessUntrusted();<text:line-break/>&lt;/script&gt;</text:p>
-         <text:p text:style-name="Text_20_body">NeatHtml dynamically chooses which of the above techniques to use. <text:s/>The server prepends a test script in an XML data island (hidden in a conditional comment to avoid validation errors), and a test comment followed by script which calls NeatHtml's BeginUntrusted() method. <text:s/>That method checks whether the test comment is accessible. <text:s/>If it is, the script injects “&lt;!--” using document.writeln(). <text:s/>If comments are not accessible, it checks whether the script in the XML data island ran. <text:s/>If it did, BeginUntrusted() injects “&lt;xml&gt;”. <text:s/>Otherwise, the script injects “&lt;xmp&gt;”. <text:s/>The server replaces “--” , “&lt;/xmp&gt;”, and “&lt;/xml&gt;” in the untrusted content and follows the content with the string “&lt;!‑‑ &gt; ‑‑&gt;&lt;!-- &lt;xmp&gt;&lt;/xmp&gt;&lt;xml&gt;&lt;/xml&gt;&lt;! --&gt;”, like this:</text:p>
+         <text:p text:style-name="Text_20_body">NeatHtml dynamically chooses which of the above techniques to use. <text:s/>The server prepends a test comment followed by script which calls NeatHtml's BeginUntrusted() method. <text:s/>That method checks whether the test comment is accessible. <text:s/>If it is, the script injects “&lt;!--” using document.writeln(). <text:s/>If comments are not accessible, it checks navigator.userAgent to determine whether to inject “&lt;xml&gt;” (for IEMobile) or “&lt;xmp&gt; (for WebKit and KHTML), or “NeatHtml error: unrecognized browser&lt;!--” otherwise. <text:s/>The server replaces “--” , “&lt;/xmp&gt;”, and “&lt;/xml&gt;” in the untrusted content and follows the content with the string “&lt;!‑‑ &gt; ‑‑&gt;&lt;!-- &lt;xmp&gt;&lt;/xmp&gt;&lt;xml&gt;&lt;/xml&gt;&lt;! --&gt;”, like this:</text:p>
          <text:p text:style-name="CodeExample">
-            <text:span text:style-name="T9">&lt;!--[if lt IE 7]&gt;<text:line-break/>&lt;xml&gt;&lt;script type='text/javascript'&gt;NeatHtml.ScriptsRunInXml=true;&lt;/script&gt;&lt;/xml&gt;<text:line-break/>&lt;![endif]--&gt; <text:line-break/>&lt;!-- test comment --&gt;<text:line-break/>&lt;script type='text/javascript'&gt;<text:line-break/> NeatHtml.DefaultFilter.BeginUntrusted();<text:line-break/>&lt;/script&gt;</text:span>
+            <text:span text:style-name="T9">&lt;!-- test comment --&gt;<text:line-break/>&lt;script type='text/javascript'&gt;<text:line-break/> NeatHtml.DefaultFilter.BeginUntrusted();<text:line-break/>&lt;/script&gt;</text:span>
             <text:line-break/>
             <text:span text:style-name="Variable">preprocessed untrusted content</text:span>
             <text:line-break/>
             <text:span text:style-name="T9">&lt;!-- &gt; --&gt;&lt;!-- &lt;xmp&gt;&lt;/xmp&gt;&lt;xml&gt;&lt;/xml&gt;&lt;! --&gt;</text:span>
             <text:line-break/>&lt;script type='text/javascript'&gt;<text:line-break/> NeatHtml.DefaultFilter.ProcessUntrusted();<text:line-break/>&lt;/script&gt;</text:p>
          <text:p text:style-name="Text_20_body">The string “&lt;!‑‑ &gt; ‑‑&gt;&lt;!-- &lt;xmp&gt;&lt;/xmp&gt;&lt;xml&gt;&lt;/xml&gt;&lt;! --&gt;” is designed to close either an open comment, an open XMP element, or an open XML element. <text:s/>The “&gt;” in the first comment is needed because many browsers interpret “--” as ending a comment but allow a new comment to be started if another “--” occurs before the tag is closed with an “&gt;”. <text:s/>The comment enclosing the “&lt;xmp&gt;&lt;/xmp&gt;&lt;xml&gt;&lt;/xml&gt;” hides those tags from browsers where the XMP element is not used and ensures that they don't cause validation errors. <text:s/>The last “&lt;!” hides the ending “--&gt;” from browsers where the XMP element is used.</text:p>
-         <text:p text:style-name="Text_20_body">
-            <text:soft-page-break/>Hiding the untrusted content using HTML injected by JavaScript has another major advantage – the untrusted content is <text:span text:style-name="T5">not</text:span> hidden from no-script users. <text:s/>They will see the untrusted content in the normal document flow. <text:s/>Of course this means that it is important to do additional server-side preprocessing to prevent attacks on no-script users. <text:s/>That is described in <text:a xlink:type="simple" xlink:href="#2.2.Defending No-Script Users with Regex Replacements, a Table Trap, and Layout Lockdown|outline">section 2.2</text:a>.</text:p>
+         <text:p text:style-name="Text_20_body">Hiding the untrusted content using HTML injected by JavaScript has another major advantage – the untrusted <text:soft-page-break/>content is <text:span text:style-name="T5">not</text:span> hidden from no-script users. <text:s/>They will see the untrusted content in the normal document flow. <text:s/>Of course this means that it is important to do additional server-side preprocessing to prevent attacks on no-script users. <text:s/>That is described in <text:a xlink:type="simple" xlink:href="#2.2.Defending No-Script Users with Regex Replacements, a Table Trap, and Layout Lockdown|outline">section 2.2</text:a>.</text:p>
          <text:p text:style-name="Text_20_body">On a related note, the untrusted content will not be hidden if the call to NeatHtml.DefaultFilter.BeginUntrusted() fails for any reason. <text:s/>The most common reason would be forgetting to include NeatHtml.js on the page. <text:s/>To ensure that such a mistake does not result in untrusted content being displayed to script users, the server adds a fail-safe:</text:p>
          <text:p text:style-name="CodeExample">
-            <text:span text:style-name="T11">&lt;!--[if lt IE 7]&gt;<text:line-break/>&lt;xml&gt;&lt;script type='text/javascript'&gt;NeatHtml.ScriptsRunInXml=true;&lt;/script&gt;&lt;/xml&gt;<text:line-break/>&lt;![endif]--&gt; <text:line-break/>
-            </text:span>
-            <text:span text:style-name="T11">&lt;!-- test comment --&gt;</text:span>
+            <text:span text:style-name="T11">
+               <text:s/>&lt;!-- test comment --&gt;</text:span>
             <text:span text:style-name="T9">
                <text:line-break/>
             </text:span>
@@ -1109,7 +1113,8 @@
          <text:p text:style-name="Text_20_body">That will cause the untrusted content to be hidden in a comment if something goes wrong. <text:s/>Using '...\074-' + '-' instead of <text:s/>'&lt;!--' simply ensures that the script source code doesn't open any tags (\074 is the octal escape for '&lt;') or end any comments.</text:p>
          <text:p text:style-name="Text_20_body">Dynamically choosing which way to hide the untrusted content makes it a little harder for ProcessUntrusted() to find it. <text:s/>To assist with this, BeginUntrusted() notes the script element that called it so that ProcessUntrusted() can extract the untrusted content from the following node (i.e. the comment or XMP element). <text:s/>Also, the server adds a sentinel string after the untrusted content so that ProcessUntrusted() can determine where the untrusted content ends and doesn't have to worry about the portion of “&lt;!‑‑ &gt; ‑‑&gt;&lt;xmp&gt;&lt;/xmp&gt;” which is not applicable for the hiding method being used. <text:s/>Any string which would not generally occur in benign content will work as a sentinel string. <text:s/>The sentinel string that NeatHtml uses is in bold below:</text:p>
          <text:p text:style-name="CodeExample">
-            <text:span text:style-name="T11">&lt;!--[if lt IE 7]&gt;<text:line-break/>&lt;xml&gt;&lt;script type='text/javascript'&gt;NeatHtml.ScriptsRunInXml=true;&lt;/script&gt;&lt;/xml&gt;<text:line-break/>&lt;![endif]--&gt; <text:line-break/>
+            <text:span text:style-name="T11">
+               <text:s/>
             </text:span>&lt;!-- test comment --&gt;<text:line-break/>
             <text:span text:style-name="T11">&lt;script type='text/javascript'&gt;</text:span>
          </text:p>
@@ -1132,10 +1137,10 @@
             <text:line-break/>&lt;script type='text/javascript'&gt;<text:line-break/> NeatHtml.DefaultFilter.ProcessUntrusted();<text:line-break/>&lt;/script&gt;</text:p>
          <text:p text:style-name="Text_20_body">NeatHtml uses a hidden input element because it is a valid element that is not displayed to the user and should not occur in benign untrusted content.</text:p>
          <text:h text:style-name="Heading_20_4" text:outline-level="4">Filtering Untrusted Content with JavaScript</text:h>
-         <text:p text:style-name="Text_20_body">Once ProcessUntrusted() has obtained the preprocessed untrusted content and undone the server's <text:soft-page-break/>preprocessing, it needs to filter the original untrusted content. <text:s/>To maximize security and provide the best user experience, ProcessUntrusted() actually parses the untrusted content and converts it to secure, well-formed XHTML that all browsers should parse consistently. <text:s/>The parser can handle poorly formed “tag soup” HTML. <text:s/>Specifically, the filter:</text:p>
+         <text:p text:style-name="Text_20_body">Once ProcessUntrusted() has obtained the preprocessed untrusted content and undone the server's preprocessing, it needs to filter the original untrusted content. <text:s/>To maximize security and provide the best user experience, ProcessUntrusted() actually parses the untrusted content and converts it to secure, well-formed XHTML that all browsers should parse consistently. <text:s/>The parser can handle poorly formed “tag soup” HTML. <text:s/>Specifically, the filter:</text:p>
          <text:list xml:id="list1472795798" text:style-name="Bulleted_20_List">
             <text:list-item text:start-value="1">
-               <text:p text:style-name="Bulleted_20_List">removes tags which are not on a whitelist (e.g. “&lt;foo&gt;some &lt;b&gt;content&lt;/b&gt;&lt;/foo&gt;” becomes “some &lt;b&gt;content&lt;/b&gt;”). <text:s/>By default, the whitelist does not contain tags which could be used for XSS attacks (e.g. SCRIPT) or automated CSRF attacks (e.g. IMG). <text:s/>To allow trusted images to be displayed, the developer can allow IMG tags whose SRC attribute matches a specified regular expression pattern.</text:p>
+               <text:p text:style-name="Bulleted_20_List">removes tags which are not on a whitelist (e.g. “&lt;foo&gt;some &lt;b&gt;content&lt;/b&gt;&lt;/foo&gt;” becomes “some <text:soft-page-break/>&lt;b&gt;content&lt;/b&gt;”). <text:s/>By default, the whitelist does not contain tags which could be used for XSS attacks (e.g. SCRIPT) or automated CSRF attacks (e.g. IMG). <text:s/>To allow trusted images to be displayed, the developer can allow IMG tags whose SRC attribute matches a specified regular expression pattern.</text:p>
             </text:list-item>
             <text:list-item>
                <text:p text:style-name="Bulleted_20_List">removes content from SCRIPT elements so that it isn't displayed after removing the tag (e.g. “&lt;script&gt;a=b&lt;/script&gt;” is removed entirely)</text:p>
@@ -1184,10 +1189,12 @@
                <text:p text:style-name="Bulleted_20_List">converts named character entities that are not part of the XHTML standard to numeric character entities (e.g. “&amp;nbsp;” becomes “&amp;#160;”)</text:p>
             </text:list-item>
          </text:list>
-         <text:p text:style-name="Text_20_body">Applications can configure the parser to call arbitrary functions for particular element or attribute names. <text:s/>The functions used to provide the whitelisting functionality described above are part of NeatHtml's JavaScript API, so that it is simple to add elements and attributes to the whitelists. <text:s/>The whitelists used by default can be found in <text:a xlink:type="simple" xlink:href="https://forgesvn1.novell.com/viewsvn/neathtml/trunk/js/NeatHtml.js?view=markup">NeatHtml.js</text:a> by searching for “allowedTags”, “prohibitedTags” (i.e. tags whose content is removed), “allowedAttrs”, and “allowedProps”. <text:s/>The whitelist regular expression used for style property values is part of <text:soft-page-break/>the “StyleDeclRe” used to find style property declaration within the style attribute.</text:p>
+         <text:p text:style-name="Text_20_body">Applications can configure the parser to call arbitrary functions for particular element or attribute names. <text:s/>The functions used to provide the whitelisting functionality described above are part of NeatHtml's JavaScript API, so that it is simple to add elements and attributes to the whitelists. <text:s/>The whitelists used by default can be found in <text:a xlink:type="simple" xlink:href="https://forgesvn1.novell.com/viewsvn/neathtml/trunk/js/NeatHtml.js?view=markup">NeatHtml.js</text:a> by searching for “allowedTags”, “prohibitedTags” (i.e. tags whose content is removed), “allowedAttrs”, and “allowedProps”. <text:s/>The whitelist regular expression used for style property values is part of the “StyleDeclRe” used to find style property declaration within the style attribute.</text:p>
          <text:p text:style-name="Text_20_body">To make the filter's job slightly easier, it ignores everything after the first top-level element. <text:s/>To accommodate this, the server encloses the preprocessed untrusted content in a DIV element, like this:</text:p>
          <text:p text:style-name="CodeExample">
-            <text:span text:style-name="T11">&lt;!--[if lt IE 7]&gt;<text:line-break/>&lt;xml&gt;&lt;script type='text/javascript'&gt;NeatHtml.ScriptsRunInXml=true;&lt;/script&gt;&lt;/xml&gt;<text:line-break/>&lt;![endif]--&gt; <text:line-break/>
+            <text:soft-page-break/>
+            <text:span text:style-name="T11">
+               <text:s/>
             </text:span>&lt;!-- test comment --&gt;<text:line-break/>
             <text:span text:style-name="T11">&lt;script type='text/javascript'&gt;</text:span>
          </text:p>
@@ -1218,7 +1225,7 @@
          <text:p text:style-name="CodeExample">
             <text:span text:style-name="T9">&lt;div&gt;</text:span>
             <text:line-break/>
-            <text:span text:style-name="T11">&lt;!--[if lt IE 7]&gt;<text:line-break/>&lt;xml&gt;&lt;script type='text/javascript'&gt;NeatHtml.ScriptsRunInXml=true;&lt;/script&gt;&lt;/xml&gt;<text:line-break/>&lt;![endif]--&gt; <text:line-break/>&lt;!-- test comment --&gt;<text:line-break/>&lt;script type='text/javascript'&gt;</text:span>
+            <text:span text:style-name="T11">&lt;!-- test comment --&gt;<text:line-break/>&lt;script type='text/javascript'&gt;</text:span>
          </text:p>
          <text:p text:style-name="P6">
             <text:s text:c="2"/>try { NeatHtml.DefaultFilter.BeginUntrusted(); }<text:line-break/>
@@ -1251,17 +1258,16 @@
             <text:span text:style-name="T9">&lt;/div&gt;</text:span>
          </text:p>
          <text:p text:style-name="Text_20_body">ProcessUntrusted() finds that DIV element by searching the ancestors of the script element that called BeginUntrusted() and stopping at the first DIV element. <text:s/>It then sets the innerHTML member of that DIV element to the filtered content.</text:p>
-         <text:h text:style-name="Heading_20_3" text:outline-level="3">
-            <text:soft-page-break/>Preventing Phishing and Containing Vandalism with Layout Lockdown</text:h>
+         <text:h text:style-name="Heading_20_3" text:outline-level="3">Preventing Phishing and Containing Vandalism with Layout Lockdown</text:h>
          <text:p text:style-name="Text_20_body">With the techniques described so far, users with script enabled will see the untrusted content after it has been filtered to prevent XSS and CSRF attacks. <text:s/>However, an attacker could still use styles (e.g. absolute positioning or negative margins) to display malicious content on any part of the page. <text:s/>This ability could be used vandalize the page or to launch a phishing attack in which the user is tricked into trusting the attacker's content because of where it appears on the page.</text:p>
          <text:p text:style-name="Text_20_body">CSS provides a mechanism to restrict the area where content is displayed. <text:s/>If an element has the style “overflow: hidden”, then the browser is supposed to clip the content to the element's containing box. <text:s/>To take advantage of this, the server could style the outer DIV element, like this:</text:p>
          <text:p text:style-name="CodeExample">
+            <text:soft-page-break/>
             <text:span text:style-name="T11">&lt;div </text:span>
             <text:span text:style-name="T9">style='overflow: hidden;'</text:span>
             <text:span text:style-name="T11">&gt;</text:span>
             <text:line-break/>
-            <text:span text:style-name="T11">&lt;!--[if lt IE 7]&gt;<text:line-break/> &lt;xml&gt;&lt;script type='text/javascript'&gt;NeatHtml.ScriptsRunInXml=true;&lt;/script&gt;&lt;/xml&gt;<text:line-break/> &lt;![endif]--&gt; <text:line-break/>
-            </text:span> &lt;!-- test comment --&gt;<text:line-break/>
+            <text:span text:style-name="T11"/>&lt;!-- test comment --&gt;<text:line-break/>
             <text:span text:style-name="T11">&lt;script type='text/javascript'&gt;<text:line-break/>
                <text:s/>try { NeatHtml.DefaultFilter.BeginUntrusted(); }<text:line-break/>
                <text:s/>catch (ex) { document.writeln('NeatHtml not found\074!-' + '-'); }<text:line-break/> &lt;/script&gt; </text:span>
@@ -1294,8 +1300,7 @@
             <text:s text:c="2"/>
             <text:span text:style-name="T11">&lt;div style='overflow: hidden;'&gt;</text:span>
             <text:line-break/>
-            <text:span text:style-name="T11">&lt;!--[if lt IE 7]&gt;<text:line-break/> &lt;xml&gt;&lt;script type='text/javascript'&gt;NeatHtml.ScriptsRunInXml=true;&lt;/script&gt;&lt;/xml&gt;<text:line-break/> &lt;![endif]--&gt; <text:line-break/>
-            </text:span> &lt;!-- test comment --&gt;<text:line-break/>
+            <text:span text:style-name="T11"/>&lt;!-- test comment --&gt;<text:line-break/>
             <text:span text:style-name="T11">&lt;script type='text/javascript'&gt;</text:span>
          </text:p>
          <text:p text:style-name="P6">
@@ -1332,7 +1337,7 @@
          </text:p>
          <text:p text:style-name="Text_20_body">NeatHtml also does some additional styling which is not security related:</text:p>
          <text:p text:style-name="CodeExample">
-            <text:soft-page-break/>
+            <text:s/>
             <text:span text:style-name="T11">&lt;div </text:span>
             <text:span text:style-name="T9">class='NeatHtml' </text:span>
             <text:span text:style-name="T11">style='overflow: hidden; </text:span>
@@ -1340,8 +1345,7 @@
                <text:s text:c="28"/>border: none; padding: 0; margin: 0;</text:span>
             <text:span text:style-name="T11">'&gt;</text:span>
             <text:line-break/>
-            <text:span text:style-name="T11">&lt;!--[if lt IE 7]&gt;<text:line-break/> &lt;xml&gt;&lt;script type='text/javascript'&gt;NeatHtml.ScriptsRunInXml=true;&lt;/script&gt;&lt;/xml&gt;<text:line-break/> &lt;![endif]--&gt; <text:line-break/>
-            </text:span> &lt;!-- test comment --&gt;<text:line-break/>
+            <text:span text:style-name="T11"/>&lt;!-- test comment --&gt;<text:line-break/>
             <text:span text:style-name="T11">&lt;script type='text/javascript'&gt;</text:span>
             <text:line-break/>
             <text:span text:style-name="T11">
@@ -1371,7 +1375,7 @@
             <text:s/>NeatHtml.DefaultFilter.ProcessUntrusted();<text:line-break/> &lt;/script&gt;<text:line-break/>
             <text:span text:style-name="T11">&lt;/div&gt;<text:line-break/>&lt;script type='text/javascript'&gt;<text:line-break/> NeatHtml.DefaultFilter.ResizeContainer();<text:line-break/>&lt;/script&gt;</text:span>
          </text:p>
-         <text:p text:style-name="Text_20_body">The class attribute makes it easy for designers to style all untrusted content similarly (e.g. give it all the same background color). <text:s/>The “position: relative” allows for untrusted content to be positioned absolutely <text:span text:style-name="T5">within</text:span> the DIV. <text:s/>The “border: none; padding: 0; margin: 0”, simply make it easier for designers to style untrusted content by enclosing it in a separate DIV element for which they control all the style properties.</text:p>
+         <text:p text:style-name="Text_20_body">The class attribute makes it easy for designers to style all untrusted content similarly (e.g. give it all the same background color). <text:s/>The “position: relative” allows for untrusted content to be positioned absolutely <text:span text:style-name="T5">within</text:span> the DIV. <text:s/>The “border: none; padding: 0; margin: 0”, simply make it easier for designers to style untrusted <text:soft-page-break/>content by enclosing it in a separate DIV element for which they control all the style properties.</text:p>
          <text:p text:style-name="Text_20_body">There is one other small way that the untrusted content could change something outside of the containing box. <text:s/>On browsers that support <text:a xlink:type="simple" xlink:href="http://www.w3.org/TR/CSS21/generate.html#counters">CSS counters</text:a> the untrusted content can use a style of “counter-increment: <text:span text:style-name="T5">counterName</text:span>” or “counter-reset: <text:span text:style-name="T5">counterName</text:span>” to change the values of counters. <text:s/>This could be used to change the numbering of paragraphs, chapters, etc. <text:s/>To avoid this, NeatHtml's client-side filter does not include “counter-increment” and “counter-reset” on the whitelist of property names.</text:p>
          <text:h text:style-name="Heading_20_2" text:outline-level="2">Defending No-Script Users with Regex Replacements, Layout Lockdown, and a Table Trap</text:h>
          <text:p text:style-name="Text_20_body">The techniques described above are designed to protect the overwhelming majority of users – those with JavaScript enabled. <text:s/>Protecting no-script users requires doing additional server-side preprocessing. <text:s/>NeatHtml tries to minimize the amount of server-side preprocessing while maximizing end-user security and usability. <text:s/>This section describes NeatHtml preprocessing techniques in general terms. <text:s/>See the <text:a xlink:type="simple" xlink:href="https://forgesvn1.novell.com/viewsvn/neathtml/trunk/dotnet/Brettle.Web.NeatHtml/Filter.cs?view=markup">Filter.cs</text:a> source code for full details.</text:p>
@@ -1379,7 +1383,7 @@
          <text:p text:style-name="Text_20_body">To maximize speed, NeatHtml's server-side component uses regular expressions (regexs) to manipulate the untrusted content directly as a string. <text:s/>This technique should be faster than the true parsing done by the client-side filter, especially for benign content. <text:s/>Unfortunately, the regex manipulations described below will not ensure that the preprocessed untrusted content parsed by the browser is well-formed XML. <text:s/>For example, no attempt is made to ensure that every start tag has a matching end tag, and named entities are not converted to numeric entities. <text:s/>For applications which require well-formed pages, the techniques described in this section are not appropriate. <text:s/>For those applications, options include:</text:p>
          <text:list xml:id="list1802914207" text:style-name="Bulleted_20_List">
             <text:list-item text:start-value="1">
-               <text:p text:style-name="Bulleted_20_List">Sacrifice support for no-script users and Safari/Konqueror users by always hiding the preprocessed <text:soft-page-break/>untrusted content in an HTML comment.</text:p>
+               <text:p text:style-name="Bulleted_20_List">Sacrifice support for no-script users and Safari/Konqueror users by always hiding the preprocessed untrusted content in an HTML comment.</text:p>
             </text:list-item>
             <text:list-item>
                <text:p text:style-name="Bulleted_20_List">Require that untrusted content is well-formed and secure when it is created.</text:p>
@@ -1391,14 +1395,14 @@
          <text:h text:style-name="Heading_20_3" text:outline-level="3">Preventing Phishing and Containing Vandalism with Layout Lockdown and a Table Trap</text:h>
          <text:p text:style-name="Text_20_body">Recall that the Layout Lockdown technique used for script users required calling the client-side function ResizeContainer() to ensure that overflow content was hidden from users of IE6 and earlier. <text:s/>Without script, NeatHtml needs to ensure that a fixed size scrollable outer DIV is used. <text:s/>To avoid affecting users of other browsers, the server uses conditional comments, like this:</text:p>
          <text:p text:style-name="CodeExample">
+            <text:soft-page-break/>
             <text:span text:style-name="T9">&lt;!--[if gte IE 7]&gt;&lt;!--&gt;</text:span>
             <text:span text:style-name="T11">
                <text:line-break/>&lt;div class='NeatHtml' style='overflow: hidden; position: relative;<text:line-break/>
                <text:s text:c="28"/>border: none; padding: 0; margin: 0;'&gt;<text:line-break/>
             </text:span>
-            <text:span text:style-name="T9">&lt;!--&lt;![endif]--&gt;<text:line-break/>
-            </text:span>
-            <text:span text:style-name="T11">&lt;!--[if lt IE 7]&gt;</text:span>
+            <text:span text:style-name="T9">&lt;!--&lt;![endif]--&gt;<text:line-break/> &lt;!--[if lt IE 7]</text:span>
+            <text:span text:style-name="T11">&gt;</text:span>
             <text:span text:style-name="T9">
                <text:line-break/>&lt;div class='NeatHtml'<text:line-break/>
                <text:s text:c="4"/>style='width: </text:span>
@@ -1406,9 +1410,7 @@
             <text:span text:style-name="T9">; height: </text:span>
             <text:span text:style-name="T6">NoScriptDownlevelIEHeight</text:span>
             <text:span text:style-name="T9">;<text:line-break/>
-               <text:s text:c="11"/>overflow:auto; position:relative; border:none; padding:0; margin:0;'&gt;<text:line-break/>
-            </text:span>
-            <text:span text:style-name="T11">&lt;xml&gt;&lt;script type='text/javascript'&gt;NeatHtml.ScriptsRunInXml=true;&lt;/script&gt;&lt;/xml&gt;<text:line-break/>&lt;![endif]--&gt;</text:span>
+               <text:s text:c="11"/>overflow:auto; position:relative; border:none; padding:0; margin:0;'&gt;<text:line-break/>&lt;![endif]--&gt; </text:span>
             <text:line-break/> &lt;!-- test comment --&gt;<text:line-break/>
             <text:span text:style-name="T11">&lt;script type='text/javascript'&gt;</text:span>
             <text:line-break/>
@@ -1449,6 +1451,7 @@
          <text:p text:style-name="P8">To prevent untrusted content that leaves an attribute or tag half open (i.e. a missing quote or “&gt;”) from affecting trusted content, NeatHtml uses both single and double quoted attributes in the sentinel element already being used to mark the end of untrusted content for the client-side script:</text:p>
          <text:p text:style-name="CodeExample">
             <text:soft-page-break/>
+            <text:s/>
             <text:span text:style-name="T11">&lt;!--[if gte IE 7]&gt;&lt;!--&gt; <text:line-break/>&lt;div class='NeatHtml' style='overflow: hidden; position: relative;<text:line-break/>
                <text:s text:c="28"/>border: none; padding: 0; margin: 0;'&gt;<text:line-break/>&lt;!--&lt;![endif]--&gt;<text:line-break/>&lt;!--[if lt IE 7]&gt;<text:line-break/>&lt;div class='NeatHtml' <text:line-break/>
                <text:s text:c="4"/>style='width: </text:span>
@@ -1456,7 +1459,7 @@
             <text:span text:style-name="T11">; height: </text:span>
             <text:span text:style-name="T7">NoScriptDownlevelIEHeight</text:span>
             <text:span text:style-name="T11">;<text:line-break/>
-               <text:s text:c="11"/>overflow:auto; position:relative; border:none; padding:0; margin:0;'&gt;<text:line-break/> &lt;xml&gt;&lt;script type='text/javascript'&gt;NeatHtml.ScriptsRunInXml=true;&lt;/script&gt;&lt;/xml&gt;<text:line-break/>&lt;![endif]--&gt; </text:span>
+               <text:s text:c="11"/>overflow:auto; position:relative; border:none; padding:0; margin:0;'&gt;<text:line-break/>&lt;![endif]--&gt; </text:span>
             <text:line-break/> &lt;!-- test comment --&gt;<text:line-break/>
             <text:span text:style-name="T11">&lt;script type='text/javascript'&gt;</text:span>
             <text:line-break/>
@@ -1518,7 +1521,7 @@
             <text:span text:style-name="T11">; height: </text:span>
             <text:span text:style-name="T7">NoScriptDownlevelIEHeight</text:span>
             <text:span text:style-name="T11">;<text:line-break/>
-               <text:s text:c="11"/>overflow:auto; position:relative; border:none; padding:0; margin:0;'&gt;<text:line-break/> &lt;xml&gt;&lt;script type='text/javascript'&gt;NeatHtml.ScriptsRunInXml=true;&lt;/script&gt;&lt;/xml&gt;<text:line-break/>&lt;![endif]--&gt; </text:span>
+               <text:s text:c="11"/>overflow:auto; position:relative; border:none; padding:0; margin:0;'&gt;<text:line-break/>&lt;![endif]--&gt; </text:span>
             <text:line-break/>
             <text:span text:style-name="T9">&lt;table style='border-spacing: 0;'&gt;&lt;tr&gt;&lt;td style='padding: 0;'&gt;</text:span>
             <text:line-break/>
@@ -1561,10 +1564,10 @@
             <text:span text:style-name="T2">&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</text:span>
          </text:p>
          <text:p text:style-name="P7">
-            <text:soft-page-break/>
-            <text:s/>&lt;script type='text/javascript'&gt;<text:line-break/>
+            <text:s text:c="2"/>&lt;script type='text/javascript'&gt;<text:line-break/>
             <text:s/>NeatHtml.DefaultFilter.ProcessUntrusted();<text:line-break/> &lt;/script&gt;<text:line-break/>&lt;/div&gt;<text:line-break/>&lt;script type='text/javascript'&gt;NeatHtml.DefaultFilter.ResizeContainer();&lt;/script&gt; </text:p>
-         <text:p text:style-name="P8">The Table Trap prevents untrusted content that doesn't contain TABLE end tags from displaying outside the outer DIV but does not prevent untrusted content from pulling trusted content <text:span text:style-name="T5">into</text:span> the outer DIV. <text:s/>In particular, if the untrusted content starts but does not end an IFRAME, OBJECT, SCRIPT, or CDATA element/section, then the trusted content which follows the outer DIV in the page will be pulled into the outer DIV and will appear to the user to be untrusted. <text:s/>This will occur because, like TABLE elements, the aforementioned elements must be explicitly closed. <text:s/>As a result the outer DIV's end tag will be ignored if such an element is still open. <text:s/>Although it's hard to imagine how such content could be used for phishing, it could certainly be used to vandalize the page. <text:s/>For that reason, the server closes any open SCRIPT elements, hides IFRAME and OBJECT tags, and disables CDATA sections as described below.</text:p>
+         <text:p text:style-name="P8">
+            <text:soft-page-break/>The Table Trap prevents untrusted content that doesn't contain TABLE end tags from displaying outside the outer DIV but does not prevent untrusted content from pulling trusted content <text:span text:style-name="T5">into</text:span> the outer DIV. <text:s/>In particular, if the untrusted content starts but does not end an IFRAME, OBJECT, SCRIPT, or CDATA element/section, then the trusted content which follows the outer DIV in the page will be pulled into the outer DIV and will appear to the user to be untrusted. <text:s/>This will occur because, like TABLE elements, the aforementioned elements must be explicitly closed. <text:s/>As a result the outer DIV's end tag will be ignored if such an element is still open. <text:s/>Although it's hard to imagine how such content could be used for phishing, it could certainly be used to vandalize the page. <text:s/>For that reason, the server closes any open SCRIPT elements, hides IFRAME and OBJECT tags, and disables CDATA sections as described below.</text:p>
          <text:p text:style-name="P8">To close any open SCRIPT elements, the server simply adds an empty SCRIPT element after the untrusted content, like this:</text:p>
          <text:p text:style-name="CodeExample">
             <text:span text:style-name="T11">&lt;!--[if gte IE 7]&gt;&lt;!--&gt;<text:line-break/>&lt;div class='NeatHtml' style='overflow: hidden; position: relative;<text:line-break/>
@@ -1574,7 +1577,7 @@
             <text:span text:style-name="T11">; height: </text:span>
             <text:span text:style-name="T7">NoScriptDownlevelIEHeight</text:span>
             <text:span text:style-name="T11">;<text:line-break/>
-               <text:s text:c="11"/>overflow:auto; position:relative; border:none; padding:0; margin:0;'&gt;<text:line-break/> &lt;xml&gt;&lt;script type='text/javascript'&gt;NeatHtml.ScriptsRunInXml=true;&lt;/script&gt;&lt;/xml&gt;<text:line-break/>&lt;![endif]--&gt; </text:span>
+               <text:s text:c="11"/>overflow:auto; position:relative; border:none; padding:0; margin:0;'&gt;<text:line-break/>&lt;![endif]--&gt; </text:span>
             <text:line-break/>
             <text:span text:style-name="T11">&lt;table style='border-spacing: 0;'&gt;&lt;tr&gt;&lt;td style='padding: 0;'&gt;</text:span>
             <text:line-break/>
@@ -1628,7 +1631,7 @@
          </text:p>
          <text:p text:style-name="P8">The “(/)” group will match for all potential end tags and the “([a-z][a-z0-9_:]*)” group will match the tag name for any element tag. <text:s/>
          </text:p>
-         <text:p text:style-name="P8">If there is a tag name but it is not on a whitelist (which would not contain TABLE, OBJECT, or IFRAME), <text:soft-page-break/>the server prepends “NeatHtmlReplace_” to the tag name (e.g. “&lt;iframe” becomes “&lt;NeatHtmlReplace_iframe”). <text:s/>This effectively hides the tag from no-script users. <text:s/>When script is enabled, ProcessUntrusted() removes the “NeatHtmlReplace_” from the tag name, before filtering begins. <text:s/>In the current implementation everything on the client-side tag name whitelist is also on the server's whitelist, so renaming the tag is essentially the same as deleting it. <text:s/>However, renaming the tag leaves open the possibility of handling these elements differently when script is enabled.</text:p>
+         <text:p text:style-name="P8">If there is a tag name but it is not on a whitelist (which would not contain TABLE, OBJECT, or IFRAME), the server prepends “NeatHtmlReplace_” to the tag name (e.g. “&lt;iframe” becomes “&lt;NeatHtmlReplace_iframe”). <text:s/>This effectively hides the tag from no-script users. <text:s/>When script is enabled, ProcessUntrusted() removes the “NeatHtmlReplace_” from the tag name, before filtering begins. <text:s/>In the current implementation everything on the client-side tag name whitelist is also on the server's whitelist, so renaming the tag is essentially the same as deleting it. <text:s/>However, renaming the tag leaves open the possibility <text:soft-page-break/>of handling these elements differently when script is enabled.</text:p>
          <text:p text:style-name="P8">Note: the tag name whitelist allows SCRIPT tags. <text:s/>Removing them from the whitelist would cause them to be renamed and as a result the script source code would be displayed to the user. <text:s/>While that isn't a security issue, it impacts usability. <text:s/>Having SCRIPT tags on the whitelist is not a security risk because no-script users won't run the scripts, and for scripting users the client-side filter will remove SCRIPT elements and their contents.</text:p>
          <text:p text:style-name="Text_20_body">
             <text:span text:style-name="T3">If no tag name is captured (e.g. “![CDATA[” does not match “([a-z][a-z0-9_:]*)”) the server disables the tag by replacing the initial “&lt;” with “&lt;NeatHtmlLt /&gt;&amp;lt;”. <text:s/>For no-script users, the browser ignores the “&lt;NeatHtmlLt /&gt;” and the user just sees “&lt;”. <text:s/>For script users, the “&lt;NeatHtmlLt /&gt;” allows ProcessUntrusted() to undo the replacement and pass the original untrusted content through the client-side filter. <text:s/>This gives the client-side filter a chance to handle any tags that did not match the server's regex.</text:span>
@@ -1652,9 +1655,9 @@
          <text:p text:style-name="Text_20_body">before replacing “--” with “&amp;34;&amp;34;”. <text:s/>That matches any HTML comment that does not contain “--”. <text:s/>Comments containing “--” are not removed by the server because matching them requires a considerably more complex regex. <text:s/>Since displaying such comments is not a security issue and the HTML standards discourage use of “--” in comments, NeatHtml avoids the additional complexity.</text:p>
          <text:p text:style-name="Text_20_body">The server handles CDATA sections by replacing all complete CDATA sections with the HTML-encoded content of the CDATA section. <text:s/>A complete CDATA section is anything matching the following regex:</text:p>
          <text:p text:style-name="CodeExample">&lt;!\[CDATA\[([^\]]*(?:\][^\]]+)*)\]\]&gt;</text:p>
-         <text:p text:style-name="P8">
-            <text:soft-page-break/>The content of the CDATA section (i.e. the part that the server HTML-encodes) is the part matching the first grouping construct.</text:p>
-         <text:h text:style-name="Heading_20_4" text:outline-level="4">Allowing Tables in Untrusted Content</text:h>
+         <text:p text:style-name="P8">The content of the CDATA section (i.e. the part that the server HTML-encodes) is the part matching the first grouping construct.</text:p>
+         <text:h text:style-name="Heading_20_4" text:outline-level="4">
+            <text:soft-page-break/>Allowing Tables in Untrusted Content</text:h>
          <text:p text:style-name="Text_20_body">The algorithm used to allow tables has not been extensively tested and using it involves taking an unnecessary risk if benign content is not expected to contain TABLE elements. <text:s/>For that reason, support for displaying untrusted tables to no-script users is optional, and disabled by default.</text:p>
          <text:p text:style-name="Text_20_body">When support for TABLE elements is enabled, NeatHtml keeps track of how many TABLE elements are open and closes any that remain open at the end of the untrusted content. <text:s/>This requires accurately identifying TABLE tags that will actually cause the browser to start or end a TABLE element. <text:s/>The regex used above to match potential tags, is not sufficient for the following reasons:</text:p>
          <text:list xml:id="list995787524" text:style-name="Bulleted_20_List">
@@ -1753,7 +1756,7 @@
                </table:table-cell>
             </table:table-row>
          </table:table>
-         <text:p text:style-name="Text_20_body">The server continues to disable tags when there is no tag name, and additionally disables tags if there is no tag tail, or if there are attributes on an end tag, or an end tag ends with “/&gt;”. <text:s/>The server disables the tag by <text:soft-page-break/>replacing the initial “&lt;” with “&lt;NeatHtmlLt /&gt;&amp;lt;” as described earlier. <text:s/>The server also continues to rename tags that are not on a whitelist, by prepending “NeatHtmlReplace_” to the tag name as described earlier. <text:s/>Additionally, the server canonicalizes attributes by quoting any unquoted attribute values, and adding attribute values wherever they are missing.</text:p>
+         <text:p text:style-name="Text_20_body">The server continues to disable tags when there is no tag name, and additionally disables tags if there is no tag tail, or if there are attributes on an end tag, or an end tag ends with “/&gt;”. <text:s/>The server disables the tag by replacing the initial “&lt;” with “&lt;NeatHtmlLt /&gt;&amp;lt;” as described earlier. <text:s/>The server also continues to rename tags that are not on a whitelist, by prepending “NeatHtmlReplace_” to the tag name as described earlier. <text:s/>Additionally, the server canonicalizes attributes by quoting any unquoted attribute values, and adding <text:soft-page-break/>attribute values wherever they are missing.</text:p>
          <text:p text:style-name="Text_20_body">The above regex manipulations result in preprocessed untrusted content where all tags are whitelisted and well-formed (i.e. all attributes have valid names and a quoted value that does not contain “&lt;”). <text:s/>This makes it possible to accurately identify well-formed TABLE tags, but those tags could still occur:</text:p>
          <text:list xml:id="list2063406941" text:style-name="Bulleted_20_List">
             <text:list-item text:start-value="1">
@@ -1777,10 +1780,11 @@
                <text:p text:style-name="Bulleted_20_List">“(“ only if it is immediately preceded by “rgb”. <text:s/>This prevents “url()” from being used for an CSRF attack.</text:p>
             </text:list-item>
             <text:list-item>
-               <text:p text:style-name="Bulleted_20_List">Any other printable ASCII characters except “&amp;”, “:”, “;”, and “\”. <text:s/>The character “&amp;” is not allowed because it can be used to HTML-encode characters and the character “\” is not allowed because it is used to start escape sequences in styles. <text:s/>Both are potential security risks because they could be used <text:soft-page-break/>to put characters in the property value that are not otherwise allowed. <text:s/>The characters “:” and “;” are not allowed because they could conceivably confuse a browser's style parser if they are found in a style property value.</text:p>
+               <text:p text:style-name="Bulleted_20_List">Any other printable ASCII characters except “&amp;”, “:”, “;”, and “\”. <text:s/>The character “&amp;” is not allowed because it can be used to HTML-encode characters and the character “\” is not allowed because it is used to start escape sequences in styles. <text:s/>Both are potential security risks because they could be used to put characters in the property value that are not otherwise allowed. <text:s/>The characters “:” and “;” are not allowed because they could conceivably confuse a browser's style parser if they are found in a style property value.</text:p>
             </text:list-item>
          </text:list>
-         <text:p text:style-name="Text_20_body">The allowed style value regex is designed to match the overwhelming majority of benign styles seen in typical HTML markup, while not matching any styles that could contain automated CSRF attacks. <text:s/>In those cases where a benign styles does not match the regex, no-script users see the associated content, but with no style applied.</text:p>
+         <text:p text:style-name="Text_20_body">
+            <text:soft-page-break/>The allowed style value regex is designed to match the overwhelming majority of benign styles seen in typical HTML markup, while not matching any styles that could contain automated CSRF attacks. <text:s/>In those cases where a benign styles does not match the regex, no-script users see the associated content, but with no style applied.</text:p>
          <text:h text:style-name="Heading_20_3" text:outline-level="3">Preventing CSS Counter Manipulation</text:h>
          <text:p text:style-name="Text_20_body">Recall that untrusted content can use “counter-reset” or “counter-increment” to manipulate CSS counters that are used by trusted content. <text:s/>To ensure that trusted content can use CSS counters securely, the property name whitelist used by the server to remove CSRF attacks, does not contain those properties.</text:p>
          <text:h text:style-name="Heading_20_2" text:outline-level="2">Preventing NeatHtml from Being Used for Denial of Service Attacks</text:h>
@@ -1858,7 +1862,7 @@
          <text:p text:style-name="Text_20_body">It is worth investigating whether untrusted content could be displayed inline by styling the DIV element to use “display: inline” instead. <text:s/>It's not clear whether overflow would be hidden by the browser, particularly if the browser is IE6 or earlier.</text:p>
          <text:h text:style-name="Heading_20_3" text:outline-level="3">Running Untrusted Scripts in a Restricted Environment</text:h>
          <text:p text:style-name="Text_20_body">For some applications, it would be desirable to allow untrusted scripts to run if their capabilities could be restricted. <text:s/>This would be particularly valuable for <text:a xlink:type="simple" xlink:href="http://en.wikipedia.org/wiki/Mashup_(web_application_hybrid)">mashup</text:a> applications and social networking sites. <text:s/>Since NeatHtml can modify an untrusted script before it runs, it might be able to create a restricted environment for these scripts. <text:s/>For example, NeatHtml could do the following:</text:p>
-         <text:list xml:id="list1870135565" text:style-name="Numbered_20_List">
+         <text:list xml:id="list2157012275" text:style-name="Numbered_20_List">
             <text:list-item>
                <text:p text:style-name="Numbered_20_List">Use a regex to find all potential global identifiers in the script. <text:s/>False positives would not impact functionality or security (as long as the matches are syntactically valid identifiers), so this regex could be fairly liberal.</text:p>
             </text:list-item>
